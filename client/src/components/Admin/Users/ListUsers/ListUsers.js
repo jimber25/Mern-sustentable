@@ -31,7 +31,7 @@ export function ListUsers(props) {
         console.error(error);
       }
     })();
-  }, [usersActive, reload]);
+  }, [usersActive, reload,accessToken]);
 
   if (!users) return <Loader active inline="centered" />;
   if (size(users) === 0) return "No hay ningun usuario";

@@ -1,11 +1,11 @@
 import { ENV } from "../utils";
 
-export class User {
+export class Role {
   baseApi = ENV.BASE_API;
 
-  async getMe(accessToken) {
+  async getRole(accessToken, idRole) {
     try {
-      const url = `${this.baseApi}/${ENV.API_ROUTES.USER_ME}`;
+      const url = `${this.baseApi}/role/${idRole}`;
       const params = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -23,25 +23,17 @@ export class User {
     }
   }
 
-  async createUser(accessToken, data) {
+  async createRole(accessToken, data) {
     try {
-      const formData = new FormData();
-      Object.keys(data).forEach((key) => {
-        formData.append(key, data[key]);
-      });
-
-      if (data.fileAvatar) {
-        formData.append("avatar", data.fileAvatar);
-      }
-
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USER}`;
-      const url = `${this.baseApi}/add-user`;
+      const url = `${this.baseApi}/add-role`;
       const params = {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: formData,
+        body: JSON.stringify(data),
       };
 
       const response = await fetch(url, params);
@@ -55,12 +47,13 @@ export class User {
     }
   }
 
-  async getUsers(accessToken, active = undefined) {
+  async getRoles(accessToken, active = undefined) {
     try {
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
-      const url = `${this.baseApi}/users?active=${active}`;
+      const url = `${this.baseApi}/roles?active=${active}`;
       const params = {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       };
@@ -76,30 +69,23 @@ export class User {
     }
   }
 
-  async updateUser(accessToken, idUser, userData) {
+  async updateRole(accessToken, idRole, roleData) {
     try {
-      const data = userData;
-      if (!data.password) {
-        delete data.password;
-      }
-
-      const formData = new FormData();
-      Object.keys(data).forEach((key) => {
-        formData.append(key, data[key]);
-      });
-
-      if (data.fileAvatar) {
-        formData.append("avatar", data.fileAvatar);
-      }
+      const data = roleData;
+      // const formData = new FormData();
+      // Object.keys(data).forEach((key) => {
+      //   formData.append(key, data[key]);
+      // });
 
       // const url = `${ENV.BASE_API}/${ENV.API_ROUTES.USER}/${idUser}`;
-      const url = `${ENV.BASE_API}/update-user/${idUser}`;
+      const url = `${ENV.BASE_API}/update-role/${idRole}`;
       const params = {
-        method: "PATCH",
+        method: "PUT",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: formData,
+        body: JSON.stringify(data),
       };
 
       const response = await fetch(url, params);
@@ -113,13 +99,14 @@ export class User {
     }
   }
 
-  async deleteUser(accessToken, idUser) {
+  async deleteRole(accessToken, idRole) {
     try {
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USER}/${idUser}`;
-      const url = `${this.baseApi}/delete-user/${idUser}`;
+      const url = `${this.baseApi}/delete-role/${idRole}`;
       const params = {
         method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       };

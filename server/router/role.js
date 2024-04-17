@@ -3,7 +3,6 @@ const multiparty = require("connect-multiparty");
 const RoleController = require("../controllers/role");
 const md_auth = require("../middlewares/authenticated");
 
-const md_upload = multiparty({ uploadDir: "./uploads/avatar" });
 const api = express.Router();
 
 api.get("/role/:id", [md_auth.asureAuth], RoleController.getRole);

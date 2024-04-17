@@ -5,8 +5,8 @@ const image = require("../utils/image");
 async function getUser(req, res) {
   const { user_id } = req.user;
 
-  const response = await User.findById(user_id);
-  console.log(response)
+  const response = await User.findById(user_id).populate("role");
+  // console.log(response)
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado usuario" });
   } else {
@@ -76,7 +76,6 @@ async function updateUser(req, res) {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el usuario" });
     } else {
-      console.log(response)
       res.status(200).send({ msg: "Actualizacion correcta" });
     }
   });

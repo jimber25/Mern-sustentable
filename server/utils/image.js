@@ -14,7 +14,7 @@ function getFilePath(file) {
 
   // let fileExt = extSplit[1]; //es la segunda posicion xq parte de la ultima de fileName
   // //console.log(fileExt);
-  console.log(fileName)
+  // console.log(fileName)
   return fileName;
 
 }

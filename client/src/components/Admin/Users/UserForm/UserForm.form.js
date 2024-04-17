@@ -20,7 +20,7 @@ export function validationSchema(user) {
     firstname: Yup.string().required(true),
     lastname: Yup.string().required(true),
     email: Yup.string().email(true).required(true),
-    role: Yup.string().required(true),
+    // role: Yup.string().required(true),
     password: user ? Yup.string() : Yup.string().required(true),
     company: Yup.string().required(true),
     position: Yup.string().required(true),

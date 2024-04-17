@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const PermissionSchema = Schema({
-  permission_code:{
-      type: Number,
-      unique: true
-  },
+const PermissionSchema = mongoose.Schema({
+  // permission_code:{
+  //     type: Number,
+  //     unique: true
+  // },
   role: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Role'
   },
   description: String,
