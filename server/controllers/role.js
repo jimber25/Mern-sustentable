@@ -2,10 +2,10 @@ const bcrypt = require("bcryptjs");
 const Role = require("../models/role");
 
 async function getRole(req, res) {
-  const { role_id } = req.user;
+  const { id } = req.params;
 
-  const response = await Role.findById(role_id);
-  // console.log(response)
+  const response = await Role.findById(id);
+  console.log(id)
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado el rol" });
   } else {
@@ -27,12 +27,10 @@ async function getRoles(req, res) {
 }
 
 async function createRole(req, res) {
-  //console.log(req.body);
-  const role = new Role({ ...req.body, active: active });
+  const role = new Role({ ...req.body, active: true });
 
   role.save((error, roleStored) => {
     if (error) {
-      console.log(error)
       res.status(400).send({ msg: "Error al crear el rol" });
     } else {
       res.status(201).send(roleStored);
@@ -48,7 +46,6 @@ async function updateRole(req, res) {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el rol" });
     } else {
-      // console.log(response)
       res.status(200).send({ msg: "Actualizacion correcta" });
     }
   });

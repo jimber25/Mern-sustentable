@@ -11,7 +11,10 @@ const UserSchema = mongoose.Schema({
   company: String,
   position: String,
   sector: String,
-  role: String,
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Role'
+  },
   active: Boolean,
   avatar: String,
 });

@@ -20,3 +20,17 @@ export const ENV = {
     REFRESH: "refresh",
   },
 };
+
+export const MODULES = [
+  "users",
+  "roles",
+  "permissions",
+  "configure"
+];
+
+export const ACTIONS = [
+  "edit",
+  "create",
+  "delete",
+  "view"
+]

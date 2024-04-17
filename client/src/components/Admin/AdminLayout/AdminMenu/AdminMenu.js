@@ -1,5 +1,5 @@
-import React from "react";
-import { Menu, Icon } from "semantic-ui-react";
+import React, {useEffect, useState} from "react";
+import { Menu, Icon, DropdownMenu, Dropdown, DropdownItem, DropdownHeader } from "semantic-ui-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../../hooks";
 import "./AdminMenu.scss";
@@ -9,7 +9,8 @@ export function AdminMenu() {
   const {
     user: { role },
   } = useAuth();
-  const isAdmin = role === "admin";
+
+  const isAdmin = (role? role.name : "") === "admin";
 
   const isCurrentPath = (path) => {
     if (path === pathname) return true;
@@ -25,8 +26,8 @@ export function AdminMenu() {
             to="/admin/users"
             active={isCurrentPath("/admin/users")}
           >
-            <Icon name="user outline" />
-            Usuario
+            <Icon name="users" />
+            Usuarios
           </Menu.Item>
 
           <Menu.Item
@@ -38,14 +39,14 @@ export function AdminMenu() {
             Menu
           </Menu.Item>
 
-          <Menu.Item
+          {/* <Menu.Item
             as={Link}
-            to="/admin/courses"
-            active={isCurrentPath("/admin/courses")}
+            to="/admin/roles"
+            active={isCurrentPath("/admin/roles")}
           >
-            <Icon name="computer" />
-            Cursos
-          </Menu.Item>
+            <Icon name="user" />
+            Roles
+          </Menu.Item> */}
 
           <Menu.Item
             as={Link}
@@ -55,6 +56,30 @@ export function AdminMenu() {
             <Icon name="mail" />
             Newsletter
           </Menu.Item>
+
+          {/* <Menu.Item
+            as={Link}
+            to="/admin/config"
+            active={isCurrentPath("/admin/config")}
+          >
+            <Icon name="configure" />
+            Configuracion
+          </Menu.Item> */}
+
+          <Dropdown item icon="configure"  text='Configuracion'>
+          <DropdownMenu>
+            <DropdownItem
+            as={Link}
+            to="/admin/config/roles"
+            active={isCurrentPath("/admin/config/roles")}
+            > <Icon name="users" /> Roles</DropdownItem>
+            <DropdownItem
+                as={Link}
+                to="/admin/config/permissions"
+                active={isCurrentPath("/admin/config/permissions")}
+                > <Icon name="clipboard list" /> Permisos</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
         </>
       )}
 
