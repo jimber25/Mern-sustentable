@@ -69,6 +69,29 @@ export class Permission {
     }
   }
 
+  async getPermissionsByRole(accessToken, roleId, active = undefined) {
+    try {
+      // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
+      const url = `${this.baseApi}/permissions-role/${roleId}?active=${active}`;
+      const params = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
   async getPermissionsByRoleId(accessToken, roleId) {
     try {
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;

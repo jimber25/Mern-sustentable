@@ -18,9 +18,9 @@ async function getPermissions(req, res) {
   let response = null;
 
   if (active === undefined || active === "undefined") {
-    response = await Permission.find();
+    response = await Permission.find().sort({active:-1}).populate("role");
   } else {
-    response = await Permission.find({ active });
+    response = await Permission.find({ active }).sort({active:-1}).populate("role");
   }
   
   if (!response) {

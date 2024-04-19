@@ -25,7 +25,6 @@ export function PermissionItem(props) {
   const { permission, onReload } = props;
   const { accessToken } = useAuth();
 
-
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
 
@@ -84,16 +83,19 @@ export function PermissionItem(props) {
       <div className="permission-item">
         <div className="permission-item__info">
           <div>
-            <Grid  columns={"equal"}>
-              <GridRow stretched>
-                {/* <GridColumn width={6}>
-                  <p>{role}</p>
-                </GridColumn> */}
-                <GridColumn width={12}>
-                  {convertModulesEngToEsp(permission.module)}
+            <Grid divided>
+              <GridRow columns={3} stretched>
+                <GridColumn width={1} >
+                 <Icon color={permission.active? "green" : "red"} name='circle' />
                 </GridColumn>
-                <GridColumn width={8}>
-                  {convertActionsEngToEsp(permission.action)}
+                <GridColumn width={3}>
+                <p>Rol</p>{permission.role && permission.role.name? permission.role.name : null}
+                </GridColumn>
+                <GridColumn width={3}>
+                  <p>Modulo</p>{convertModulesEngToEsp(permission.module)}
+                </GridColumn>
+                <GridColumn width={3}>
+                <p>Accion</p>{convertActionsEngToEsp(permission.action)}
                 </GridColumn>
               </GridRow>
             </Grid>

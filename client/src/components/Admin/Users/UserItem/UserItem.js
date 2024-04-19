@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { Image, Button, Icon, Confirm } from "semantic-ui-react";
 import { image } from "../../../../assets";
-import { User } from "../../../../api";
+import { Permission, User } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { BasicModal } from "../../../Shared";
 import { ENV } from "../../../../utils";
 import { UserForm } from "../UserForm";
 import "./UserItem.scss";
+import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
 
 const userController = new User();
+const permissionController = new Permission();
 
 export function UserItem(props) {
   const { user, onReload } = props;
-  const { accessToken } = useAuth();
+  const { accessToken, user: { role } } = useAuth();
+
+  const [permissionsByRole, setPermissionsByRole] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -23,6 +27,21 @@ export function UserItem(props) {
 
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPermissionsByRole([]);
+        if (role) {
+          const response = await permissionController.getPermissionsByRole(accessToken, role._id, true);
+          setPermissionsByRole(response);
+        }
+      } catch (error) {
+        console.error(error);
+        setPermissionsByRole([]);
+      }
+    })();
+  }, [role]);
 
   const openUpdateUser = () => {
     setTitleModal(`Actualizar ${user.email}`);
@@ -71,12 +90,12 @@ export function UserItem(props) {
     <>
       <div className="user-item">
         <div className="user-item__info">
-          <Image
+          {/* <Image
             avatar
             src={
               user.avatar ? `${ENV.BASE_PATH}/${user.avatar}` : image.noAvatar
             }
-          />
+          /> */}
           <div>
             <p>
               {user.firstname} {user.lastname}
@@ -86,19 +105,22 @@ export function UserItem(props) {
         </div>
 
         <div>
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "users", "edit"))?(
           <Button icon primary onClick={openUpdateUser}>
             <Icon name="pencil" />
-          </Button>
+          </Button>) : null}
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "users", "edit"))?(
           <Button
             icon
             color={user.active ? "orange" : "teal"}
             onClick={openDesactivateActivateConfim}
           >
             <Icon name={user.active ? "ban" : "check"} />
-          </Button>
+          </Button> ):null}
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "users", "delete"))?(
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
-          </Button>
+          </Button> ) : null }
         </div>
       </div>
 

@@ -47,6 +47,15 @@ export function AdminRouter() {
             path="/admin/newsletter"
             element={loadLayout(AdminLayout, Newsletter)}
           />
+
+          <Route
+            path="/admin/admin/dashboard"
+            element={loadLayout(AdminLayout, Permissions)}
+          />
+            <Route
+            path="/admin/admin/reports"
+            element={loadLayout(AdminLayout, Permissions)}
+          />
         </>
       )}
     </Routes>
