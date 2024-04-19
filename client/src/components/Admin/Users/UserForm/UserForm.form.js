@@ -7,7 +7,7 @@ export function initialValues(user) {
     firstname: user?.firstname || "",
     lastname: user?.lastname || "",
     email: user?.email || "",
-    role: user?.role || "",
+    role: user? user.role._id? user.role._id : user.role : "",
     password: "",
     company: user?.company || "",
     position: user?.position || "",

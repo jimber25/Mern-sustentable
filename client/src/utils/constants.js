@@ -22,15 +22,18 @@ export const ENV = {
 };
 
 export const MODULES = [
-  "users",
-  "roles",
+  "dashboard",
+  "configure",
   "permissions",
-  "configure"
+  "reports",
+  "roles",
+  "users"
 ];
 
 export const ACTIONS = [
-  "edit",
-  "create",
   "delete",
+  "create",
+  "edit",
+  "menu",
   "view"
 ]

@@ -41,59 +41,57 @@ export function RoleItem(props) {
     onOpenCloseModal();
   };
 
-  const openDesactivateActivateConfim = () => {
-    setIsDelete(false);
-    setConfirmMessage(
-      role.active
-        ? `Desactivar rol ${role.name}`
-        : `Activar rol ${role.name}`
-    );
-    onOpenCloseConfirm();
-  };
+  // const openDesactivateActivateConfim = () => {
+  //   setIsDelete(false);
+  //   setConfirmMessage(
+  //     role.active
+  //       ? `Desactivar rol ${role.name}`
+  //       : `Activar rol ${role.name}`
+  //   );
+  //   onOpenCloseConfirm();
+  // };
 
-  const onActivateDesactivate = async () => {
-    try {
-      await roleController.updateRole(accessToken, role._id, {
-        active: !role.active,
-      });
-      onReload();
-      onOpenCloseConfirm();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const onActivateDesactivate = async () => {
+  //   try {
+  //     await roleController.updateRole(accessToken, role._id, {
+  //       active: !role.active,
+  //     });
+  //     onReload();
+  //     onOpenCloseConfirm();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const openDeleteConfirm = () => {
-    setIsDelete(true);
-    setConfirmMessage(`Eliminar el rol ${role.name}`);
-    onOpenCloseConfirm();
-  };
+  // const openDeleteConfirm = () => {
+  //   setIsDelete(true);
+  //   setConfirmMessage(`Eliminar el rol ${role.name}`);
+  //   onOpenCloseConfirm();
+  // };
 
-  const onDelete = async () => {
-    try {
-      await roleController.deleteRole(accessToken, role._id);
-      onReload();
-      onOpenCloseConfirm();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const onDelete = async () => {
+  //   try {
+  //     await roleController.deleteRole(accessToken, role._id);
+  //     onReload();
+  //     onOpenCloseConfirm();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <>
       <div className="role-item">
         <div className="role-item__info">
           <div>
-            <p>
               {role.name}
-            </p>
           </div>
         </div>
         <div>
           <Button icon primary onClick={openUpdatePermission}>
             <Icon name="pencil" />
           </Button>
-          <Button
+          {/* <Button
             icon
             color={role.active ? "orange" : "teal"}
             onClick={openDesactivateActivateConfim}
@@ -102,7 +100,7 @@ export function RoleItem(props) {
           </Button>
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -113,7 +111,7 @@ export function RoleItem(props) {
       <Confirm
         open={showConfirm}
         onCancel={onOpenCloseConfirm}
-        onConfirm={isDelete ? onDelete : onActivateDesactivate}
+        // onConfirm={isDelete ? onDelete : onActivateDesactivate}
         content={confirmMessage}
         size="mini"
       />

@@ -6,6 +6,7 @@ import { User, Role} from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { image } from "../../../../assets";
 import { ENV } from "../../../../utils";
+import { isAdmin } from "../../../../utils/checkPermission";
 import { initialValues, validationSchema } from "./UserForm.form";
 import "./UserForm.scss";
 
@@ -14,7 +15,7 @@ const roleController = new Role();
 
 export function UserForm(props) {
   const { close, onReload, user } = props;
-  const { accessToken } = useAuth();
+  const { accessToken, user:{ role } } = useAuth();
   const [listRoles, setListRoles] = useState([]);
 
   useEffect(() => {
@@ -68,13 +69,14 @@ export function UserForm(props) {
 
   return (
     <Form className="user-form" onSubmit={formik.handleSubmit}>
-      <div className="user-form__avatar" {...getRootProps()}>
+      {/* <div className="user-form__avatar" {...getRootProps()}>
         <input {...getInputProps()} />
         <Image avatar size="small" src={getAvatar()} />
-      </div>
+      </div> */}
 
       <Form.Group widths="equal">
         <Form.Input
+          label="Nombre"
           name="firstname"
           placeholder="Nombre"
           onChange={formik.handleChange}
@@ -82,6 +84,7 @@ export function UserForm(props) {
           error={formik.errors.firstname}
         />
         <Form.Input
+          label="Apellidos"
           name="lastname"
           placeholder="Apellidos"
           onChange={formik.handleChange}
@@ -92,6 +95,7 @@ export function UserForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
+          label="Empresa"
           name="company"
           placeholder="Empresa"
           onChange={formik.handleChange}
@@ -101,6 +105,7 @@ export function UserForm(props) {
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Input
+          label="Sector"
           name="sector"
           placeholder="Sector"
           onChange={formik.handleChange}
@@ -108,6 +113,7 @@ export function UserForm(props) {
           error={formik.errors.sector}
         />
         <Form.Input
+          label="Posicion"
           name="position"
           placeholder="Posicion"
           onChange={formik.handleChange}
@@ -118,13 +124,16 @@ export function UserForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
+          label="Correo Electronico"
           name="email"
           placeholder="Correo electronico"
           onChange={formik.handleChange}
           value={formik.values.email}
           error={formik.errors.email}
         />
-        <Form.Dropdown
+        {isAdmin(role) ?
+          <Form.Dropdown
+          label="Rol"
           placeholder="Seleccióna un rol"
           options={listRoles.map(ds => {
             return {
@@ -138,10 +147,11 @@ export function UserForm(props) {
             formik.setFieldValue("role", data.value)}
           value={formik.values.role}
           error={formik.errors.role}
-        />
+        /> : null}
       </Form.Group>
 
       <Form.Input
+        label="Contraseña"
         type="password"
         name="password"
         placeholder="Contraseña"
@@ -151,7 +161,7 @@ export function UserForm(props) {
       />
 
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {user ? "Actualizar usuario" : "Crear usuario"}
+        {user ? "Actualizar datos" : "Crear usuario"}
       </Form.Button>
 
     </Form>

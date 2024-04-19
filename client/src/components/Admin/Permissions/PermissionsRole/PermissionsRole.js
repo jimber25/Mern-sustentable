@@ -156,7 +156,7 @@ export function PermissionsRole(props) {
                 })}
                 selection
                 onChange={(_, data) => setModuleData(data.value)}
-                value={module}
+                value={moduleData}
               />
             </div>
           </div>

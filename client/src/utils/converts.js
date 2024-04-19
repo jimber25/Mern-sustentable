@@ -8,6 +8,8 @@ export function convertActionsEngToEsp (a) {
             return "Eliminar";
         case "view":
             return "Ver";
+        case "menu":
+            return "Menu";
         default:
             return null;
     }
@@ -23,6 +25,10 @@ export function convertModulesEngToEsp (a) {
             return "Permisos";
         case "configure":
             return "Configuracion";
+        case "reports":
+            return "Reportes";
+        case "dashboard":
+            return "Dashboard";
         default:
             return null;
     }
