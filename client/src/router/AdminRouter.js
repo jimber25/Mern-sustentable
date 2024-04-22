@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { AdminLayout } from "../layouts";
-import { Auth, Users, Blog, Courses, Menu, Newsletter, Roles, Permissions } from "../pages/admin";
+import { Auth, Users, Blog, Courses, Menu, Newsletter, Roles, Permissions, Dashboard } from "../pages/admin";
 import { useAuth } from "../hooks";
 
 export function AdminRouter() {
@@ -48,13 +48,14 @@ export function AdminRouter() {
             element={loadLayout(AdminLayout, Newsletter)}
           />
 
-          <Route
-            path="/admin/admin/dashboard"
+            <Route
+            path="/admin/reports"
             element={loadLayout(AdminLayout, Permissions)}
           />
-            <Route
-            path="/admin/admin/reports"
-            element={loadLayout(AdminLayout, Permissions)}
+
+          <Route
+            path="/admin/dashboard"
+            element={loadLayout(AdminLayout, Dashboard)}
           />
         </>
       )}

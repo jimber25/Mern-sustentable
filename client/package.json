@@ -2,8 +2,10 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "homepage":"http://localhost:3000/admin",
+  "homepage": "http://localhost:3000/admin",
   "dependencies": {
+    "@ant-design/charts": "^2.1.0",
+    "@antv/s2-react": "^1.47.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

@@ -6,6 +6,7 @@ import { BasicModal } from "../../../Shared";
 import { RoleForm } from "../../Roles/RoleForm";
 import { PermissionsRole } from "../PermissionsRole/PermissionsRole";
 import "./RoleItem.scss";
+import { isAdmin } from "../../../../utils/checkPermission";
 
 const roleController = new Role();
 const permissionController = new Permission();
@@ -88,7 +89,7 @@ export function RoleItem(props) {
           </div>
         </div>
         <div>
-          <Button icon primary onClick={openUpdatePermission}>
+          <Button icon primary onClick={openUpdatePermission} disabled={isAdmin(role)}>
             <Icon name="pencil" />
           </Button>
           {/* <Button
