@@ -61,7 +61,7 @@ export function AdminMenu() {
             to="/admin/dashboard"
             active={isCurrentPath("/admin/dashboard")}
           >
-            <Icon name="chart bar" />
+            <Icon name="home" />
             Dashboard
           </Menu.Item>):null}
           {isAdmin(role) ||

@@ -7,30 +7,31 @@ import { useAuth } from "../../hooks";
 import { BasicModal } from "../../components/Shared";
 import { UserForm } from "../../components/Admin/Users/UserForm";
 
+
 export function AdminLayout(props) {
   const { children } = props;
   const { user } = useAuth();
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
-  const [showConfirm, setShowConfirm] = useState(false);
 
-  const [onReload, setOnReload] = useState(false);
-
+  const [reload, onReload] = useState(false);
+  
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
-  const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
 
   const openUpdateUser = () => {
     setTitleModal(`Actualizar ${user.email}`);
     onOpenCloseModal();
   };
 
-//   useEffect(() => {
-//     getUserByIdApi(accessToken, userToken._id).then(response => {
-//         setUserProfile(response.user);
-//     });
-//     setReloadUsers(false);
-// }, [accessToken, reloadUsers]);
+
+  useEffect(() => {
+    if(reload){
+      window.location.reload();
+      onReload(false);
+    }
+  }, [reload]);
+
 
   return (
     <div className="admin-layout">
@@ -40,9 +41,9 @@ export function AdminLayout(props) {
       </div>
       <div className="admin-layout__right">
         <div className="admin-layout__right-header">
-        <Button icon onClick={e=>{openUpdateUser()}}>
-    <IconUI name='user' />
-  </Button>
+        <Button icon primary circular={true} onClick={e=>{openUpdateUser()}}>
+          <IconUI name='user' /> {user.email}
+         </Button>
           <Logout />
         </div>
         <div className="admin-layout__right-content">{children}</div>

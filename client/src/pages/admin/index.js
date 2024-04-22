@@ -7,3 +7,4 @@ export * from "./Permissions";
 export * from "./Menu";
 export * from "./Newsletter";
 export {ErrorAccessDenied} from "./Error";
+export * from "./Dashboard";

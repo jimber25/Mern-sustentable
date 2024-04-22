@@ -38,7 +38,7 @@ export function UserForm(props) {
         } else {
           await userController.updateUser(accessToken, user._id, formValue);
         }
-        onReload();
+        onReload(true);
         close();
       } catch (error) {
         // console.log(2)
