@@ -160,39 +160,41 @@ export function PermissionsRole(props) {
               />
             </div>
           </div>
+          {listPermissionsFilter && listPermissionsFilter.length > 0 ? (
           <div className="permissions-role-item__">
-            <Divider horizontal>
-              <Header as="h4">
-                {/* <Icon name='tag' /> */}
-                Permisos
-              </Header>
-            </Divider>
-            <SegmentGroup>
-              {listPermissionsFilter.map((permission, index) => {
-                return (
-                  <div>
-                    <Grid divided="vertically" celled="internally">
-                      <GridRow>
-                        <GridColumn width={10}>
-                          <p>{convertActionsEngToEsp(permission.action)}</p>
-                        </GridColumn>
-                        <GridColumn width={4}>
-                          <Checkbox
-                            toggle
-                            checked={permission.active}
-                            onChange={(e, { checked }) => {
-                              setActivateDesactivate(checked, index);
-                            }}
-                          />
-                        </GridColumn>
-                      </GridRow>
-                    </Grid>
-                  </div>
-                );
-                //   </ListContent>
-                // </ListItem>
-              })}
-            </SegmentGroup>
+
+                       <Divider horizontal>
+                       <Header as="h4">
+                         {/* <Icon name='tag' /> */}
+                         Permisos
+                       </Header>
+                     </Divider>
+              <SegmentGroup  size="large" placeholder>
+                {listPermissionsFilter.map((permission, index) => {
+                  return (
+                    <div>
+                      <Grid divided="vertically" celled="internally">
+                        <GridRow>
+                          <GridColumn width={10}>
+                            <p>{convertActionsEngToEsp(permission.action)}</p>
+                          </GridColumn>
+                          <GridColumn width={4}>
+                            <Checkbox
+                              toggle
+                              checked={permission.active}
+                              onChange={(e, { checked }) => {
+                                setActivateDesactivate(checked, index);
+                              }}
+                            />
+                          </GridColumn>
+                        </GridRow>
+                      </Grid>
+                    </div>
+                  );
+                  //   </ListContent>
+                  // </ListItem>
+                })}
+              </SegmentGroup>
             {/* </List> */}
             {/* </List> */}
             {/* <div>
@@ -210,7 +212,9 @@ export function PermissionsRole(props) {
               </GridRow>
             </Grid>
           </div> */}
-          </div>
+          </div>) : (
+            null
+          )}
           {/* <div>
           <Button icon primary onClick={openUpdateUser}>
             <Icon name="pencil" />

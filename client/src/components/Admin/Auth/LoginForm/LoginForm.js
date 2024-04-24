@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { Auth } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { inititalValues, validationSchema } from "./LoginForm.form";
+import "./LoginForm.scss";
 
 const authController = new Auth();
 
 export function LoginForm() {
   const { login } = useAuth();
+  const [error, setError] = useState("");
 
   const formik = useFormik({
     initialValues: inititalValues(),
@@ -24,6 +26,7 @@ export function LoginForm() {
         login(response.access);
       } catch (error) {
         console.error(error);
+        setError(error.msg);
       }
     },
   });
@@ -49,6 +52,9 @@ export function LoginForm() {
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
         Entrar
       </Form.Button>
+
+
+      <p className="login-form__error">{error}</p> 
     </Form>
   );
 }

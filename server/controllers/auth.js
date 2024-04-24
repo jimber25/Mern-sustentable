@@ -24,8 +24,8 @@ function register(req, res) {
 
   user.save((error, userStorage) => {
     if (error) {
-      console.log(error)
-      res.status(400).send({ msg: "Error al crear el usuario" });
+      // console.log(error)
+      res.status(400).send({ msg: "Error al crear el usuario: el usuario ya existe" });
     } else {
       res.status(200).send(userStorage);
     }

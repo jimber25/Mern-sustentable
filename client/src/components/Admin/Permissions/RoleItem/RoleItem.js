@@ -6,7 +6,7 @@ import { BasicModal } from "../../../Shared";
 import { RoleForm } from "../../Roles/RoleForm";
 import { PermissionsRole } from "../PermissionsRole/PermissionsRole";
 import "./RoleItem.scss";
-import { isAdmin } from "../../../../utils/checkPermission";
+import { isAdmin , hasPermission} from "../../../../utils/checkPermission";
 
 const roleController = new Role();
 const permissionController = new Permission();
@@ -14,6 +14,7 @@ const permissionController = new Permission();
 export function RoleItem(props) {
   const { role, onReload } = props;
   const { accessToken } = useAuth();
+  const roleUser = useAuth().user.role;
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -24,6 +25,23 @@ export function RoleItem(props) {
 
 
   const [listPermissions, setListPermissions] = useState([]);
+  const [permissionsByRole, setPermissionsByRole] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPermissionsByRole([]);
+        if (roleUser) {
+          const response = await permissionController.getPermissionsByRole(accessToken, roleUser._id, true);
+          setPermissionsByRole(response);
+        }
+      } catch (error) {
+        console.error(error);
+        setPermissionsByRole([]);
+      }
+    })();
+  }, [roleUser]);
+  
 
   useEffect(() => {
     if(role){
@@ -89,19 +107,10 @@ export function RoleItem(props) {
           </div>
         </div>
         <div>
+        {(isAdmin(roleUser) || hasPermission(permissionsByRole, roleUser._id, "permissions", "edit"))?(
           <Button icon primary onClick={openUpdatePermission} disabled={isAdmin(role)}>
             <Icon name="pencil" />
-          </Button>
-          {/* <Button
-            icon
-            color={role.active ? "orange" : "teal"}
-            onClick={openDesactivateActivateConfim}
-          >
-            <Icon name={role.active ? "ban" : "check"} />
-          </Button>
-          <Button icon color="red" onClick={openDeleteConfirm}>
-            <Icon name="trash" />
-          </Button> */}
+          </Button>) : null}
         </div>
       </div>
 

@@ -1,8 +1,8 @@
-import React, { useCallback, useState , useEffect} from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Form, Image } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useDropzone } from "react-dropzone";
-import { User, Role} from "../../../../api";
+import { User, Role } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { image } from "../../../../assets";
 import { ENV } from "../../../../utils";
@@ -15,7 +15,10 @@ const roleController = new Role();
 
 export function UserForm(props) {
   const { close, onReload, user } = props;
-  const { accessToken, user:{ role } } = useAuth();
+  const {
+    accessToken,
+    user: { role },
+  } = useAuth();
   const [listRoles, setListRoles] = useState([]);
 
   useEffect(() => {
@@ -24,7 +27,6 @@ export function UserForm(props) {
     });
   }, []);
 
-
   const formik = useFormik({
     initialValues: initialValues(user),
     validationSchema: validationSchema(user),
@@ -32,8 +34,11 @@ export function UserForm(props) {
     onSubmit: async (formValue) => {
       try {
         if (!user) {
-          const response= await userController.createUser(accessToken, formValue);
-          if(response.code && response.code === 500){
+          const response = await userController.createUser(
+            accessToken,
+            formValue
+          );
+          if (response.code && response.code === 500) {
           }
         } else {
           await userController.updateUser(accessToken, user._id, formValue);
@@ -47,14 +52,17 @@ export function UserForm(props) {
     },
   });
 
-  const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    formik.setFieldValue("avatar", URL.createObjectURL(file));
-    formik.setFieldValue("fileAvatar", file);
-  },[formik]);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      formik.setFieldValue("avatar", URL.createObjectURL(file));
+      formik.setFieldValue("fileAvatar", file);
+    },
+    [formik]
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: {"image/jpeg": ['.jpeg'], "image/png": ['.png']},
+    accept: { "image/jpeg": [".jpeg"], "image/png": [".png"] },
     onDrop,
   });
 
@@ -131,23 +139,23 @@ export function UserForm(props) {
           value={formik.values.email}
           error={formik.errors.email}
         />
-        {isAdmin(role) ?
+        {isAdmin(role) ? (
           <Form.Dropdown
-          label="Rol"
-          placeholder="Seleccióna un rol"
-          options={listRoles.map(ds => {
-            return {
+            label="Rol"
+            placeholder="Seleccióna un rol"
+            options={listRoles.map((ds) => {
+              return {
                 key: ds._id,
                 text: ds.name,
-                value: ds._id
-            }
-          })}
-          selection
-          onChange={(_, data) => 
-            formik.setFieldValue("role", data.value)}
-          value={formik.values.role}
-          error={formik.errors.role}
-        /> : null}
+                value: ds._id,
+              };
+            })}
+            selection
+            onChange={(_, data) => formik.setFieldValue("role", data.value)}
+            value={formik.values.role}
+            error={formik.errors.role}
+          />
+        ) : null}
       </Form.Group>
 
       <Form.Input
@@ -163,26 +171,6 @@ export function UserForm(props) {
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
         {user ? "Actualizar datos" : "Crear usuario"}
       </Form.Button>
-
     </Form>
   );
 }
-
-const roleOptions = [
-  {
-    key: "editor",
-    text: "Editor",
-    value: "editor",
-  },
-  {
-    key: "reviewer",
-    text: "Reviewer",
-    value: "reviewer",
-  },
-  {
-    key: "admin",
-    text: "Administrador",
-    value: "admin",
-  },
-  
-];

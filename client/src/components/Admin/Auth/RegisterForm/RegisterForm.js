@@ -21,13 +21,15 @@ export function RegisterForm(props) {
         await authController.register(formValue);
         openLogin();
       } catch (error) {
-        setError("Error en el servidor");
+        // console.log(error);
+        setError(error.msg);
       }
     },
   });
 
   return (
     <Form className="register-form" onSubmit={formik.handleSubmit}>
+
       <Form.Input
         name="email"
         placeholder="Correo electronico"

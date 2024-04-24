@@ -1,5 +1,5 @@
 import React, { useState , useEffect} from "react";
-import { Tab, Button } from "semantic-ui-react";
+import { Tab, Button , Search , Grid , GridColumn, Segment, Header } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { PermissionForm, ListPermissions } from "../../../components/Admin/Permissions";
 import { useAuth } from "../../../hooks";
@@ -67,7 +67,6 @@ export function Permissions() {
           Nuevo permiso
         </Button>: null}
         <Tab menu={{ secondary: true }} panes={panes} /> 
-        
       </div>
       <BasicModal
         show={showModal}
@@ -80,3 +79,4 @@ export function Permissions() {
     </>
   )
 }
+
