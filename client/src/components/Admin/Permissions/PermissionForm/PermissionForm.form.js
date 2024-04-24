@@ -11,6 +11,8 @@ export function initialValues(permission) {
 
 export function validationSchema(user) {
   return Yup.object({
-    // name: Yup.string().required(true)
+     role: Yup.string().required(true),
+     module: Yup.string().required(true),
+     action: Yup.string().required(true),
   });
 }

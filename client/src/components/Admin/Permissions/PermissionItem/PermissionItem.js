@@ -16,6 +16,7 @@ import {
   convertModulesEngToEsp,
   convertActionsEngToEsp,
 } from "../../../../utils/converts";
+import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
 import "./PermissionItem.scss";
 
 const permissionController = new Permission();
@@ -23,7 +24,9 @@ const roleController = new Role();
 
 export function PermissionItem(props) {
   const { permission, onReload } = props;
-  const { accessToken } = useAuth();
+  const { accessToken, user: { role }  } = useAuth();
+
+  const [permissionsByRole, setPermissionsByRole] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -34,6 +37,22 @@ export function PermissionItem(props) {
 
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPermissionsByRole([]);
+        if (role) {
+          const response = await permissionController.getPermissionsByRole(accessToken, role._id, true);
+          setPermissionsByRole(response);
+        }
+      } catch (error) {
+        console.error(error);
+        setPermissionsByRole([]);
+      }
+    })();
+  }, [role]);
+
 
   const openUpdateUser = () => {
     setTitleModal(`Actualizar ${permission.action}`);
@@ -102,19 +121,22 @@ export function PermissionItem(props) {
           </div>
         </div>
         <div>
+        {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
           <Button icon primary onClick={openUpdateUser}>
             <Icon name="pencil" />
-          </Button>
+          </Button>): null}
+        {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
           <Button
             icon
             color={permission.active ? "orange" : "teal"}
             onClick={openDesactivateActivateConfim}
           >
             <Icon name={permission.active ? "ban" : "check"} />
-          </Button>
+          </Button>): null }
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "delete"))?(
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
-          </Button>
+          </Button>) : null}
         </div>
       </div>
 
