@@ -1,13 +1,14 @@
 import * as Yup from "yup";
 
 export function initialValues(user) {
+  console.log(user)
   return {
     avatar: user?.avatar || "",
     fileAvatar: null,
     firstname: user?.firstname || "",
     lastname: user?.lastname || "",
     email: user?.email || "",
-    role: user? user.role._id? user.role._id : user.role : "",
+    role: user? user.role && user.role._id? user.role._id : user.role : "",
     password: "",
     company: user?.company || "",
     position: user?.position || "",

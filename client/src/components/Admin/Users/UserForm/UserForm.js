@@ -52,6 +52,7 @@ export function UserForm(props) {
     },
   });
 
+  console.log(formik)
   const onDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];

@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Loader, Search } from "semantic-ui-react";
+import {
+  Loader,
+  Search,
+  Grid,
+  GridColumn,
+  Divider,
+  Dropdown,
+  DropdownHeader,
+  DropdownMenu,
+  DropdownItem,
+  Input,
+  Icon,
+} from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Permission, User } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { UserItem } from "../UserItem";
 import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
+const _ = require("lodash");
 
 const userController = new User();
 const permissionController = new Permission();
@@ -13,6 +26,8 @@ const permissionController = new Permission();
 export function ListUsers(props) {
   const { usersActive, reload, onReload } = props;
   const [users, setUsers] = useState(null);
+  const [usersFilter, setUsersFilter] = useState(null);
+
   const {
     accessToken,
     user: { role },
@@ -31,7 +46,11 @@ export function ListUsers(props) {
       try {
         setPermissionsByRole([]);
         if (role) {
-          const response = await permissionController.getPermissionsByRole(accessToken, role._id, true);
+          const response = await permissionController.getPermissionsByRole(
+            accessToken,
+            role._id,
+            true
+          );
           setPermissionsByRole(response);
         }
       } catch (error) {
@@ -45,12 +64,14 @@ export function ListUsers(props) {
     (async () => {
       try {
         setUsers(null);
-
+        setUsersFilter([]);
         const response = await userController.getUsers(
           accessToken,
           usersActive
         );
-        setUsers(response);
+        let result=response.map(s => ({ ...s, key: s._id }));
+        setUsers(result);
+        setUsersFilter(result);
       } catch (error) {
         console.error(error);
       }
@@ -64,12 +85,104 @@ export function ListUsers(props) {
     <div>
       {isAdmin(role) ||
       hasPermission(permissionByRole, role._id, "users", "view") ? (
-        map(users, (user) => (
-          <UserItem key={user._id} user={user} onReload={onReload} />
-        ))
+        <div>
+          <div>
+            <SearchStandardUser
+              dataOrigin={users}
+              data={usersFilter}
+              setData={setUsersFilter}
+            />
+          </div>
+          <Divider clearing />
+          {map(usersFilter, (user) => (
+            <UserItem key={user._id} user={user} onReload={onReload} />
+          ))}
+        </div>
       ) : (
         <ErrorAccessDenied />
       )}
     </div>
+  );
+}
+
+function SearchStandardUser(props) {
+  const { dataOrigin, data, setData } = props;
+  const [state, setState] = useState({
+    isLoading: false,
+    results: [],
+    value: "",
+  });
+
+  const [filter, setFilter] = useState("firstname");
+
+  const handleChange = (e, { name, value }) => {
+    setFilter(value);
+    setData(dataOrigin);
+    setState({ value: "" });
+  };
+
+
+  const handleSearchChange = (e, { value }) => {
+    setState({ isLoading: true, value });
+
+    setTimeout(() => {
+      if (value && value.length < 1) {
+        setState({ isLoading: false, results: [], value: "" });
+        setData(dataOrigin);
+        return true;
+      } else if (value.length === 0) {
+        setData(dataOrigin);
+        setState({ isLoading: false, results: [], value: "" });
+        return true;
+      }
+      const re = new RegExp(_.escapeRegExp(value), "i");
+      const isMatch = (result) => re.test(result[filter]);
+      setState({
+        isLoading: false,
+        results: _.filter(data, isMatch),
+      });
+      setData(_.filter(data, isMatch));
+    }, 300);
+  };
+
+  const options = [
+    {
+      key: 1,
+      text: "Nombre",
+      value: "firstname",
+    },
+    {
+      key: 2,
+      text: "Apellido",
+      value: "lastname",
+    },
+    {
+      key: 3,
+      text: "Email",
+      value: "email",
+    },
+  ];
+
+  return (
+    <Grid>
+      <GridColumn width={4}>
+      <Input
+     icon='search'
+     iconPosition='left'
+    placeholder='Buscar...'
+    onChange={_.debounce(handleSearchChange, 500, {
+      leading: true,
+    })}
+    action={
+      <Dropdown
+            onChange={handleChange}
+            options={options}
+            value={filter}
+            button basic floating
+            />
+    }
+  />
+      </GridColumn>
+    </Grid>
   );
 }
