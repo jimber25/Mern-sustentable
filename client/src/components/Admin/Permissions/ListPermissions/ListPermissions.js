@@ -5,7 +5,8 @@ import {
   Grid,
   GridColumn,
   Divider,
-  Header,
+  Input,
+  Icon
 } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Permission, Role } from "../../../../api";
@@ -148,9 +149,6 @@ function SearchStandardRole(props) {
     value: "",
   });
 
-  const handleResultSelect = (e, { result }) =>
-    setState({ value: result.name });
-
   const handleSearchChange = (e, { value }) => {
     setState({ isLoading: true, value });
 
@@ -174,30 +172,17 @@ function SearchStandardRole(props) {
     }, 300);
   };
 
-  const resultRenderer = (data) => {
-    return (
-      <div>
-        <p>{data.name}</p>
-      </div>
-    );
-  };
-
   return (
     <Grid>
       <GridColumn width={6}>
-        <Search
-          fluid
-          input={{ icon: "search", iconPosition: "left" }}
-          loading={state.isLoading}
-          onResultSelect={handleResultSelect}
-          onSearchChange={_.debounce(handleSearchChange, 500, {
-            leading: true,
-          })}
-          results={state.results}
-          value={state.value}
-          resultRenderer={resultRenderer}
-          size={"large"}
-        />
+      <Input
+       icon='search'
+       iconPosition='left'
+      placeholder='Buscar...'
+    onChange={_.debounce(handleSearchChange, 500, {
+      leading: true,
+    })}
+  />
       </GridColumn>
     </Grid>
   );
@@ -210,10 +195,6 @@ function SearchStandardPermission(props) {
     results: [],
     value: "",
   });
-
-  const handleResultSelect = (e, { result }) =>{
-    setState({  value: result.role.name })
-    setData([result]);}
 
   const handleSearchChange = (e, { value }) => {
     setState({ isLoading: true, value });
@@ -238,29 +219,17 @@ function SearchStandardPermission(props) {
     }, 300);
   };
 
-  const resultRenderer = (data) => {
-    return (
-      <div>
-        <p>{data.role.name}</p> {convertModulesEngToEsp(data.module)} {"|"} {convertActionsEngToEsp(data.action)}
-      </div>
-    );
-  };
 
   return (
     <Grid>
       <GridColumn width={6}>
-        <Search
-          fluid
-          input={{ icon: "search", iconPosition: "left" }}
-          loading={state.isLoading}
-          onResultSelect={handleResultSelect}
-          onSearchChange={_.debounce(handleSearchChange, 500, {
-            leading: true,
-          })}
-          results={state.results}
-          value={state.value}
-          resultRenderer={resultRenderer}
-          size={"large"}
+      <Input
+       icon='search'
+       iconPosition='left'
+      placeholder='Buscar...'
+    onChange={_.debounce(handleSearchChange, 500, {
+      leading: true,
+    })}
         />
       </GridColumn>
     </Grid>
