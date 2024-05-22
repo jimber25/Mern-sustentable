@@ -6,3 +6,4 @@ export * from "./role";
 export * from "./permission";
 export * from "./newsletter";
 export * from "./blog";
+export * from "./company";

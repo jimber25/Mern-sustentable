@@ -36,7 +36,8 @@ export function AdminLayout(props) {
   return (
     <div className="admin-layout">
       <div className="admin-layout__left">
-        <Icon.LogoWhite className="logo" />
+        {/* <Icon.LogoWhite className="logo" /> */}
+        <div style={{marginTop:"50px"}}></div>
         <AdminMenu />
       </div>
       <div className="admin-layout__right">

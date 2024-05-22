@@ -13,7 +13,7 @@ import { Permission, Role } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { PermissionItem } from "../PermissionItem";
 import { RoleItem } from "../RoleItem";
-import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
+import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
 import { convertActionsEngToEsp, convertModulesEngToEsp } from "../../../../utils/converts";
 const _ = require("lodash");
@@ -86,7 +86,7 @@ export function ListPermissions(props) {
 
   if (
     isByRoles &&
-    (isAdmin(role) ||
+    ( isMaster(role) || isAdmin(role) ||
       hasPermission(permissionsByRole, role._id, "permissions", "view"))
   ) {
     if (!listRoles) return <Loader active inline="centered" />;
@@ -110,7 +110,7 @@ export function ListPermissions(props) {
     );
   } else if (
     !isByRoles &&
-    (isAdmin(role) ||
+    (isMaster(role) || isAdmin(role) ||
       hasPermission(permissionsByRole, role._id, "permissions", "view"))
   ) {
     if (!permissions) return <Loader active inline="centered" />;

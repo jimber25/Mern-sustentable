@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Button } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
-import { RoleForm, ListRoles } from "../../../components/Admin/Roles";
-import "./Roles.scss";
+import { CompanyForm, ListCompanies } from "../../../components/Admin/Companies";
+import "./Companies.scss";
 import { useAuth } from "../../../hooks";
-import { Permission } from "../../../api";
 import { isAdmin, hasPermission, isMaster } from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../Error";
+import { Permission } from "../../../api";
 
 const permissionController = new Permission();
 
-export function Roles() {
+export function Companies() {
   const [showModal, setShowModal] = useState(false);
   const [reload, setReload] = useState(false);
-
   const {
     accessToken,
     user: { role },
   } = useAuth();
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
-
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
   const onReload = () => setReload((prevState) => !prevState);
 
@@ -45,18 +43,18 @@ export function Roles() {
 
   const panes = [
     {
-      menuItem: "Roles activos",
+      menuItem: "Empresas activas",
       render: () => (
         <Tab.Pane attached={false}>
-          <ListRoles rolesActive={true} reload={reload} onReload={onReload} />
+          <ListCompanies companiesActive={true} reload={reload} onReload={onReload} />
         </Tab.Pane>
       ),
     },
     {
-      menuItem: "Roles inactivos",
+      menuItem: "Empresas inactivas",
       render: () => (
         <Tab.Pane attached={false}>
-          <ListRoles rolesActive={false} reload={reload} onReload={onReload} />
+          <ListCompanies companiesActive={false} reload={reload} onReload={onReload} />
         </Tab.Pane>
       ),
     },
@@ -64,20 +62,19 @@ export function Roles() {
 
   if (
     isMaster(role) ||
-    isAdmin(role) ||
-    hasPermission(permissionsByRole, role._id, "roles", "view")
+    hasPermission(permissionsByRole, role._id, "companies", "view")
   ) {
     return (
       <>
-        <div className="roles-page">
-          {isMaster(role) || isAdmin(role) ||
-          hasPermission(permissionsByRole, role._id, "roles", "create") ? (
+        <div className="companies-page">
+          {isMaster(role) ||
+          hasPermission(permissionsByRole, role._id, "companies", "create") ? (
             <Button
-              className="roles-page__add"
+              className="users-page__add"
               primary
               onClick={onOpenCloseModal}
             >
-              Nuevo rol
+              Nuevo Empresa
             </Button>
           ) : null}
           <Tab menu={{ secondary: true }} panes={panes} />
@@ -86,13 +83,13 @@ export function Roles() {
         <BasicModal
           show={showModal}
           close={onOpenCloseModal}
-          title="Crear nuevo rol"
+          title="Crear nueva empresa"
         >
-          <RoleForm close={onOpenCloseModal} onReload={onReload} />
+          <CompanyForm close={onOpenCloseModal} onReload={onReload} />
         </BasicModal>
       </>
     );
   } else {
-    <ErrorAccessDenied />;
+    return <ErrorAccessDenied />;
   }
 }

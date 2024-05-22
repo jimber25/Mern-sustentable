@@ -12,6 +12,7 @@ const menuRoutes = require("./router/menu");
 const courseRoutes = require("./router/course");
 const roleRoutes = require("./router/role");
 const permissionRoutes = require("./router/permission");
+const companyRoutes = require("./router/company");
 const postRoutes = require("./router/post");
 const newsletterRoutes = require("./router/newsletter");
 
@@ -34,5 +35,6 @@ app.use(`/api/${API_VERSION}`, postRoutes);
 app.use(`/api/${API_VERSION}`, newsletterRoutes);
 app.use(`/api/${API_VERSION}`, roleRoutes);
 app.use(`/api/${API_VERSION}`, permissionRoutes);
+app.use(`/api/${API_VERSION}`, companyRoutes);
 
 module.exports = app;

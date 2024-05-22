@@ -16,7 +16,7 @@ import {
   convertModulesEngToEsp,
   convertActionsEngToEsp,
 } from "../../../../utils/converts";
-import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
+import { hasPermission, isAdmin , isMaster} from "../../../../utils/checkPermission";
 import "./PermissionItem.scss";
 
 const permissionController = new Permission();
@@ -121,11 +121,11 @@ export function PermissionItem(props) {
           </div>
         </div>
         <div>
-        {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
+        {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
           <Button icon primary onClick={openUpdateUser}>
             <Icon name="pencil" />
           </Button>): null}
-        {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
+        {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
           <Button
             icon
             color={permission.active ? "orange" : "teal"}
@@ -133,7 +133,7 @@ export function PermissionItem(props) {
           >
             <Icon name={permission.active ? "ban" : "check"} />
           </Button>): null }
-          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "delete"))?(
+          {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "delete"))?(
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
           </Button>) : null}

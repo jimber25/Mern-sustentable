@@ -4,7 +4,7 @@ import { BasicModal } from "../../../components/Shared";
 import { PermissionForm, ListPermissions } from "../../../components/Admin/Permissions";
 import { useAuth } from "../../../hooks";
 import { Permission } from "../../../api";
-import { hasPermission , isAdmin} from "../../../utils/checkPermission";
+import { hasPermission , isAdmin, isMaster} from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../pages/admin/Error";
 import "./Permissions.scss";
 
@@ -59,7 +59,7 @@ export function Permissions() {
 
   return (
     <>
-    {isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "view")?
+    { isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "view")?
     (<>
     <div className="permissions-page">
       {isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "create")?

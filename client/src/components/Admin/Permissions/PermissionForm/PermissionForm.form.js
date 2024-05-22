@@ -5,7 +5,7 @@ export function initialValues(permission) {
     description: permission?.description || "",
     module: permission?.module || "",
     action: permission?.action || "",
-    role: permission?.role || null
+    role: permission?.role._id || null
   };
 }
 

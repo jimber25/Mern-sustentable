@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form } from "semantic-ui-react";
+import { Form , Message} from "semantic-ui-react";
 import { useFormik } from "formik";
 import { Auth } from "../../../../api";
 import { initialValues, validationSchema } from "./RegisterForm.form";
@@ -10,6 +10,8 @@ const authController = new Auth();
 export function RegisterForm(props) {
   const { openLogin } = props;
   const [error, setError] = useState("");
+  const [viewMessage, setViewMessage] = useState(false);
+  const [message, setMessage] = useState("");
 
   const formik = useFormik({
     initialValues: initialValues(),
@@ -18,8 +20,14 @@ export function RegisterForm(props) {
     onSubmit: async (formValue) => {
       try {
         setError("");
-        await authController.register(formValue);
-        openLogin();
+        await authController.register(formValue).then(result=>{
+          if(result.code && result.code === 200){
+            setMessage("El usuario ha sido creado correctamente en espera de ser habilitado por el administrador")
+            setViewMessage(true);
+            formik.resetForm();
+          }
+        });
+        //openLogin();
       } catch (error) {
         // console.log(error);
         setError(error.msg);
@@ -30,6 +38,12 @@ export function RegisterForm(props) {
   return (
     <Form className="register-form" onSubmit={formik.handleSubmit}>
 
+    {viewMessage?
+  <Message
+    info
+    header='Información Importante'
+    content={message}
+  /> : null}
       <Form.Input
         name="email"
         placeholder="Correo electronico"

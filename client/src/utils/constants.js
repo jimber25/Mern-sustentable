@@ -27,7 +27,7 @@ export const MODULES = [
   "permissions",
   "reports",
   "roles",
-  "users"
+  "users",
 ];
 
 export const ACTIONS = [
@@ -35,5 +35,5 @@ export const ACTIONS = [
   "create",
   "edit",
   "menu",
-  "view"
+  "view",
 ]

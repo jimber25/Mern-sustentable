@@ -6,27 +6,24 @@ import {
   GridColumn,
   Divider,
   Dropdown,
-  DropdownHeader,
-  DropdownMenu,
-  DropdownItem,
   Input,
   Icon,
 } from "semantic-ui-react";
 import { size, map } from "lodash";
-import { Permission, User } from "../../../../api";
+import { Permission, Company } from "../../../../api";
 import { useAuth } from "../../../../hooks";
-import { UserItem } from "../UserItem";
+import { CompanyItem } from "../CompanyItem";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
 const _ = require("lodash");
 
-const userController = new User();
+const companyController = new Company();
 const permissionController = new Permission();
 
-export function ListUsers(props) {
-  const { usersActive, reload, onReload } = props;
-  const [users, setUsers] = useState(null);
-  const [usersFilter, setUsersFilter] = useState(null);
+export function ListCompanies(props) {
+  const { companiesActive, reload, onReload } = props;
+  const [ companies, setCompanies ] = useState(null);
+  const [ companiesFilter, setCompaniesFilter ] = useState(null);
 
   const {
     accessToken,
@@ -34,12 +31,6 @@ export function ListUsers(props) {
   } = useAuth();
 
   const [permissionByRole, setPermissionsByRole] = useState([]);
-
-  //   const [
-  //     filterText,
-  //     setFilterText
-  // ] = useState("");
-  // const [usersActiveFilter, setUsersActiveFilter] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -63,39 +54,39 @@ export function ListUsers(props) {
   useEffect(() => {
     (async () => {
       try {
-        setUsers(null);
-        setUsersFilter([]);
-        const response = await userController.getUsers(
+        setCompanies(null);
+        setCompaniesFilter([]);
+        const response = await companyController.getCompanies(
           accessToken,
-          usersActive
+          companiesActive
         );
         let result=response.map(s => ({ ...s, key: s._id }));
-        setUsers(result);
-        setUsersFilter(result);
+        setCompanies(result);
+        setCompaniesFilter(result);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, [usersActive, reload, accessToken]);
+  }, [companiesActive, reload, accessToken]);
 
-  if (!users) return <Loader active inline="centered" />;
-  if (size(users) === 0) return "No hay ningun usuario";
+  if (!companies) return <Loader active inline="centered" />;
+  if (size(companies) === 0) return "No hay ninguna empresa";
 
   return (
     <div>
-      {isMaster(role) || isAdmin(role) ||
-      hasPermission(permissionByRole, role._id, "users", "view") ? (
+      {isMaster(role) ||
+      hasPermission(permissionByRole, role._id, "companies", "view") ? (
         <div>
           <div>
-            <SearchStandardUser
-              dataOrigin={users}
-              data={usersFilter}
-              setData={setUsersFilter}
+            <SearchStandardCompany
+              dataOrigin={companies}
+              data={companiesFilter}
+              setData={setCompaniesFilter}
             />
           </div>
           <Divider clearing />
-          {map(usersFilter, (user) => (
-            <UserItem key={user._id} user={user} onReload={onReload} />
+          {map(companiesFilter, (company) => (
+            <CompanyItem key={company._id} company={company} onReload={onReload} />
           ))}
         </div>
       ) : (
@@ -105,7 +96,7 @@ export function ListUsers(props) {
   );
 }
 
-function SearchStandardUser(props) {
+function SearchStandardCompany(props) {
   const { dataOrigin, data, setData } = props;
   const [state, setState] = useState({
     isLoading: false,
@@ -113,7 +104,7 @@ function SearchStandardUser(props) {
     value: "",
   });
 
-  const [filter, setFilter] = useState("firstname");
+  const [filter, setFilter] = useState("name");
 
   const handleChange = (e, { name, value }) => {
     setFilter(value);
@@ -149,18 +140,18 @@ function SearchStandardUser(props) {
     {
       key: 1,
       text: "Nombre",
-      value: "firstname",
+      value: "name",
     },
-    {
-      key: 2,
-      text: "Apellido",
-      value: "lastname",
-    },
-    {
-      key: 3,
-      text: "Email",
-      value: "email",
-    },
+    // {
+    //   key: 2,
+    //   text: "Apellido",
+    //   value: "lastname",
+    // },
+    // {
+    //   key: 3,
+    //   text: "Email",
+    //   value: "email",
+    // },
   ];
 
   return (

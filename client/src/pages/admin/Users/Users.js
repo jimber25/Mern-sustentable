@@ -4,7 +4,7 @@ import { BasicModal } from "../../../components/Shared";
 import { UserForm, ListUsers } from "../../../components/Admin/Users";
 import "./Users.scss";
 import { useAuth } from "../../../hooks";
-import { isAdmin, hasPermission } from "../../../utils/checkPermission";
+import { isAdmin, hasPermission, isMaster } from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../Error";
 import { Permission } from "../../../api";
 
@@ -60,13 +60,14 @@ export function Users() {
   ];
 
   if (
+    isMaster(role) ||
     isAdmin(role) ||
     hasPermission(permissionsByRole, role._id, "users", "view")
   ) {
     return (
       <>
         <div className="users-page">
-          {isAdmin(role) ||
+          {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionsByRole, role._id, "users", "create") ? (
             <Button
               className="users-page__add"

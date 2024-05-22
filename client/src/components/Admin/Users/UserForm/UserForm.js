@@ -2,24 +2,27 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Form, Image } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useDropzone } from "react-dropzone";
-import { User, Role } from "../../../../api";
+import { User, Role, Company } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { image } from "../../../../assets";
 import { ENV } from "../../../../utils";
-import { isAdmin } from "../../../../utils/checkPermission";
+import { isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { initialValues, validationSchema } from "./UserForm.form";
 import "./UserForm.scss";
 
 const userController = new User();
 const roleController = new Role();
+const companyController = new Company();
 
 export function UserForm(props) {
   const { close, onReload, user } = props;
   const {
     accessToken,
-    user: { role },
+    user: { role, company },
   } = useAuth();
   const [listRoles, setListRoles] = useState([]);
+  const [listCompanies, setListCompanies] = useState([]);
+  const [companyData, setCompanyData] = useState([]);
 
   useEffect(() => {
     roleController.getRoles(accessToken, true).then((response) => {
@@ -27,13 +30,24 @@ export function UserForm(props) {
     });
   }, []);
 
+  useEffect(() => {
+    if (isMaster(role)) {
+      companyController.getCompanies(accessToken, true).then((response) => {
+        setListCompanies(response);
+      });
+    }else if(isAdmin(role)){
+      setCompanyData(company);
+    }
+  }, []);
+
   const formik = useFormik({
     initialValues: initialValues(user),
-    validationSchema: validationSchema(user),
+    validationSchema: isAdmin(role) || isMaster(role)? null : validationSchema(user),
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
         if (!user) {
+          formValue.company=companyData._id;
           const response = await userController.createUser(
             accessToken,
             formValue
@@ -52,7 +66,7 @@ export function UserForm(props) {
     },
   });
 
-  console.log(formik)
+  console.log(formik);
   const onDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -103,14 +117,35 @@ export function UserForm(props) {
       </Form.Group>
 
       <Form.Group widths="equal">
+        {isMaster(role)? 
+        <Form.Dropdown
+        label="Empresa"
+        placeholder="Seleccióna una empresa"
+        options={listCompanies.map((ds) => {
+          return {
+            key: ds._id,
+            text: ds.name,
+            value: ds._id,
+          };
+        })}
+        selection
+        onChange={(_, data) => formik.setFieldValue("company", data.value)}
+        value={formik.values.company}
+        error={formik.errors.company}
+      />
+        :
+        isAdmin(role)?
         <Form.Input
-          label="Empresa"
-          name="company"
-          placeholder="Empresa"
-          onChange={formik.handleChange}
-          value={formik.values.company}
-          error={formik.errors.company}
-        />
+        label="Empresa"
+        name="company"
+        placeholder="Empresa"
+        disabled={true}
+        onChange={formik.handleChange}
+        value={companyData.name}
+        error={companyData.name}
+      />
+         : null
+      }
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Input
@@ -140,7 +175,7 @@ export function UserForm(props) {
           value={formik.values.email}
           error={formik.errors.email}
         />
-        {isAdmin(role) ? (
+        {isMaster(role) || isAdmin(role) ? (
           <Form.Dropdown
             label="Rol"
             placeholder="Seleccióna un rol"
