@@ -70,9 +70,7 @@ export function RoleItem(props) {
       <div className="role-item">
         <div className="role-item__info">
           <div>
-            <p>
-              {role.name}
-            </p>
+              {role.name}        
           </div>
         </div>
         <div>

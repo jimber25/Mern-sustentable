@@ -11,7 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Permission } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import "./AdminMenu.scss";
-import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
+import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 
 const permissionController = new Permission();
 
@@ -54,7 +54,7 @@ export function AdminMenu() {
     <Menu fluid vertical icon text className="admin-menu">
       {(
         <>
-         {isAdmin(role) ||
+         {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "dashboard", "menu") ? (
           <Menu.Item
             as={Link}
@@ -64,7 +64,7 @@ export function AdminMenu() {
             <Icon name="home" />
             Dashboard
           </Menu.Item>):null}
-          {isAdmin(role) ||
+          {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "users", "menu") ? (
             <Menu.Item
               as={Link}
@@ -92,6 +92,14 @@ export function AdminMenu() {
             <Icon name="archive" />
             Reportes
           </Menu.Item>
+          <Menu.Item
+            as={Link}
+            to="/admin/companies"
+            active={isCurrentPath("/admin/companies")}
+          >
+            <Icon name="building" />
+            Empresas
+          </Menu.Item>
 
           {/* <Menu.Item
             as={Link}
@@ -110,11 +118,11 @@ export function AdminMenu() {
             <Icon name="configure" />
             Configuracion
           </Menu.Item> */}
-          {isAdmin(role) ||
+          {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "configure", "menu") ? (
             <Dropdown floating labeled item text="Configuracion">
               <DropdownMenu>
-                {isAdmin(role) ||
+                {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "roles", "menu") ? (
                   <DropdownItem
                     as={Link}
@@ -125,7 +133,7 @@ export function AdminMenu() {
                     <Icon name="users" /> Roles
                   </DropdownItem>
                 ) : null}
-                {isAdmin(role) ||
+                {isMaster(role) || isAdmin(role) ||
                 hasPermission(
                   permissionActive,
                   role._id,

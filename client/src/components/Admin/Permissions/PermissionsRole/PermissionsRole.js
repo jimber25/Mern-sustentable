@@ -40,7 +40,7 @@ export function PermissionsRole(props) {
 
   const [listPermissions, setListPermissions] = useState([]);
   const [listPermissionsFilter, setListPermissionsFilter] = useState([]);
-  const [moduleData, setModuleData] = useState("");
+  const [moduleData, setModuleData] = useState("users");
 
   useEffect(() => {
     if (role) {
@@ -65,7 +65,7 @@ export function PermissionsRole(props) {
       const result = listPermissions.filter((i) => i.module === moduleData);
       setListPermissionsFilter(result);
     }
-  }, [moduleData]);
+  }, [moduleData, listPermissions]);
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -146,7 +146,7 @@ export function PermissionsRole(props) {
               </Divider>
               <Dropdown
                 label="Modulo"
-                placeholder="Selecciona un modulo"
+                // placeholder="Selecciona un modulo"
                 options={MODULES.map((ds) => {
                   return {
                     key: ds,
@@ -160,28 +160,30 @@ export function PermissionsRole(props) {
               />
             </div>
           </div>
-          {listPermissionsFilter && listPermissionsFilter.length > 0 ? (
-          <div className="permissions-role-item__">
-
-                       <Divider horizontal>
-                       <Header as="h4">
-                         {/* <Icon name='tag' /> */}
-                         Permisos
-                       </Header>
-                     </Divider>
-              <SegmentGroup  size="large" placeholder>
+          {listPermissionsFilter && listPermissionsFilter.length >= 0 ? (
+            <div className="permissions-role-item__">
+              <Divider horizontal>
+                <Header as="h4">
+                  {/* <Icon name='tag' /> */}
+                  Permisos
+                </Header>
+              </Divider>
                 {listPermissionsFilter.map((permission, index) => {
                   return (
                     <div>
-                      <Grid divided="vertically" celled="internally">
+                      <Grid celled>
                         <GridRow>
-                          <GridColumn width={10}>
-                            <p>{convertActionsEngToEsp(permission.action)}</p>
+                          <GridColumn width={2}>
+                            <Icon name={actionIcon(permission.action)} />
                           </GridColumn>
-                          <GridColumn width={4}>
+                          <GridColumn width={5}>
+                            {convertActionsEngToEsp(permission.action)}
+                          </GridColumn>
+                          <GridColumn width={3}>
                             <Checkbox
                               toggle
                               checked={permission.active}
+                              label={permission.active? 'Habilitado' : "deshabilitado"}
                               onChange={(e, { checked }) => {
                                 setActivateDesactivate(checked, index);
                               }}
@@ -194,10 +196,9 @@ export function PermissionsRole(props) {
                   //   </ListContent>
                   // </ListItem>
                 })}
-              </SegmentGroup>
-            {/* </List> */}
-            {/* </List> */}
-            {/* <div>
+              {/* </List> */}
+              {/* </List> */}
+              {/* <div>
             <Grid divided="vertically" celled='internally'>
               <GridRow >
                 <GridColumn width={6}>
@@ -212,9 +213,8 @@ export function PermissionsRole(props) {
               </GridRow>
             </Grid>
           </div> */}
-          </div>) : (
-            null
-          )}
+            </div>
+          ) : null}
           {/* <div>
           <Button icon primary onClick={openUpdateUser}>
             <Icon name="pencil" />
@@ -232,14 +232,6 @@ export function PermissionsRole(props) {
         </div> */}
         </div>
 
-        {/* <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>
-        <PermissionForm
-          close={onOpenCloseModal}
-          onReload={onReload}
-          permission={permission}
-        />
-      </BasicModal> */}
-
         <div>
           <FormButton type="submit" primary content={"Guardar"} />
         </div>
@@ -256,35 +248,57 @@ export function PermissionsRole(props) {
   );
 }
 
-function PermissionRoleItem(props) {
-  const { module, permissions, listPermissions, setListPermissions } = props;
+// function PermissionRoleItem(props) {
+//   const { module, permissions, listPermissions, setListPermissions } = props;
 
-  const setActivateDesactivate = (checked, index) => {
-    const newData = { ...listPermissions };
-    newData[module][index].active = checked;
-    setListPermissions(newData);
-  };
+//   const setActivateDesactivate = (checked, index) => {
+//     const newData = { ...listPermissions };
+//     newData[module][index].active = checked;
+//     setListPermissions(newData);
+//   };
 
-  return permissions.map((permission, index) => {
-    return (
-      <div>
-        <Grid divided="vertically" celled="internally">
-          <GridRow>
-            <GridColumn width={10}>
-              <p>{convertActionsEngToEsp(permission.action)}</p>
-            </GridColumn>
-            <GridColumn width={4}>
-              <Checkbox
-                toggle
-                checked={permission.active}
-                onChange={(e) => {
-                  setActivateDesactivate(e.checked, index);
-                }}
-              />
-            </GridColumn>
-          </GridRow>
-        </Grid>
-      </div>
-    );
-  });
+//   return permissions.map((permission, index) => {
+//     return (
+//       <div>
+//         <Grid divided="vertically" celled="internally">
+//           <GridRow>
+//           <GridColumn>
+//           <Icon name={actionIcon(permission.action)} />
+//           </GridColumn>
+//             <GridColumn width={10}>
+//               <p>{convertActionsEngToEsp(permission.action)}</p>
+//             </GridColumn>
+//             <GridColumn width={4}>
+//               <Checkbox
+//                 toggle
+//                 checked={permission.active}
+//                 onChange={(e) => {
+//                   setActivateDesactivate(e.checked, index);
+//                 }}
+//               />
+//             </GridColumn>
+//           </GridRow>
+//         </Grid>
+//       </div>
+//     );
+//   });
+// }
+
+function actionIcon(a) {
+  switch (a) {
+    case "edit":
+      return "edit";
+    case "delete":
+      return "trash alternate outline";
+    case "create":
+      return "add circle";
+    case "update":
+      return "pencil alternate";
+    case "view":
+      return "eye";
+    case "menu":
+      return "th list";
+    default:
+      return null;
+  }
 }

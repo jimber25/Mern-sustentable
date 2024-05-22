@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const Role = require("../models/role");
 const image = require("../utils/image");
+const { default: mongoose } = require("mongoose");
 
 async function getUser(req, res) {
   const { user_id } = req.user;
@@ -18,10 +20,12 @@ async function getUsers(req, res) {
   const { active } = req.query;
   let response = null;
 
+  let role= await Role.find({"name":"Master"});
+
   if (active === undefined) {
-    response = await User.find();
+    response = await User.find({"role":{$ne: role[0]._id }});
   } else {
-    response = await User.find({ active });
+    response = await User.find({ active , "role":{$ne:role[0]._id }});
   }
 
   res.status(200).send(response);
@@ -44,6 +48,7 @@ async function createUser(req, res) {
 
   user.save((error, userStored) => {
     if (error) {
+      console.log(error)
       res.status(500).send({ code:400, msg: "El usuario ya existe" });
     } else {
       if (!userStored) {

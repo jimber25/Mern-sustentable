@@ -1,19 +1,19 @@
 import React, { useState , useEffect} from "react";
-import { Image, Button, Icon, Confirm } from "semantic-ui-react";
+import { Image, Button, Icon, Confirm, CommentAction } from "semantic-ui-react";
 import { image } from "../../../../assets";
-import { Permission, User } from "../../../../api";
+import { Permission, Company } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { BasicModal } from "../../../Shared";
 import { ENV } from "../../../../utils";
-import { UserForm } from "../UserForm";
-import "./UserItem.scss";
+import { CompanyForm } from "../CompanyForm";
+import "./CompanyItem.scss";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 
-const userController = new User();
+const companyController = new Company();
 const permissionController = new Permission();
 
-export function UserItem(props) {
-  const { user, onReload } = props;
+export function CompanyItem(props) {
+  const { company, onReload } = props;
   const { accessToken, user: { role } } = useAuth();
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
@@ -43,25 +43,25 @@ export function UserItem(props) {
     })();
   }, [role]);
 
-  const openUpdateUser = () => {
-    setTitleModal(`Actualizar ${user.email}`);
+  const openUpdateCompany = () => {
+    setTitleModal(`Actualizar ${company.name}`);
     onOpenCloseModal();
   };
 
   const openDesactivateActivateConfim = () => {
     setIsDelete(false);
     setConfirmMessage(
-      user.active
-        ? `Desactivar usuario ${user.email}`
-        : `Activar usuario ${user.email}`
+      company.active
+        ? `Desactivar empresa ${company.email}`
+        : `Activar empresa ${company.email}`
     );
     onOpenCloseConfirm();
   };
 
   const onActivateDesactivate = async () => {
     try {
-      await userController.updateUser(accessToken, user._id, {
-        active: !user.active,
+      await companyController.updateCompany(accessToken, company._id, {
+        active: !company.active,
       });
       onReload();
       onOpenCloseConfirm();
@@ -72,13 +72,13 @@ export function UserItem(props) {
 
   const openDeleteConfirm = () => {
     setIsDelete(true);
-    setConfirmMessage(`Eliminar usuario ${user.email}`);
+    setConfirmMessage(`Eliminar empresa ${company.name}`);
     onOpenCloseConfirm();
   };
 
   const onDelete = async () => {
     try {
-      await userController.deleteUser(accessToken, user._id);
+      await companyController.deleteCompany(accessToken, company._id);
       onReload();
       onOpenCloseConfirm();
     } catch (error) {
@@ -88,8 +88,8 @@ export function UserItem(props) {
 
   return (
     <>
-      <div className="user-item">
-        <div className="user-item__info">
+      <div className="company-item">
+        <div className="company-item__info">
           {/* <Image
             avatar
             src={
@@ -98,26 +98,26 @@ export function UserItem(props) {
           /> */}
           <div>
             <p>
-              {user.firstname} {user.lastname}
+              {company.name} 
             </p>
-            <p>{user.email}</p>
+            <p>{company.email}</p>
           </div>
         </div>
 
         <div>
-          {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "users", "edit"))?(
-          <Button icon primary onClick={openUpdateUser}>
+          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
+          <Button icon primary onClick={openUpdateCompany}>
             <Icon name="pencil" />
           </Button>) : null}
-          {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "users", "edit"))?(
+          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
           <Button
             icon
-            color={user.active ? "orange" : "teal"}
+            color={company.active ? "orange" : "teal"}
             onClick={openDesactivateActivateConfim}
           >
-            <Icon name={user.active ? "ban" : "check"} />
+            <Icon name={company.active ? "ban" : "check"} />
           </Button> ):null}
-          {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "users", "delete"))?(
+          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "delete"))?(
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
           </Button> ) : null }
@@ -125,7 +125,7 @@ export function UserItem(props) {
       </div>
 
       <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>
-        <UserForm close={onOpenCloseModal} onReload={onReload} user={user} />
+        <CompanyForm close={onOpenCloseModal} onReload={onReload} company={company} />
       </BasicModal>
 
       <Confirm

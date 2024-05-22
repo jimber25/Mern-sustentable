@@ -27,7 +27,7 @@ function register(req, res) {
       // console.log(error)
       res.status(400).send({ msg: "Error al crear el usuario: el usuario ya existe" });
     } else {
-      res.status(200).send(userStorage);
+      res.status(200).send({code:200, userStorage});
     }
   });
 }
@@ -47,10 +47,10 @@ function login(req, res) {
           bcrypt.compare(password, userStore.password, (bcryptError, check) => {
             if (bcryptError) {
               res.status(500).send({ msg: "Error del servidor" });
-            } else if (!check) {
-              res.status(400).send({ msg: "Contraseña incorrecta" });
             } else if (!userStore.active) {
               res.status(401).send({ msg: "Usuario no autorizado o no activo" });
+            } else if (!check) {
+              res.status(400).send({ msg: "Contraseña incorrecta" });
             } else {
               res.status(200).send({
                 access: jwt.createAccessToken(userStore),

@@ -92,11 +92,27 @@ async function deletePermission(req, res) {
   });
 }
 
+async function getPermissionsByRoleAndModule(req, res) {
+  const { id } = req.params;
+  const { module, action } = req.query;
+  let response = null;
+
+  response = await Permission.find({ role:id, module:module});
+  
+  if (!response) {
+    res.status(400).send({ code:400, msg: "No se ha encontrado permisos" });
+  } else {
+    res.status(200).send({response});
+  }
+  // res.status(200).send(response);
+}
+
 module.exports = {
   getPermission,
   getPermissions,
   createPermission,
   updatePermission,
   deletePermission,
-  getPermissionsByRoleId
+  getPermissionsByRoleId,
+  getPermissionsByRoleAndModule
 };

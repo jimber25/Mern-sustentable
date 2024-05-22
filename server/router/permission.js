@@ -9,6 +9,7 @@ const api = express.Router();
 api.get("/permission/:id", [md_auth.asureAuth], PermissionController.getPermission);
 api.get("/permissions", [md_auth.asureAuth], PermissionController.getPermissions);
 api.get("/permissions-role/:id", [md_auth.asureAuth], PermissionController.getPermissionsByRoleId);
+api.get("/permissions-role-module/:id", [md_auth.asureAuth], PermissionController.getPermissionsByRoleAndModule);
 api.post("/add-permission", [md_auth.asureAuth], PermissionController.createPermission);
 api.put("/update-permission/:id",[md_auth.asureAuth], PermissionController.updatePermission);
 api.delete("/delete-permission/:id", [md_auth.asureAuth], PermissionController.deletePermission);

@@ -6,7 +6,7 @@ import { BasicModal } from "../../../Shared";
 import { RoleForm } from "../../Roles/RoleForm";
 import { PermissionsRole } from "../PermissionsRole/PermissionsRole";
 import "./RoleItem.scss";
-import { isAdmin , hasPermission} from "../../../../utils/checkPermission";
+import { isAdmin , hasPermission, isMaster} from "../../../../utils/checkPermission";
 
 const roleController = new Role();
 const permissionController = new Permission();
@@ -107,14 +107,14 @@ export function RoleItem(props) {
           </div>
         </div>
         <div>
-        {(isAdmin(roleUser) || hasPermission(permissionsByRole, roleUser._id, "permissions", "edit"))?(
+        {(isMaster(roleUser) || isAdmin(roleUser) || hasPermission(permissionsByRole, roleUser._id, "permissions", "edit"))?(
           <Button icon primary onClick={openUpdatePermission} disabled={isAdmin(role)}>
             <Icon name="pencil" />
           </Button>) : null}
         </div>
       </div>
 
-      <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}  size={"large"}>
+      <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}  size={"tiny"}>
         <PermissionsRole close={onOpenCloseModal} onReload={onReload} role={role} />
       </BasicModal>
 

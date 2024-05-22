@@ -5,7 +5,7 @@ async function getRole(req, res) {
   const { id } = req.params;
 
   const response = await Role.findById(id);
-  console.log(id)
+  
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado el rol" });
   } else {
@@ -18,9 +18,9 @@ async function getRoles(req, res) {
   let response = null;
 
   if (active === undefined) {
-    response = await Role.find();
+    response = await Role.find({"name":{$not:{ $regex: "Master" }}}); // restringir el rol master
   } else {
-    response = await Role.find({ active });
+    response = await Role.find({ active, "name":{$not:{ $regex: "Master" }}}); //restringir el rol master
   }
 
   res.status(200).send(response);

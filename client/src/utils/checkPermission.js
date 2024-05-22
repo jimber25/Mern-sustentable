@@ -5,6 +5,13 @@ export function isAdmin(actualRole){
     }
     return false
   }
+
+  export function isMaster(actualRole){
+    if (actualRole.name.toLowerCase() === "master"){
+      return true;
+    }
+    return false
+  }
   
   
   //PERMISOS EN USO
