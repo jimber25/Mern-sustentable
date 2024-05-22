@@ -7,7 +7,7 @@ const { default: mongoose } = require("mongoose");
 async function getUser(req, res) {
   const { user_id } = req.user;
 
-  const response = await User.findById(user_id).populate("role");
+  const response = await User.findById(user_id).populate("role").populate("company");
   // console.log(response)
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado usuario" });
@@ -79,6 +79,7 @@ async function updateUser(req, res) {
 
   User.findByIdAndUpdate({ _id: id }, userData, (error,response) => {
     if (error) {
+      console.log(error)
       res.status(400).send({ msg: "Error al actualizar el usuario" });
     } else {
       res.status(200).send({ msg: "Actualizacion correcta" });
