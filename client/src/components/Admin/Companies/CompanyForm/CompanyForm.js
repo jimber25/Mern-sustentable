@@ -55,20 +55,39 @@ export function CompanyForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Nombre"
+          label="Razon Social"
           name="name"
-          placeholder="Nombre"
+          placeholder="Razon social"
           onChange={formik.handleChange}
           value={formik.values.name}
           error={formik.errors.name}
         />
         <Form.Input
+          label="CUIT"
+          name="cuit"
+          placeholder="cuit"
+          onChange={formik.handleChange}
+          value={formik.values.cuit}
+          error={formik.errors.cuit}
+        />
+      </Form.Group>
+
+      <Form.Group widths="equal">
+        <Form.Input
           label="Telefono"
           name="phone"
-          placeholder="telefono"
+          placeholder="Telefono"
           onChange={formik.handleChange}
           value={formik.values.phone}
           error={formik.errors.phone}
+        />
+        <Form.Input
+          label="Direccion"
+          name="address"
+          placeholder="Direccion"
+          onChange={formik.handleChange}
+          value={formik.values.address}
+          error={formik.errors.address}
         />
       </Form.Group>
     

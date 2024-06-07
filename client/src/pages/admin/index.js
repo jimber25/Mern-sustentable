@@ -10,3 +10,5 @@ export {ErrorAccessDenied} from "./Error";
 export * from "./Dashboard";
 export * from "./Reports";
 export * from "./Companies";
+export * from "./Recover";
+export * from "./Sites";
