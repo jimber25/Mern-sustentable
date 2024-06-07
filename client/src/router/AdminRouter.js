@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { AdminLayout } from "../layouts";
-import { Auth, Users, Blog, Courses, Menu, Newsletter, Roles, Permissions, Dashboard, Reports, Companies } from "../pages/admin";
+import { Auth, Users, Blog, Courses, Menu, Newsletter, Roles, Permissions, Dashboard, Reports, Companies, Recover, Sites } from "../pages/admin";
 import { useAuth } from "../hooks";
 
 export function AdminRouter() {
@@ -19,7 +19,10 @@ export function AdminRouter() {
   return (
     <Routes>
       {!user ? (
+        <>
         <Route path="/admin/*" element={<Auth />} />
+         <Route path="/recover" element={<Recover />} />
+        </>
       ) : (
         <>
           {["/admin", "/admin/blog"].map((path) => (
@@ -62,6 +65,12 @@ export function AdminRouter() {
             path="/admin/companies"
             element={loadLayout(AdminLayout, Companies)}
           />
+
+<Route
+            path="/admin/data/sites"
+            element={loadLayout(AdminLayout, Sites)}
+          />
+
         </>
       )}
     </Routes>

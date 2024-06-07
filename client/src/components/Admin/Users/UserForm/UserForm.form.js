@@ -26,7 +26,7 @@ export function validationSchema(user) {
     // repeatPassword: Yup.string()
     // .required(true)
     // .oneOf([Yup.ref("password")], "Las contraseñas tienen que ser iguales"),
-    company: Yup.string().required(true),
+    // company: Yup.string().required(true),
     position: Yup.string().required(true),
     sector: Yup.string().required(true),
   });

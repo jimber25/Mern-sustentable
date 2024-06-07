@@ -64,6 +64,43 @@ export function AdminMenu() {
             <Icon name="home" />
             Dashboard
           </Menu.Item>):null}
+
+          {/* {isMaster(role) || isAdmin(role) ||
+          hasPermission(permissionActive, role._id, "data", "menu") ? (
+            <Dropdown floating labeled item text="Datos">
+              <DropdownMenu>
+                {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "sites", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/sites"
+                    active={isCurrentPath("/admin/data/sites")}
+                  >
+                    {" "}
+                    <Icon name="users" /> Site
+                  </DropdownItem>
+                ) : null} */}
+                {/* {isMaster(role) || isAdmin(role) ||
+                hasPermission(
+                  permissionActive,
+                  role._id,
+                  "permissions",
+                  "menu"
+                ) ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/config/permissions"
+                    active={isCurrentPath("/admin/config/permissions")}
+                  >
+                    {" "}
+                    <Icon name="clipboard list" /> Permisos
+                  </DropdownItem>
+                ) : null} */}
+              {/* </DropdownMenu>
+            </Dropdown>
+          ) : null} */}
+
+
           {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "users", "menu") ? (
             <Menu.Item

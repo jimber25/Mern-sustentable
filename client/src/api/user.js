@@ -134,4 +134,99 @@ export class User {
       throw error;
     }
   }
+
+  async verifyEmailApi(data) {
+    const url = `${this.baseApi}/verify-email`;
+    const params = {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    //console.log(data);
+
+    return fetch(url, params)
+      .then((response) => {
+        //console.log("api response");
+        //console.log(response);
+        return response.json();
+      })
+      .then((result) => {
+        //console.log("api result");
+        //console.log(result);
+        if (result.message === "e-mail encontrado") {
+          return {
+            ok: true,
+            message: "¡e-mail encontrado!",
+          };
+        }
+        return {
+          ok: false,
+          message: result.message,
+        };
+      })
+      .catch((err) => {
+        return {
+          ok: false,
+          message: err.message,
+        };
+      });
+  }
+
+  async sendEmail(data) {
+    const url = `${this.baseApi}/send-email`;
+    const params = {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    return fetch(url, params)
+      .then((response) => {
+        return response.json();
+      })
+      .then((result) => {
+        if (result.message === "email de recuperación enviado") {
+          return {
+            ok: true,
+            message: result.message,
+          };
+        }
+        return {
+          ok: false,
+          message: result.message,
+        };
+      })
+      .catch((err) => {
+        return {
+          ok: false,
+          message: err.message,
+        };
+      });
+  }
+
+  async updatePasswordByTokenApi(user, resetToken) {
+    const url = `${this.baseApi}/update-password-by-token/${resetToken}`;
+    const params = {
+      method: "PUT",
+      body: JSON.stringify(user),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    return fetch(url, params)
+      .then((response) => {
+        return response.json();
+      })
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
 }

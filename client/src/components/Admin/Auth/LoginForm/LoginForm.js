@@ -31,6 +31,11 @@ export function LoginForm() {
     },
   });
 
+   const recoverPassword = (e) => {
+   console.log("a vista recuperar contraseña");
+   window.location.href = "/recover";
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Form.Input
@@ -53,6 +58,13 @@ export function LoginForm() {
         Entrar
       </Form.Button>
 
+    
+      
+                <a onClick={recoverPassword}>
+                    Olvidé mi contraseña
+                </a>
+
+           
 
       <p className="login-form__error">{error}</p> 
     </Form>

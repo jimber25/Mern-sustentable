@@ -1,40 +1,31 @@
 import React, { useState } from "react";
 import { Tab } from "semantic-ui-react";
-import { RegisterForm, LoginForm } from "../../../components/Admin/Auth";
+import { RecoverForm } from "../../../components/Admin/Auth";
 import { Icon } from "../../../assets";
-import "./Auth.scss";
+import "./Recover.scss";
 
-export function Auth() {
+export function Recover() {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const openLogin = () => setActiveIndex(0);
 
   const panes = [
     {
-      menuItem: "Entrar",
+      menuItem: "Recuperar Contraseña",
       render: () => (
         <Tab.Pane>
-          <LoginForm />
-        </Tab.Pane>
-      ),
-    },
-    {
-      menuItem: "Nuevo usuario",
-      render: () => (
-        <Tab.Pane>
-          <RegisterForm openLogin={openLogin} />
+          <RecoverForm />
         </Tab.Pane>
       ),
     },
   ];
 
   return (
-    <div className="auth">
+    <div className="recover">
       {/* <Icon.LogoWhite className="logo" /> */}
 
       <Tab
+      menu={{ attached: false }}
         panes={panes}
-        className="auth__forms"
+        className="recover__forms"
         activeIndex={activeIndex}
         onTabChange={(_, data) => setActiveIndex(data.activeIndex)}
       />

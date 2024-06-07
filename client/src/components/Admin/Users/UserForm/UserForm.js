@@ -36,6 +36,7 @@ export function UserForm(props) {
         setListCompanies(response);
       });
     }else if(isAdmin(role)){
+      console.log(company)
       setCompanyData(company);
     }
   }, []);
@@ -47,7 +48,9 @@ export function UserForm(props) {
     onSubmit: async (formValue) => {
       try {
         if (!user) {
-          formValue.company=companyData._id;
+          if(isAdmin(role)){
+            formValue.company=companyData._id;
+          }
           const response = await userController.createUser(
             accessToken,
             formValue
@@ -55,6 +58,9 @@ export function UserForm(props) {
           if (response.code && response.code === 500) {
           }
         } else {
+          if(isAdmin(role) && !user.company){
+            formValue.company=companyData._id;
+          }
           await userController.updateUser(accessToken, user._id, formValue);
         }
         onReload(true);
@@ -66,7 +72,6 @@ export function UserForm(props) {
     },
   });
 
-  console.log(formik);
   const onDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -139,10 +144,9 @@ export function UserForm(props) {
         label="Empresa"
         name="company"
         placeholder="Empresa"
-        disabled={true}
         onChange={formik.handleChange}
         value={companyData.name}
-        error={companyData.name}
+        error={formik.errors.company}
       />
          : null
       }

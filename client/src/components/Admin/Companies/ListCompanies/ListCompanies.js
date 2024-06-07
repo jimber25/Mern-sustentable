@@ -142,16 +142,16 @@ function SearchStandardCompany(props) {
       text: "Nombre",
       value: "name",
     },
-    // {
-    //   key: 2,
-    //   text: "Apellido",
-    //   value: "lastname",
-    // },
-    // {
-    //   key: 3,
-    //   text: "Email",
-    //   value: "email",
-    // },
+    {
+      key: 2,
+      text: "CUIT",
+      value: "cuit",
+    },
+    {
+      key: 3,
+      text: "Email",
+      value: "email",
+    },
   ];
 
   return (
