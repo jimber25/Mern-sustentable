@@ -105,11 +105,11 @@ export function CompanyItem(props) {
         </div>
 
         <div>
-          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
           <Button icon primary onClick={openUpdateCompany}>
             <Icon name="pencil" />
           </Button>) : null}
-          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
           <Button
             icon
             color={company.active ? "orange" : "teal"}
@@ -117,7 +117,7 @@ export function CompanyItem(props) {
           >
             <Icon name={company.active ? "ban" : "check"} />
           </Button> ):null}
-          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "delete"))?(
+          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "companies", "delete"))?(
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
           </Button> ) : null }

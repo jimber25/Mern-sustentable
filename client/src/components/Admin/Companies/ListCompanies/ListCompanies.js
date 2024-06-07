@@ -74,7 +74,7 @@ export function ListCompanies(props) {
 
   return (
     <div>
-      {isMaster(role) ||
+      {isAdmin(role) ||
       hasPermission(permissionByRole, role._id, "companies", "view") ? (
         <div>
           <div>
