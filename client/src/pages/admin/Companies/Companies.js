@@ -61,13 +61,13 @@ export function Companies() {
   ];
 
   if (
-    isMaster(role) ||
+    isAdmin(role) ||
     hasPermission(permissionsByRole, role._id, "companies", "view")
   ) {
     return (
       <>
         <div className="companies-page">
-          {isMaster(role) ||
+          {isAdmin(role) ||
           hasPermission(permissionsByRole, role._id, "companies", "create") ? (
             <Button
               className="users-page__add"
