@@ -6,8 +6,10 @@ export function initialValues(site) {
     creator_user: site?.creator_user || "",
     state: site?.state || "",
     company: site?.company || "",
-    reviews:site?.reviews || "",
-    installation_type: site?.installation_type || "",
+    installation_type: site?.installation_type || {
+      // value:"",
+      reviews:[]
+    },
     product_category: site?.product_category || "",
     days_month:site?.days_month || "",
     days_total:site?.days_total || "",
@@ -37,11 +39,8 @@ export function initialValues(site) {
 
 export function validationSchema() {
   return Yup.object({
-    title: Yup.string().required(true),
-    miniature: Yup.string().required(true),
-    description: Yup.string().required(true),
-    url: Yup.string().required(true),
-    price: Yup.number().required(true),
-    score: Yup.number().min(1, true).max(5, true).required(true),
+    date: Yup.string().required(true),
+    creator_user: Yup.string().required(true),
+    state: Yup.string().required(true)
   });
 }

@@ -55,7 +55,7 @@ export function ListSites(props) {
           defaultActivePage={pagination.page}
           ellipsisItem={null}
           firstItem={null}
-          lastItem={null}
+          lastItem={null}--
           onPageChange={changePage}
         /> */}
       </div>

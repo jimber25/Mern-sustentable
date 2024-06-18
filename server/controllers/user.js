@@ -23,9 +23,9 @@ async function getUsers(req, res) {
   let role= await Role.find({"name":"Master"});
 
   if (active === undefined) {
-    response = await User.find({"role":{$ne: role[0]._id }});
+    response = await User.find({"role":{$ne: role[0]._id }}).populate("role");
   } else {
-    response = await User.find({ active , "role":{$ne:role[0]._id }});
+    response = await User.find({ active , "role":{$ne:role[0]._id }}).populate("role");
   }
 
   res.status(200).send(response);

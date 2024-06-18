@@ -8,6 +8,8 @@ import {
   Dropdown,
   Input,
   Icon,
+  Table,
+  Button
 } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Permission, Company } from "../../../../api";
@@ -174,6 +176,128 @@ function SearchStandardCompany(props) {
     }
   />
       </GridColumn>
+      <EditableTable2/>
     </Grid>
   );
 }
+
+const EditableTable = () => {
+  const [data, setData] = useState([
+    { id: 1, name: 'John Doe', age: 30 },
+    { id: 2, name: 'Jane Smith', age: 25 },
+    // Add more initial data as needed
+  ]);
+  
+  const handleEdit = (id, field, value) => {
+    const newData = data.map(item => {
+      if (item.id === id) {
+        return { ...item, [field]: value };
+      }
+      return item;
+    });
+    setData(newData);
+  };
+
+  return (
+    <Table celled>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell>Name</Table.HeaderCell>
+          <Table.HeaderCell>Age</Table.HeaderCell>
+          <Table.HeaderCell>Action</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {data.map(item => (
+          <Table.Row key={item.id}>
+            <Table.Cell>
+              <input
+                type="text"
+                value={item.name}
+                onChange={e => handleEdit(item.id, 'name', e.target.value)}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <input
+                type="number"
+                value={item.age}
+                onChange={e => handleEdit(item.id, 'age', e.target.value)}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <Button color="red">Delete</Button>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  );
+};
+
+
+const EditableTable2 = () => {
+  const [data, setData] = useState([
+    { id: 1, name: 'John Doe', age: 30, gender: 'Male' },
+    { id: 2, name: 'Jane Smith', age: 25, gender: 'Female' },
+    // Add more initial data as needed
+  ]);
+
+  const genders = [
+    { key: 'male', text: 'Male', value: 'Male' },
+    { key: 'female', text: 'Female', value: 'Female' },
+  ];
+
+  const handleEdit = (id, field, value) => {
+    const newData = data.map(item => {
+      if (item.id === id) {
+        return { ...item, [field]: value };
+      }
+      return item;
+    });
+    setData(newData);
+  };
+
+  return (
+    <Table celled>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell>Name</Table.HeaderCell>
+          <Table.HeaderCell>Age</Table.HeaderCell>
+          <Table.HeaderCell>Gender</Table.HeaderCell>
+          <Table.HeaderCell>Action</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {data.map(item => (
+          <Table.Row key={item.id}>
+            <Table.Cell>
+              <input
+                type="text"
+                value={item.name}
+                onChange={e => handleEdit(item.id, 'name', e.target.value)}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <input
+                type="number"
+                value={item.age}
+                onChange={e => handleEdit(item.id, 'age', e.target.value)}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <Dropdown
+                selection
+                options={genders}
+                value={item.gender}
+                onChange={(e, { value }) => handleEdit(item.id, 'gender', value)}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              <Button color="red">Delete</Button>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  );
+};
