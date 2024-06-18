@@ -51,7 +51,7 @@ export function SiteItem(props) {
         </div>
       </div>
 
-      <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>
+      <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal} size={'fullscreen'}>
         <SiteForm
           onClose={onOpenCloseModal}
           onReload={onReload}

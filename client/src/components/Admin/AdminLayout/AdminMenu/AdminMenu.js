@@ -65,7 +65,7 @@ export function AdminMenu() {
             Dashboard
           </Menu.Item>):null}
 
-          {/* {isMaster(role) || isAdmin(role) ||
+          {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "data", "menu") ? (
             <Dropdown floating labeled item text="Datos">
               <DropdownMenu>
@@ -79,8 +79,8 @@ export function AdminMenu() {
                     {" "}
                     <Icon name="users" /> Site
                   </DropdownItem>
-                ) : null} */}
-                {/* {isMaster(role) || isAdmin(role) ||
+                ) : null} 
+                {isMaster(role) || isAdmin(role) ||
                 hasPermission(
                   permissionActive,
                   role._id,
@@ -95,10 +95,11 @@ export function AdminMenu() {
                     {" "}
                     <Icon name="clipboard list" /> Permisos
                   </DropdownItem>
-                ) : null} */}
-              {/* </DropdownMenu>
+                ) : null}
+              </DropdownMenu>
             </Dropdown>
-          ) : null} */}
+          ) : null} 
+
 
 
           {isMaster(role) || isAdmin(role) ||

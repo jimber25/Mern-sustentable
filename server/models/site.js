@@ -12,17 +12,24 @@ const SiteSchema = mongoose.Schema({
   company:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
+  }, 
+  site:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Site'
   },
-  reviews:[{
-    date:Date,
-    reviewer_user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    comments:String,
-    state:String,
-  }],
   installation_type: String,
+  installation_type: {
+    value:String,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    state:Boolean
+  },
   product_category: String,
   days_month:Number,
   days_total:Number,

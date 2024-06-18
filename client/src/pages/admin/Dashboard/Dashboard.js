@@ -11,15 +11,71 @@ export function Dashboard() {
 
   const panes = [
     {
-      menuItem: 'Tab 1',
+      menuItem: 'Overview',
       render: () => <TabPane attached={false}> <Line {...config} /> </TabPane>,
     },
     {
-      menuItem: 'Tab 2',
+      menuItem: 'Energia',
       render: () => <TabPane attached={false}><Pie {...config2} /></TabPane>,
     },
     {
-      menuItem: 'Tab 3',
+      menuItem: 'Combustible',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Aguas',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Efluentes',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Residuos',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Peligrosos',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Social',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+  ]
+  
+
+  const subPanes = [
+    {
+      menuItem: 'Energia / un',
+      render: () => <TabPane attached={false}> <Line {...config} /> </TabPane>,
+    },
+    {
+      menuItem: 'Energia',
+      render: () => <TabPane attached={false}><Pie {...config2} /></TabPane>,
+    },
+    {
+      menuItem: 'Combustible',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Aguas',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Efluentes',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Residuos',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Peligrosos',
+      render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
+    },
+    {
+      menuItem: 'Social',
       render: () => <TabPane attached={false}><Column {...config3} /></TabPane>,
     },
   ]
@@ -93,6 +149,9 @@ const data2 = [
 
 return (
   <>
-   <Tab menu={{ pointing: true }} panes={panes} />
+   <Tab 
+  //  menu={{ pointing: true }}
+   menu={{ borderless: true, attached: false, tabular: false }}
+   panes={panes} />
   </>)
 }

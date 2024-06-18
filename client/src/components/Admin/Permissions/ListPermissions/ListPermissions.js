@@ -6,7 +6,8 @@ import {
   GridColumn,
   Divider,
   Input,
-  Icon
+  Icon,
+  Table
 } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Permission, Role } from "../../../../api";
@@ -37,6 +38,23 @@ export function ListPermissions(props) {
 
   const [listRolesFilter, setListRolesFilter] = useState([]);
   const [permissionsFilter, setPermissionsFilter] = useState([]);
+
+  const [column, setColumn] = useState(null);
+  const [data, setData] = useState(/* Your data array */);
+  const [direction, setDirection] = useState(null);
+
+  const handleSort = (clickedColumn) => () => {
+    if (column !== clickedColumn) {
+      setColumn(clickedColumn);
+      setData([...data].sort((a, b) => a[clickedColumn] > b[clickedColumn] ? 1 : -1));
+      setDirection('ascending');
+      return;
+    }
+
+    setData(data.reverse());
+    setDirection(direction === 'ascending' ? 'descending' : 'ascending');
+  };
+
 
   useEffect(() => {
     (async () => {
@@ -125,7 +143,17 @@ export function ListPermissions(props) {
           />
         </div>
         <Divider clearing/>
-        <div>
+        <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Estado</Table.HeaderCell>
+                <Table.HeaderCell >Rol</Table.HeaderCell>
+                <Table.HeaderCell>Modulo</Table.HeaderCell>
+                <Table.HeaderCell>Accion</Table.HeaderCell>
+                <Table.HeaderCell>Acciones</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
           {map(permissionsFilter, (permission) => (
             <PermissionItem
               key={permission._id}
@@ -133,7 +161,8 @@ export function ListPermissions(props) {
               onReload={onReload}
             />
           ))}
-        </div>
+           </Table.Body>
+           </Table>
       </div>
     );
   } else {

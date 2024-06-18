@@ -145,7 +145,7 @@ export function UserForm(props) {
         name="company"
         placeholder="Empresa"
         onChange={formik.handleChange}
-        value={companyData.name}
+        value={companyData?companyData.name : ""}
         error={formik.errors.company}
       />
          : null

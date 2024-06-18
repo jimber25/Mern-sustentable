@@ -11,12 +11,17 @@ import {
   DropdownItem,
   Input,
   Icon,
+  Table,
 } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Permission, User } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { UserItem } from "../UserItem";
-import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
+import {
+  hasPermission,
+  isAdmin,
+  isMaster,
+} from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
 const _ = require("lodash");
 
@@ -69,7 +74,7 @@ export function ListUsers(props) {
           accessToken,
           usersActive
         );
-        let result=response.map(s => ({ ...s, key: s._id }));
+        let result = response.map((s) => ({ ...s, key: s._id }));
         setUsers(result);
         setUsersFilter(result);
       } catch (error) {
@@ -83,7 +88,8 @@ export function ListUsers(props) {
 
   return (
     <div>
-      {isMaster(role) || isAdmin(role) ||
+      {isMaster(role) ||
+      isAdmin(role) ||
       hasPermission(permissionByRole, role._id, "users", "view") ? (
         <div>
           <div>
@@ -94,9 +100,23 @@ export function ListUsers(props) {
             />
           </div>
           <Divider clearing />
-          {map(usersFilter, (user) => (
-            <UserItem key={user._id} user={user} onReload={onReload} />
-          ))}
+
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Nombre</Table.HeaderCell>
+                <Table.HeaderCell>Apellido</Table.HeaderCell>
+                <Table.HeaderCell>Email</Table.HeaderCell>
+                <Table.HeaderCell>Rol</Table.HeaderCell>
+                <Table.HeaderCell>Acciones</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {map(usersFilter, (user) => (
+                <UserItem key={user._id} user={user} onReload={onReload} />
+              ))}
+            </Table.Body>
+          </Table>
         </div>
       ) : (
         <ErrorAccessDenied />
@@ -120,7 +140,6 @@ function SearchStandardUser(props) {
     setData(dataOrigin);
     setState({ value: "" });
   };
-
 
   const handleSearchChange = (e, { value }) => {
     setState({ isLoading: true, value });
@@ -166,22 +185,24 @@ function SearchStandardUser(props) {
   return (
     <Grid>
       <GridColumn width={4}>
-      <Input
-     icon='search'
-     iconPosition='left'
-    placeholder='Buscar...'
-    onChange={_.debounce(handleSearchChange, 500, {
-      leading: true,
-    })}
-    action={
-      <Dropdown
-            onChange={handleChange}
-            options={options}
-            value={filter}
-            button basic floating
+        <Input
+          icon="search"
+          iconPosition="left"
+          placeholder="Buscar..."
+          onChange={_.debounce(handleSearchChange, 500, {
+            leading: true,
+          })}
+          action={
+            <Dropdown
+              onChange={handleChange}
+              options={options}
+              value={filter}
+              button
+              basic
+              floating
             />
-    }
-  />
+          }
+        />
       </GridColumn>
     </Grid>
   );

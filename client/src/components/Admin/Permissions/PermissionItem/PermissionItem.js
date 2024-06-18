@@ -7,6 +7,7 @@ import {
   GridRow,
   GridColumn,
   Segment,
+  Table,
 } from "semantic-ui-react";
 import { Permission, Role } from "../../../../api";
 import { useAuth } from "../../../../hooks";
@@ -16,7 +17,11 @@ import {
   convertModulesEngToEsp,
   convertActionsEngToEsp,
 } from "../../../../utils/converts";
-import { hasPermission, isAdmin , isMaster} from "../../../../utils/checkPermission";
+import {
+  hasPermission,
+  isAdmin,
+  isMaster,
+} from "../../../../utils/checkPermission";
 import "./PermissionItem.scss";
 
 const permissionController = new Permission();
@@ -24,7 +29,10 @@ const roleController = new Role();
 
 export function PermissionItem(props) {
   const { permission, onReload } = props;
-  const { accessToken, user: { role }  } = useAuth();
+  const {
+    accessToken,
+    user: { role },
+  } = useAuth();
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
 
@@ -43,7 +51,11 @@ export function PermissionItem(props) {
       try {
         setPermissionsByRole([]);
         if (role) {
-          const response = await permissionController.getPermissionsByRole(accessToken, role._id, true);
+          const response = await permissionController.getPermissionsByRole(
+            accessToken,
+            role._id,
+            true
+          );
           setPermissionsByRole(response);
         }
       } catch (error) {
@@ -52,7 +64,6 @@ export function PermissionItem(props) {
       }
     })();
   }, [role]);
-
 
   const openUpdateUser = () => {
     setTitleModal(`Actualizar ${permission.action}`);
@@ -99,46 +110,50 @@ export function PermissionItem(props) {
 
   return (
     <>
-      <div className="permission-item">
-        <div className="permission-item__info">
-          <div>
-            <Grid divided>
-              <GridRow columns={3} stretched>
-                <GridColumn width={1} >
-                 <Icon color={permission.active? "green" : "red"} name='circle' />
-                </GridColumn>
-                <GridColumn width={3}>
-                <p>Rol</p>{permission.role && permission.role.name? permission.role.name : null}
-                </GridColumn>
-                <GridColumn width={3}>
-                  <p>Modulo</p>{convertModulesEngToEsp(permission.module)}
-                </GridColumn>
-                <GridColumn width={3}>
-                <p>Accion</p>{convertActionsEngToEsp(permission.action)}
-                </GridColumn>
-              </GridRow>
-            </Grid>
-          </div>
-        </div>
-        <div>
-        {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
-          <Button icon primary onClick={openUpdateUser}>
-            <Icon name="pencil" />
-          </Button>): null}
-        {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "edit"))?(
-          <Button
-            icon
-            color={permission.active ? "orange" : "teal"}
-            onClick={openDesactivateActivateConfim}
-          >
-            <Icon name={permission.active ? "ban" : "check"} />
-          </Button>): null }
-          {(isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "delete"))?(
-          <Button icon color="red" onClick={openDeleteConfirm}>
-            <Icon name="trash" />
-          </Button>) : null}
-        </div>
-      </div>
+      <Table.Row key={permission._id}>
+        <Table.Cell>
+          <Icon color={permission.active ? "green" : "red"} name="circle" />
+        </Table.Cell>
+        <Table.Cell>
+          {permission.role && permission.role.name
+            ? permission.role.name
+            : null}
+        </Table.Cell>
+        <Table.Cell>{convertModulesEngToEsp(permission.module)}</Table.Cell>
+        <Table.Cell>{convertActionsEngToEsp(permission.action)}</Table.Cell>
+        <Table.Cell>
+          {isMaster(role) ||
+          isAdmin(role) ||
+          hasPermission(permissionsByRole, role._id, "permissions", "edit") ? (
+            <Button icon primary onClick={openUpdateUser}>
+              <Icon name="pencil" />
+            </Button>
+          ) : null}
+          {isMaster(role) ||
+          isAdmin(role) ||
+          hasPermission(permissionsByRole, role._id, "permissions", "edit") ? (
+            <Button
+              icon
+              color={permission.active ? "orange" : "teal"}
+              onClick={openDesactivateActivateConfim}
+            >
+              <Icon name={permission.active ? "ban" : "check"} />
+            </Button>
+          ) : null}
+          {isMaster(role) ||
+          isAdmin(role) ||
+          hasPermission(
+            permissionsByRole,
+            role._id,
+            "permissions",
+            "delete"
+          ) ? (
+            <Button icon color="red" onClick={openDeleteConfirm}>
+              <Icon name="trash" />
+            </Button>
+          ) : null}
+        </Table.Cell>
+      </Table.Row>
 
       <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>
         <PermissionForm
