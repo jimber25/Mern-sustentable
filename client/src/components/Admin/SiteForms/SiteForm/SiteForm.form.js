@@ -7,10 +7,15 @@ export function initialValues(site) {
     state: site?.state || "",
     company: site?.company || "",
     installation_type: site?.installation_type || {
-      // value:"",
-      reviews:[]
+      value:"",
+      reviews:[
+      ]
     },
-    product_category: site?.product_category || "",
+    product_category: site?.product_category || {
+      value:"",
+      reviews:[
+      ]
+    },
     days_month:site?.days_month || "",
     days_total:site?.days_total || "",
     hours_month:site?.hours_month || "",
@@ -38,9 +43,12 @@ export function initialValues(site) {
 }
 
 export function validationSchema() {
-  return Yup.object({
-    date: Yup.string().required(true),
-    creator_user: Yup.string().required(true),
-    state: Yup.string().required(true)
-  });
+  // return Yup.object({
+  //   date: Yup.string().required(true),
+  //   creator_user: Yup.string().required(true),
+  //   state: Yup.string().required(true),
+  //   installation_type: Yup.object({
+  //     value: Yup.string().required(),
+  //   }),
+  // });
 }

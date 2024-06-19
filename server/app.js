@@ -13,7 +13,7 @@ const courseRoutes = require("./router/course");
 const roleRoutes = require("./router/role");
 const permissionRoutes = require("./router/permission");
 const companyRoutes = require("./router/company");
-const siteRoutes = require("./router/site");
+const siteFormRoutes = require("./router/siteform");
 const newsletterRoutes = require("./router/newsletter");
 
 // Configure Body Parser
@@ -31,7 +31,7 @@ app.use(`/api/${API_VERSION}`, authRoutes);
 app.use(`/api/${API_VERSION}`, userRoutes);
 app.use(`/api/${API_VERSION}`, menuRoutes);
 app.use(`/api/${API_VERSION}`, courseRoutes);
-app.use(`/api/${API_VERSION}`, siteRoutes);
+app.use(`/api/${API_VERSION}`, siteFormRoutes);
 app.use(`/api/${API_VERSION}`, newsletterRoutes);
 app.use(`/api/${API_VERSION}`, roleRoutes);
 app.use(`/api/${API_VERSION}`, permissionRoutes);

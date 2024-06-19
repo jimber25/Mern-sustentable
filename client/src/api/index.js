@@ -7,4 +7,4 @@ export * from "./permission";
 export * from "./newsletter";
 export * from "./blog";
 export * from "./company";
-export * from "./site";
+export * from "./siteform";

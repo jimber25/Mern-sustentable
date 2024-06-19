@@ -1,11 +1,11 @@
 const bcrypt = require("bcryptjs");
-const Site = require("../models/site");
+const SiteForm = require("../models/siteform");
 const { deleteCompany } = require("./company");
 
-async function getSite(req, res) {
+async function getSiteForm(req, res) {
   const { id } = req.params;
 
-  const response = await Site.findById(id);
+  const response = await SiteForm.findById(id);
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado el formulario del Sitio" });
   } else {
@@ -13,36 +13,36 @@ async function getSite(req, res) {
   }
 }
 
-async function getSites(req, res) {
+async function getSiteForms(req, res) {
   const { active } = req.query;
   let response = null;
 
   if (active === undefined) {
-    response = await Site.find();
+    response = await SiteForm.find();
   } else {
-    response = await Site.find({ active });
+    response = await SiteForm.find({ active });
   }
 
   res.status(200).send(response);
 }
 
-async function createSite(req, res) {
-  const site = new Site({ ...req.body, active: true });
+async function createSiteForm(req, res) {
+  const siteForm = new SiteForm({ ...req.body, active: true });
 
-  site.save((error, siteStored) => {
+  siteForm.save((error, siteFormStored) => {
     if (error) {
       res.status(400).send({ msg: "Error al crear el formulario del sitio" });
     } else {
-      res.status(200).send(siteStored);
+      res.status(200).send(siteFormStored);
     }
   });
 }
 
-async function updateSite(req, res) {
+async function updateSiteForm(req, res) {
   const { id } = req.params;
-  const siteData = req.body;
+  const siteFormData = req.body;
 
-  Site.findByIdAndUpdate({ _id: id }, siteData, (error,response) => {
+  SiteForm.findByIdAndUpdate({ _id: id }, siteFormData, (error,response) => {
     if (error) {
       res.status(400).send({ msg: "Error al actualizar el formulario del sitio" });
     } else {
@@ -51,10 +51,10 @@ async function updateSite(req, res) {
   });
 }
 
-async function deleteSite(req, res) {
+async function deleteSiteForm(req, res) {
   const { id } = req.params;
 
-  Site.findByIdAndDelete(id, (error) => {
+  SiteForm.findByIdAndDelete(id, (error) => {
     if (error) {
       res.status(400).send({ msg: "Error al eliminar el formulario del sitio" });
     } else {
@@ -64,9 +64,9 @@ async function deleteSite(req, res) {
 }
 
 module.exports = {
-  getSite,
-  getSites,
-  createSite,
-  updateSite,
-  deleteCompany,
+  getSiteForm,
+  getSiteForms,
+  createSiteForm,
+  updateSiteForm,
+  deleteSiteForm,
 };

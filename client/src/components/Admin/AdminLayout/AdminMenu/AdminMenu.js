@@ -73,11 +73,11 @@ export function AdminMenu() {
                 hasPermission(permissionActive, role._id, "sites", "menu") ? (
                   <DropdownItem
                     as={Link}
-                    to="/admin/data/sites"
-                    active={isCurrentPath("/admin/data/sites")}
+                    to="/admin/data/siteforms"
+                    active={isCurrentPath("/admin/data/siteforms")}
                   >
-                    {" "}
-                    <Icon name="users" /> Site
+                    <Icon name="users" /> 
+                    {"Formulario Sitio"}
                   </DropdownItem>
                 ) : null} 
                 {isMaster(role) || isAdmin(role) ||

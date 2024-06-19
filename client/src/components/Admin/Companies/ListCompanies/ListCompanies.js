@@ -176,7 +176,6 @@ function SearchStandardCompany(props) {
     }
   />
       </GridColumn>
-      <EditableTable2/>
     </Grid>
   );
 }

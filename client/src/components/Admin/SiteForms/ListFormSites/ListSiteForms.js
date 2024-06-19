@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Loader, Pagination } from "semantic-ui-react";
 import { size, map } from "lodash";
-import { Site } from "../../../../api";
-import { SiteItem } from "../SiteItem";
-import "./ListSites.scss";
+import { Siteform } from "../../../../api";
+import { SiteFormItem } from "../SiteFormItem";
+import "./ListSiteForms.scss";
 
-const siteController = new Site();
+const siteFormController = new Siteform();
 
-export function ListSites(props) {
+export function ListSiteForms(props) {
   const { reload, onReload } = props;
-  const [sites, setSites] = useState(false);
+  const [siteforms, setSiteForms] = useState(false);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState();
 
   useEffect(() => {
     (async () => {
       try {
-        const response = await siteController.getSites({ page });
+        const response = await siteFormController.getSiteForms({ page });
         if(response.docs){
-          setSites(response.docs);
+          setSiteForms(response.docs);
         }else{
-          setSites([]);
+          setSiteForms([]);
         }
         
         // setSites(response.docs);
@@ -40,13 +40,13 @@ export function ListSites(props) {
     setPage(data.activePage);
   };
 
-  if (!sites) return <Loader active inline="centered" />;
-  if (size(sites) === 0) return "No hay ningun formulario de sitio";
+  if (!siteforms) return <Loader active inline="centered" />;
+  if (size(siteforms) === 0) return "No hay ningun formulario de sitio";
 
   return (
     <div className="list-sites">
-      {map(sites, (site) => (
-        <SiteItem key={site._id} site={site} onReload={onReload} />
+      {map(siteforms, (siteForm) => (
+        <SiteFormItem key={siteForm._id} siteForm={siteForm} onReload={onReload} />
       ))}
 
       <div className="list-sites__pagination">

@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { AdminLayout } from "../layouts";
-import { Auth, Users, Blog, Courses, Menu, Newsletter, Roles, Permissions, Dashboard, Reports, Companies, Recover, Sites } from "../pages/admin";
+import { Auth, Users, Blog, Courses, Menu, Newsletter, Roles, Permissions, Dashboard, Reports, Companies, Recover, SiteForms } from "../pages/admin";
 import { useAuth } from "../hooks";
 
 export function AdminRouter() {
@@ -67,8 +67,8 @@ export function AdminRouter() {
           />
 
 <Route
-            path="/admin/data/sites"
-            element={loadLayout(AdminLayout, Sites)}
+            path="/admin/data/siteforms"
+            element={loadLayout(AdminLayout, SiteForms)}
           />
 
         </>
