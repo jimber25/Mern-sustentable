@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { Image, Button, Icon, Confirm } from "semantic-ui-react";
 import { BasicModal } from "../../../Shared";
 import { ENV } from "../../../../utils";
-import { Site } from "../../../../api";
+import { Siteform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { SiteForm } from "../SiteForm";
-import "./SiteItem.scss";
+import "./SiteFormItem.scss";
 
-const siteController = new Site();
+const siteFormController = new Siteform();
 
-export function SiteItem(props) {
-  const { site, onReload } = props;
+export function SiteFormItem(props) {
+  const { siteForm, onReload } = props;
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -20,13 +20,13 @@ export function SiteItem(props) {
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
 
   const openUpdateSite = () => {
-    setTitleModal(`Actualizar ${site.title}`);
+    setTitleModal(`Actualizar ${siteForm.title}`);
     onOpenCloseModal();
   };
 
   const onDelete = async () => {
     try {
-      await siteController.deleteSite(accessToken, site._id);
+      await siteFormController.deleteSiteForm(accessToken, siteForm._id);
       onReload();
       onOpenCloseConfirm();
     } catch (error) {
@@ -36,10 +36,10 @@ export function SiteItem(props) {
 
   return (
     <>
-      <div className="course-item">
+      <div className="site-form-item">
 
         <div>
-          <Button icon as="a" href={site.url} target="_blank">
+          <Button icon as="a" href={siteForm.url} target="_blank">
             <Icon name="eye" />
           </Button>
           <Button icon primary onClick={openUpdateSite}>
@@ -55,7 +55,7 @@ export function SiteItem(props) {
         <SiteForm
           onClose={onOpenCloseModal}
           onReload={onReload}
-          site={site}
+          siteForm={siteForm}
         />
       </BasicModal>
 
@@ -63,7 +63,7 @@ export function SiteItem(props) {
         open={showConfirm}
         onCancel={onOpenCloseConfirm}
         onConfirm={onDelete}
-        content={`Eliminar el formulario ${site.title}`}
+        content={`Eliminar el formulario ${siteForm.title}`}
         size="mini"
       />
     </>

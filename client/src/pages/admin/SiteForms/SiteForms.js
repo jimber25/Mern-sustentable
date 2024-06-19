@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Tab, Button } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
-import { ListSites, SiteForm } from "../../../components/Admin/Site";
+import { ListSiteForms, SiteForm } from "../../../components/Admin/SiteForms";
 import "./Sites.scss";
 
-export function Sites() {
+export function SiteForms() {
   const [showModal, setShowModal] = useState(false);
   const [reload, setReload] = useState(false);
 
@@ -15,7 +15,7 @@ export function Sites() {
     {
       render: () => (
         <Tab.Pane attached={false}>
-          <ListSites reload={reload} onReload={onReload} />
+          <ListSiteForms reload={reload} onReload={onReload} />
         </Tab.Pane>
       ),
     },
@@ -33,7 +33,7 @@ export function Sites() {
         <Tab menu={{ secondary: true }} panes={panes} />
       </div>
 
-      <BasicModal show={showModal} close={onOpenCloseModal} title="Site General" size={"big"}>
+      <BasicModal show={showModal} close={onOpenCloseModal} title="Site General" size={"fullscreen"}>
         <SiteForm onClose={onOpenCloseModal} onReload={onReload} />
       </BasicModal>
     </>

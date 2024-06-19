@@ -1,9 +1,9 @@
 import { ENV } from "../utils";
 
-export class Site {
+export class Siteform {
   baseApi = ENV.BASE_API;
 
-  async createSite(accessToken, data) {
+  async createSiteForm(accessToken, data) {
     try {
       const formData = new FormData();
       Object.keys(data).forEach((key) => {
@@ -34,7 +34,7 @@ export class Site {
     }
   }
 
-  async getSites(params) {
+  async getSiteForms(params) {
     try {
       const pageFilter = `page=${params?.page || 1}`;
       const limitFilter = `limit=${params?.limit || 10}`;
@@ -51,7 +51,7 @@ export class Site {
     }
   }
 
-  async updateSite(accessToken, idSite, data) {
+  async updateSiteForm(accessToken, idFormSite, data) {
     try {
       const formData = new FormData();
       Object.keys(data).forEach((key) => {
@@ -62,7 +62,7 @@ export class Site {
         formData.append("miniature", data.file);
       }
 
-      const url = `${this.baseApi}/${ENV.API_ROUTES.COURSE}/${idSite}`;
+      const url = `${this.baseApi}/${ENV.API_ROUTES.COURSE}/${idFormSite}`;
       const params = {
         method: "PATCH",
         headers: {
@@ -82,9 +82,9 @@ export class Site {
     }
   }
 
-  async deleteSite(accessToken, idSite) {
+  async deleteSiteForm(accessToken, idFormSite) {
     try {
-      const url = `${this.baseApi}/${ENV.API_ROUTES.COURSE}/${idSite}`;
+      const url = `${this.baseApi}/${ENV.API_ROUTES.COURSE}/${idFormSite}`;
       const params = {
         method: "DELETE",
         headers: {
