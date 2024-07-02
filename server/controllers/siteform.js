@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const SiteForm = require("../models/siteform");
 const { deleteCompany } = require("./company");
+const mongoose = require('mongoose');
 
 async function getSiteForm(req, res) {
   const { id } = req.params;
@@ -14,16 +15,34 @@ async function getSiteForm(req, res) {
 }
 
 async function getSiteForms(req, res) {
-  const { active } = req.query;
-  let response = null;
+  const { active,  page = 1, limit = 50, site } = req.query;
 
-  if (active === undefined) {
-    response = await SiteForm.find();
-  } else {
-    response = await SiteForm.find({ active });
+  const filter={}
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    populate: [
+      {
+        path : 'creator_user',
+      },
+    ]
+  };
+
+  if(active !== undefined){
+    options.active=active;
+  }
+  if(site !== undefined){
+    filter.site=mongoose.Types.ObjectId(site);
   }
 
-  res.status(200).send(response);
+  SiteForm.paginate(filter, options, (error, siteforms) => {
+    if (error) {
+      res.status(400).send({ msg: "Error al obtener los formularios del sitio" });
+    } else {
+      res.status(200).send(siteforms);
+    }
+  });
+
 }
 
 async function createSiteForm(req, res) {
@@ -31,6 +50,7 @@ async function createSiteForm(req, res) {
 
   siteForm.save((error, siteFormStored) => {
     if (error) {
+      console.log(error)
       res.status(400).send({ msg: "Error al crear el formulario del sitio" });
     } else {
       res.status(200).send(siteFormStored);

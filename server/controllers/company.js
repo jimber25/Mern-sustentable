@@ -1,6 +1,18 @@
 const bcrypt = require("bcryptjs");
 const Company = require("../models/company");
 
+async function getCompanyMe(req, res) {
+  const { user_id } = req.user;
+
+  // const response = await Company.findById(user_id).populate("role").populate("company");
+  // // console.log(response)
+  // if (!response) {
+  //   res.status(400).send({ msg: "No se ha encontrado usuario" });
+  // } else {
+  //   res.status(200).send(response);
+  // }
+}
+
 async function getCompany(req, res) {
   const { id } = req.params;
 
@@ -63,6 +75,7 @@ async function deleteCompany(req, res) {
 }
 
 module.exports = {
+  getCompanyMe,
   getCompany,
   getCompanies,
   createCompany,

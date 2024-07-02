@@ -14,6 +14,7 @@ export const ENV = {
     COURSE: "course",
     NEWSLETTER: "newsletter",
     POST: "post",
+    COMPANY_ME:"company/me"
   },
   JWT: {
     ACCESS: "access",
@@ -28,6 +29,8 @@ export const MODULES = [
   "reports",
   "roles",
   "users",
+  "sites",
+  "companies"
 ];
 
 export const ACTIONS = [

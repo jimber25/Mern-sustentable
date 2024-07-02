@@ -12,6 +12,10 @@ const UserSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
   },
+  site: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Site'
+  },
   position: String,
   sector: String,
   role: {

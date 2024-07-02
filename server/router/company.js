@@ -5,6 +5,7 @@ const md_auth = require("../middlewares/authenticated");
 
 const api = express.Router();
 
+api.get("/company/me", [md_auth.asureAuth], CompanyController.getCompanyMe);
 api.get("/company/:id", [md_auth.asureAuth], CompanyController.getCompany);
 api.get("/companies", [md_auth.asureAuth], CompanyController.getCompanies);
 api.post("/add-company", [md_auth.asureAuth], CompanyController.createCompany);

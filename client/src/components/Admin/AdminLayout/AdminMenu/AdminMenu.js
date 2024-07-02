@@ -67,7 +67,7 @@ export function AdminMenu() {
 
           {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "data", "menu") ? (
-            <Dropdown floating labeled item text="Datos">
+            <Dropdown trigger={<span style={{marginRight:"40%"}}><Icon name='archive'/>Datos</span>} floating labeled item>
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "sites", "menu") ? (
@@ -76,7 +76,7 @@ export function AdminMenu() {
                     to="/admin/data/siteforms"
                     active={isCurrentPath("/admin/data/siteforms")}
                   >
-                    <Icon name="users" /> 
+                    <Icon name="file alternate" /> 
                     {"Formulario Sitio"}
                   </DropdownItem>
                 ) : null} 
@@ -93,7 +93,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/config/permissions")}
                   >
                     {" "}
-                    <Icon name="clipboard list" /> Permisos
+                    {/* <Icon name="clipboard list" /> Permisos */}
                   </DropdownItem>
                 ) : null}
               </DropdownMenu>
@@ -130,6 +130,8 @@ export function AdminMenu() {
             <Icon name="archive" />
             Reportes
           </Menu.Item>
+          {isMaster(role) || 
+          hasPermission(permissionActive, role._id, "users", "menu") ? (
           <Menu.Item
             as={Link}
             to="/admin/companies"
@@ -137,6 +139,16 @@ export function AdminMenu() {
           >
             <Icon name="building" />
             Empresas
+          </Menu.Item>
+          ): null}
+
+          <Menu.Item
+            as={Link}
+            to="/admin/sites"
+            active={isCurrentPath("/admin/sites")}
+          >
+            <Icon name="building" />
+            Sitios
           </Menu.Item>
 
           {/* <Menu.Item
@@ -158,7 +170,7 @@ export function AdminMenu() {
           </Menu.Item> */}
           {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "configure", "menu") ? (
-            <Dropdown floating labeled item text="Configuracion">
+            <Dropdown  item trigger={<span style={{marginRight:"10%"}}><Icon name='configure'/>Configuracion</span>} >
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "roles", "menu") ? (
