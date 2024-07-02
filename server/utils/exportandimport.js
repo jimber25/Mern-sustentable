@@ -7,3 +7,4 @@
 
 //admin@admin.com   pass admin123
 //editor@editor.com pass editor123
+//master@master.com pass Master123@

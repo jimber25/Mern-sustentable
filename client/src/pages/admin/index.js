@@ -12,3 +12,5 @@ export * from "./Reports";
 export * from "./Companies";
 export * from "./Recover";
 export * from "./SiteForms";
+export * from "./Sites";
+export * from "./NewSiteForm";

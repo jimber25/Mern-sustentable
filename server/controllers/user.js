@@ -7,7 +7,7 @@ const { default: mongoose } = require("mongoose");
 async function getUser(req, res) {
   const { user_id } = req.user;
 
-  const response = await User.findById(user_id).populate("role").populate("company");
+  const response = await User.findById(user_id).populate("role").populate("company").populate("site");
   // console.log(response)
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado usuario" });

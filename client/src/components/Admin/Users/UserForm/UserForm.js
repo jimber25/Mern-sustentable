@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Form, Image } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useDropzone } from "react-dropzone";
-import { User, Role, Company } from "../../../../api";
+import { User, Role, Company, Site } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { image } from "../../../../assets";
 import { ENV } from "../../../../utils";
@@ -13,16 +13,19 @@ import "./UserForm.scss";
 const userController = new User();
 const roleController = new Role();
 const companyController = new Company();
+const siteController = new Site();
 
 export function UserForm(props) {
   const { close, onReload, user } = props;
   const {
     accessToken,
-    user: { role, company },
+    user: { role, company , site},
   } = useAuth();
   const [listRoles, setListRoles] = useState([]);
   const [listCompanies, setListCompanies] = useState([]);
+  const [listSites, setListSites] = useState([]);
   const [companyData, setCompanyData] = useState([]);
+  const [siteData, setSiteData] = useState([]);
 
   useEffect(() => {
     roleController.getRoles(accessToken, true).then((response) => {
@@ -36,8 +39,14 @@ export function UserForm(props) {
         setListCompanies(response);
       });
     }else if(isAdmin(role)){
-      console.log(company)
+      siteController.getSites(accessToken, true).then((response) => {
+        setListSites(response);
+      });
       setCompanyData(company);
+      if(site){
+        console.log(site)
+        setSiteData(site);
+      }
     }
   }, []);
 
@@ -50,6 +59,7 @@ export function UserForm(props) {
         if (!user) {
           if(isAdmin(role)){
             formValue.company=companyData._id;
+            // formValue.site=siteData._id;
           }
           const response = await userController.createUser(
             accessToken,
@@ -60,6 +70,8 @@ export function UserForm(props) {
         } else {
           if(isAdmin(role) && !user.company){
             formValue.company=companyData._id;
+          }else if(isAdmin(role) && !user.site){
+            formValue.site=siteData._id;
           }
           await userController.updateUser(accessToken, user._id, formValue);
         }
@@ -121,6 +133,7 @@ export function UserForm(props) {
         />
       </Form.Group>
 
+
       <Form.Group widths="equal">
         {isMaster(role)? 
         <Form.Dropdown
@@ -139,7 +152,8 @@ export function UserForm(props) {
         error={formik.errors.company}
       />
         :
-        isAdmin(role)?
+        isAdmin(role)? siteData.length===0?
+        <>
         <Form.Input
         label="Empresa"
         name="company"
@@ -148,7 +162,33 @@ export function UserForm(props) {
         value={companyData?companyData.name : ""}
         error={formik.errors.company}
       />
-         : null
+       <Form.Dropdown
+        label="Sitio"
+        placeholder="Seleccióna un sitio"
+        options={listSites.map((ds) => {
+          return {
+            key: ds._id,
+            text: ds.name,
+            value: ds._id,
+          };
+        })}
+        selection
+        onChange={(_, data) => formik.setFieldValue("site", data.value)}
+        value={formik.values.site?formik.values.site: null}
+        error={formik.errors.site}
+      />
+        </>
+         :
+         <Form.Input
+         label="Sitio"
+         name="site"
+         placeholder="Sitio"
+         onChange={formik.handleChange}
+         value={siteData?siteData.name : ""}
+         error={formik.errors.site}
+       />
+         
+         :  null
       }
       </Form.Group>
       <Form.Group widths="equal">

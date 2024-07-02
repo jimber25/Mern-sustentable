@@ -29,6 +29,10 @@ export function convertModulesEngToEsp (a) {
             return "Reportes";
         case "dashboard":
             return "Dashboard";
+        case "companies":
+            return "Empresas";
+        case "sites":
+            return "Sitios";
         default:
             return null;
     }

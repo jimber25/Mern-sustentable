@@ -1,11 +1,11 @@
 import { ENV } from "../utils";
 
-export class Siteform {
+export class Site {
   baseApi = ENV.BASE_API;
 
-  async getCompany(accessToken, idSiteForm) {
+  async getSite(accessToken, idSite) {
     try {
-      const url = `${this.baseApi}/siteform/${idSiteForm}`;
+      const url = `${this.baseApi}/site/${idSite}`;
       const params = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -23,14 +23,16 @@ export class Siteform {
     }
   }
 
-  async createSiteForm(accessToken, data) {
+  async createSite(accessToken, data) {
     try {
       // const formData = new FormData();
       // Object.keys(data).forEach((key) => {
       //   formData.append(key, data[key]);
       // });
+
+      console.log(data)
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USER}`;
-      const url = `${this.baseApi}/add-siteform`;
+      const url = `${this.baseApi}/add-site`;
       const params = {
         method: "POST",
         headers: {
@@ -39,6 +41,7 @@ export class Siteform {
         },
         body: JSON.stringify(data),
       };
+      console.log(params)
       const response = await fetch(url, params);
       const result = await response.json();
 
@@ -50,20 +53,10 @@ export class Siteform {
     }
   }
 
-  async getSiteForms(accessToken, paramsSite, active = undefined) {
+  async getSites(accessToken, active = undefined) {
     try {
-      const pageFilter = `page=${paramsSite?.page || 1}`;
-      const limitFilter = `limit=${paramsSite?.limit || 10}`;
-      const siteFilter = `site=${paramsSite?.site || undefined}`
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
-      let url=`${this.baseApi}/siteforms?${pageFilter}&${limitFilter}`;
-      if(active !== undefined){
-        url = `${this.baseApi}/siteforms?active=${active}&${pageFilter}&${limitFilter}`;
-      }
-      if(paramsSite?.site){
-        url = `${url}&${siteFilter}`
-        console.log(url)
-      }
+      const url = `${this.baseApi}/sites?active=${active}`;
       const params = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -81,9 +74,9 @@ export class Siteform {
     }
   }
 
-  async updateSiteForm(accessToken, idSiteForm, siteformData) {
+  async updateSite(accessToken, idSite, siteData) {
     try {
-      const data = siteformData;
+      const data = siteData;
 
       // const formData = new FormData();
       // Object.keys(data).forEach((key) => {
@@ -91,7 +84,7 @@ export class Siteform {
       // });
 
       // const url = `${ENV.BASE_API}/${ENV.API_ROUTES.USER}/${idUser}`;
-      const url = `${ENV.BASE_API}/update-siteform/${idSiteForm}`;
+      const url = `${ENV.BASE_API}/update-site/${idSite}`;
       const params = {
         method: "PUT",
         headers: {
@@ -112,10 +105,10 @@ export class Siteform {
     }
   }
 
-  async deleteSiteForm(accessToken, idSiteForm) {
+  async deleteSite(accessToken, idSite) {
     try {
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USER}/${idUser}`;
-      const url = `${this.baseApi}/delete-siteform/${idSiteForm}`;
+      const url = `${this.baseApi}/delete-site/${idSite}`;
       const params = {
         method: "DELETE",
         headers: {

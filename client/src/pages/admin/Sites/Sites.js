@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Button } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
-import { CompanyForm, ListCompanies } from "../../../components/Admin/Companies";
-import "./Companies.scss";
+import { SiteForm, ListSites } from "../../../components/Admin/Sites";
+import "./Sites.scss";
 import { useAuth } from "../../../hooks";
 import { isAdmin, hasPermission, isMaster } from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../Error";
 import { Permission } from "../../../api";
+import { Link } from 'react-router-dom';
+
 
 const permissionController = new Permission();
 
-export function Companies() {
+export function Sites() {
   const [showModal, setShowModal] = useState(false);
   const [reload, setReload] = useState(false);
   const {
@@ -43,39 +45,40 @@ export function Companies() {
 
   const panes = [
     {
-      menuItem: "Empresas activas",
+      menuItem: "Sitios activos",
       render: () => (
         <Tab.Pane attached={false}>
-          <ListCompanies companiesActive={true} reload={reload} onReload={onReload} />
+          <ListSites sitesActive={true} reload={reload} onReload={onReload} />
         </Tab.Pane>
       ),
     },
     {
-      menuItem: "Empresas inactivas",
+      menuItem: "Sitios inactivos",
       render: () => (
         <Tab.Pane attached={false}>
-          <ListCompanies companiesActive={false} reload={reload} onReload={onReload} />
+          <ListSites sitesActive={false} reload={reload} onReload={onReload} />
         </Tab.Pane>
       ),
     },
   ];
 
   if (
-    isMaster(role) ||
-    hasPermission(permissionsByRole, role._id, "companies", "view")
+    isMaster(role) || isAdmin(role) ||
+    hasPermission(permissionsByRole, role._id, "sites", "view")
   ) {
     return (
       <>
-        <div className="companies-page">
-          {isMaster(role) ||
-          hasPermission(permissionsByRole, role._id, "companies", "create") ? (
-            <Button
-              className="users-page__add"
+        <div className="sites-page">
+          { isMaster(role) ||isAdmin(role) ||
+          hasPermission(permissionsByRole, role._id, "sites", "create") ? (
+             <Button
+               className="sites-page__add"
               primary
               onClick={onOpenCloseModal}
-            >
-              Nueva Empresa
-            </Button>
+             >
+               Nuevo Sitio
+             </Button>
+           
           ) : null}
           <Tab menu={{ secondary: true }} panes={panes} />
         </div>
@@ -83,9 +86,9 @@ export function Companies() {
         <BasicModal
           show={showModal}
           close={onOpenCloseModal}
-          title="Crear nueva empresa"
+          title="Crear nuevo sitio"
         >
-          <CompanyForm close={onOpenCloseModal} onReload={onReload} />
+          <SiteForm close={onOpenCloseModal} onReload={onReload} />
         </BasicModal>
       </>
     );

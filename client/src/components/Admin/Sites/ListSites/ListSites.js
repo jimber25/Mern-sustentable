@@ -12,20 +12,20 @@ import {
   Button
 } from "semantic-ui-react";
 import { size, map } from "lodash";
-import { Permission, Company } from "../../../../api";
+import { Permission, Site } from "../../../../api";
 import { useAuth } from "../../../../hooks";
-import { CompanyItem } from "../CompanyItem";
+import { SiteItem } from "../SiteItem";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
 const _ = require("lodash");
 
-const companyController = new Company();
+const siteController = new Site();
 const permissionController = new Permission();
 
-export function ListCompanies(props) {
-  const { companiesActive, reload, onReload } = props;
-  const [ companies, setCompanies ] = useState(null);
-  const [ companiesFilter, setCompaniesFilter ] = useState(null);
+export function ListSites(props) {
+  const { sitesActive, reload, onReload } = props;
+  const [ sites, setSites ] = useState(null);
+  const [ sitesFilter, setSitesFilter ] = useState(null);
 
   const {
     accessToken,
@@ -56,48 +56,49 @@ export function ListCompanies(props) {
   useEffect(() => {
     (async () => {
       try {
-        setCompanies(null);
-        setCompaniesFilter([]);
-        const response = await companyController.getCompanies(
+        setSites(null);
+        setSitesFilter([]);
+        const response = await siteController.getSites(
           accessToken,
-          companiesActive
+          sitesActive
         );
         let result=response.map(s => ({ ...s, key: s._id }));
-        setCompanies(result);
-        setCompaniesFilter(result);
+        setSites(result);
+        setSitesFilter(result);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, [companiesActive, reload, accessToken]);
+  }, [sitesActive, reload, accessToken]);
 
-  if (!companies) return <Loader active inline="centered" />;
-  if (size(companies) === 0) return "No hay ninguna empresa";
+  if (!sites) return <Loader active inline="centered" />;
+  if (size(sites) === 0) return "No hay ningun sitio";
 
   return (
     <div>
-      {isMaster(role) ||
-      hasPermission(permissionByRole, role._id, "companies", "view") ? (
+      { isMaster(role) || isAdmin(role) ||
+      hasPermission(permissionByRole, role._id, "sites", "view") ? (
         <div>
           <div>
-            <SearchStandardCompany
-              dataOrigin={companies}
-              data={companiesFilter}
-              setData={setCompaniesFilter}
+            <SearchStandardSite
+              dataOrigin={sites}
+              data={sitesFilter}
+              setData={setSitesFilter}
             />
           </div>
           <Divider clearing />
+
           <Table celled>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Razon Social</Table.HeaderCell>
-                <Table.HeaderCell>Email</Table.HeaderCell>
-                <Table.HeaderCell>Acciones</Table.HeaderCell>
+                <Table.HeaderCell >Email</Table.HeaderCell>
+                <Table.HeaderCell >Acciones</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
-            {map(companiesFilter, (company) => (
-            <CompanyItem key={company._id} company={company} onReload={onReload} />
+            {map(sitesFilter, (site) => (
+            <SiteItem key={site._id} site={site} onReload={onReload} />
           ))}
            </Table.Body>
            </Table>
@@ -109,7 +110,7 @@ export function ListCompanies(props) {
   );
 }
 
-function SearchStandardCompany(props) {
+function SearchStandardSite(props) {
   const { dataOrigin, data, setData } = props;
   const [state, setState] = useState({
     isLoading: false,
@@ -155,23 +156,23 @@ function SearchStandardCompany(props) {
     }, 300);
   };
 
-  // const options = [
-  //   {
-  //     key: 1,
-  //     text: "Nombre",
-  //     value: "name",
-  //   },
-  //   {
-  //     key: 2,
-  //     text: "CUIT",
-  //     value: "cuit",
-  //   },
-  //   {
-  //     key: 3,
-  //     text: "Email",
-  //     value: "email",
-  //   },
-  // ];
+  const options = [
+    {
+      key: 1,
+      text: "Nombre",
+      value: "name",
+    },
+    {
+      key: 2,
+      text: "CUIT",
+      value: "cuit",
+    },
+    {
+      key: 3,
+      text: "Email",
+      value: "email",
+    },
+  ];
 
   return (
     <Grid>

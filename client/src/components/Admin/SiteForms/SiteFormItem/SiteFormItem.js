@@ -1,23 +1,50 @@
-import React, { useState } from "react";
-import { Image, Button, Icon, Confirm } from "semantic-ui-react";
+import React, { useState, useEffect } from "react";
+import { Image, Button, Icon, Confirm, Table } from "semantic-ui-react";
 import { BasicModal } from "../../../Shared";
 import { ENV } from "../../../../utils";
-import { Siteform } from "../../../../api";
+import { Permission, Siteform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { SiteForm } from "../SiteForm";
+import {
+  hasPermission,
+  isAdmin,
+  isMaster,
+} from "../../../../utils/checkPermission";
 import "./SiteFormItem.scss";
 
 const siteFormController = new Siteform();
+const permissionController = new Permission();
 
 export function SiteFormItem(props) {
   const { siteForm, onReload } = props;
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const { accessToken } = useAuth();
+  const { accessToken  , user: { role }, } = useAuth();
 
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
+
+  const [permissionsByRole, setPermissionsByRole] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPermissionsByRole([]);
+        if (role) {
+          const response = await permissionController.getPermissionsByRole(
+            accessToken,
+            role._id,
+            true
+          );
+          setPermissionsByRole(response);
+        }
+      } catch (error) {
+        console.error(error);
+        setPermissionsByRole([]);
+      }
+    })();
+  }, [role]);
 
   const openUpdateSite = () => {
     setTitleModal(`Actualizar ${siteForm.title}`);
@@ -36,10 +63,40 @@ export function SiteFormItem(props) {
 
   return (
     <>
-      <div className="site-form-item">
 
-        <div>
-          <Button icon as="a" href={siteForm.url} target="_blank">
+        <Table.Row key={siteForm._id}>
+        <Table.Cell>
+          <Icon color={siteForm.active ? "green" : "red"} name="circle" />
+        </Table.Cell>
+        <Table.Cell>{siteForm.date}</Table.Cell>
+        <Table.Cell>
+          {siteForm.creator_user? 
+          siteForm.creator_user.lastname? siteForm.creator_user.lastname + " " + siteForm.creator_user.firstname
+          : siteForm.creator_user.email : null}
+        </Table.Cell>
+        <Table.Cell>
+          {isMaster(role) ||
+          isAdmin(role) ||
+          hasPermission(permissionsByRole, role._id, "permissions", "edit") ? (
+            <Button icon primary onClick={openUpdateSite}>
+              <Icon name="pencil" />
+            </Button>
+          ) : null}
+          {isMaster(role) ||
+          isAdmin(role) ||
+          hasPermission(
+            permissionsByRole,
+            role._id,
+            "permissions",
+            "delete"
+          ) ? (
+            <Button icon color="red" onClick={onOpenCloseConfirm}>
+              <Icon name="trash" />
+            </Button>
+          ) : null}
+        </Table.Cell>
+      </Table.Row>
+          {/* <Button icon as="a" href={siteForm.url} target="_blank">
             <Icon name="eye" />
           </Button>
           <Button icon primary onClick={openUpdateSite}>
@@ -47,9 +104,7 @@ export function SiteFormItem(props) {
           </Button>
           <Button icon color="red" onClick={onOpenCloseConfirm}>
             <Icon name="trash" />
-          </Button>
-        </div>
-      </div>
+          </Button> */}
 
       <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal} size={'fullscreen'}>
         <SiteForm

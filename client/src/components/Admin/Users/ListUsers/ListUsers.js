@@ -154,33 +154,38 @@ function SearchStandardUser(props) {
         setState({ isLoading: false, results: [], value: "" });
         return true;
       }
-      const re = new RegExp(_.escapeRegExp(value), "i");
-      const isMatch = (result) => re.test(result[filter]);
+      const filteredData = dataOrigin.filter(item =>
+        Object.values(item).some(v =>
+          v.toString().toLowerCase().includes(value.toLowerCase())
+        )
+      );
+      // const re = new RegExp(_.escapeRegExp(value), "i");
+      // const isMatch = (result) => re.test(result[filter]);
       setState({
         isLoading: false,
-        results: _.filter(data, isMatch),
+        results: filteredData,
       });
-      setData(_.filter(data, isMatch));
+      setData(filteredData);
     }, 300);
   };
 
-  const options = [
-    {
-      key: 1,
-      text: "Nombre",
-      value: "firstname",
-    },
-    {
-      key: 2,
-      text: "Apellido",
-      value: "lastname",
-    },
-    {
-      key: 3,
-      text: "Email",
-      value: "email",
-    },
-  ];
+  // const options = [
+  //   {
+  //     key: 1,
+  //     text: "Nombre",
+  //     value: "firstname",
+  //   },
+  //   {
+  //     key: 2,
+  //     text: "Apellido",
+  //     value: "lastname",
+  //   },
+  //   {
+  //     key: 3,
+  //     text: "Email",
+  //     value: "email",
+  //   },
+  // ];
 
   return (
     <Grid>
@@ -192,16 +197,16 @@ function SearchStandardUser(props) {
           onChange={_.debounce(handleSearchChange, 500, {
             leading: true,
           })}
-          action={
-            <Dropdown
-              onChange={handleChange}
-              options={options}
-              value={filter}
-              button
-              basic
-              floating
-            />
-          }
+          // action={
+          //   <Dropdown
+          //     onChange={handleChange}
+          //     options={options}
+          //     value={filter}
+          //     button
+          //     basic
+          //     floating
+          //   />
+          // }
         />
       </GridColumn>
     </Grid>

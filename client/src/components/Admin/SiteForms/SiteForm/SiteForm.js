@@ -1,25 +1,55 @@
 import React, { useCallback, useState } from "react";
-import { Form, Image, Grid, Table, Icon, Button, Comment, CommentGroup, CommentContent, CommentMetadata, CommentText, CommentAuthor, Divider } from "semantic-ui-react";
+import {
+  Form,
+  Image,
+  Grid,
+  Table,
+  Icon,
+  Button,
+  Comment,
+  CommentGroup,
+  CommentContent,
+  CommentMetadata,
+  CommentText,
+  CommentAuthor,
+  Divider,
+} from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
-import { useFormik, Field, FieldArray , FormikProvider, getIn} from "formik";
+import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
 import { Siteform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { ENV } from "../../../../utils";
-import { formatDateView, formatDateHourCompleted } from "../../../../utils/formatDate";
+import {
+  formatDateView,
+  formatDateHourCompleted,
+} from "../../../../utils/formatDate";
 import { BasicModal } from "../../../Shared";
 import { initialValues, validationSchema } from "./SiteForm.form";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import "./SiteForm.scss";
 
 const siteFormController = new Siteform();
 
 export function SiteForm(props) {
-  const { onClose, onReload, siteForm } = props;
+  const { onClose, onReload, siteForm, site } = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [fieldName, setFieldName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const { user } = useAuth();
+
+  const location = useLocation();
+  const { siteSelected } = location.state || {};
+
+  if (!siteSelected) {
+    // // Manejo de caso donde no hay datos en state (por ejemplo, acceso directo a la URL)
+    // return <div>No se encontraron detalles de producto.</div>;
+  }
+
+  const navigate = useNavigate();
 
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
@@ -37,26 +67,57 @@ export function SiteForm(props) {
     onSubmit: async (formValue) => {
       try {
         if (!siteForm) {
-          //await siteFormController.createSiteForm(accessToken, formValue);
-          console.log(formValue)
+          formValue.creator_user = user._id;
+          formValue.date = new Date();
+          if (user?.site) {
+            formValue.site = user.site._id;
+          } else {
+            if (site) {
+              formValue.site = site;
+            } else {
+              // Desencriptar los datos recibidos
+              if (!siteForm) {
+                const siteData = decrypt(siteSelected);
+                formValue.site = siteData;
+              }
+            }
+          }
+          await siteFormController.createSiteForm(accessToken, formValue);
+          //console.log(formValue);
         } else {
-          await siteFormController.updateSiteForm(accessToken, siteForm._id, formValue);
+          await siteFormController.updateSiteForm(
+            accessToken,
+            siteForm._id,
+            formValue
+          );
         }
         onReload();
-        onClose();
+        if (onClose) {
+          onClose();
+        } else {
+          // Después de guardar exitosamente, navegamos hacia atrás
+          goBack();
+        }
       } catch (error) {
         console.error(error);
       }
     },
   });
 
+  const goBack=()=>{
+    navigate(`/admin/data/siteforms`, {
+      state: { siteSelected: siteSelected },
+    });
+  }
+
   return (
     <Form className="site-form" onSubmit={formik.handleSubmit}>
-      <Table celled>
+      <Table size="small" celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Concepto</Table.HeaderCell>
-            <Table.HeaderCell>Valor</Table.HeaderCell>
+            <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
+            <Table.HeaderCell width="3">Valor</Table.HeaderCell>
+            <Table.HeaderCell width="2">Estado</Table.HeaderCell>
             <Table.HeaderCell>Acciones</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
@@ -68,22 +129,35 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{_id:1,name:"ppp"}].map((ds) => {
+                options={[{ _id: 1, name: "ppp" }].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
                     value: ds._id,
                   };
                 })}
-                
                 selection
                 onChange={(_, data) =>
                   formik.setFieldValue("installation_type.value", data.value)
                 }
                 value={formik.values.installation_type.value}
-                //value={getIn(formik.values, `installation_type.value`)}
                 error={formik.errors.installation_type}
               />
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.installation_type.isApproved}
+                label={
+                  formik.values.installation_type.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("installation_type.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -91,7 +165,7 @@ export function SiteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                   openUpdateSite("tipo de instalacion","installation_type");
+                  openUpdateSite("tipo de instalacion", "installation_type");
                 }}
               >
                 <Icon name="comment outline" />
@@ -106,6 +180,7 @@ export function SiteForm(props) {
               </Button>
             </Table.Cell>
           </Table.Row>
+
           <Table.Row>
             <Table.Cell>
               <label className="label">Categoria de productos</label>
@@ -113,7 +188,7 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{_id:1,name:"ppp"}].map((ds) => {
+                options={[{ _id: 1, name: "ppp" }].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
@@ -129,12 +204,27 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("Categoria de productos","product_category");
+                  openUpdateSite("Categoria de productos", "product_category");
                 }}
               >
                 <Icon name="comment outline" />
@@ -156,18 +246,32 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="days_month"
+                name="days_month.value"
                 onChange={formik.handleChange}
-                value={formik.values.days_month}
+                value={formik.values.days_month.value}
                 error={formik.errors.days_month}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite("Dias trabajados en el mes", "days_month");
                 }}
               >
                 <Icon name="comment outline" />
@@ -190,20 +294,32 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="days_total"
-                disabled={true}
-                placeholder="Precio del curso"
+                name="days_total.value"
                 onChange={formik.handleChange}
-                value={formik.values.days_total}
+                value={formik.values.days_total.value}
                 error={formik.errors.days_total}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.days_total.isApproved}
+                label={
+                  formik.values.days_total.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_total.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite("Dias totales trabajados", "days_total");
                 }}
               >
                 <Icon name="comment outline" />
@@ -226,18 +342,32 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="hours_month"
+                name="hours_month.value"
                 onChange={formik.handleChange}
-                value={formik.values.hours_month}
+                value={formik.values.hours_month.value}
                 error={formik.errors.hours_month}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.hours_month.isApproved}
+                label={
+                  formik.values.hours_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("hours_month.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.hours_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite("Horas trabajadas en el mes", "hours_month");
                 }}
               >
                 <Icon name="comment outline" />
@@ -260,19 +390,33 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="hours_total"
+                name="hours_total.value"
                 disabled={true}
                 onChange={formik.handleChange}
-                value={formik.values.hours_total}
+                value={formik.values.hours_total.value}
                 error={formik.errors.hours_total}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.hours_total.isApproved}
+                label={
+                  formik.values.hours_total.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("hours_total.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.hours_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite("Horas totales trabajadas", "hours_total");
                 }}
               >
                 <Icon name="comment outline" />
@@ -297,18 +441,37 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="temporary_workers"
+                name="temporary_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.temporary_workers}
+                value={formik.values.temporary_workers.value}
                 error={formik.errors.temporary_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.temporary_workers.isApproved}
+                label={
+                  formik.values.temporary_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("temporary_workers.isApproved", checked);
+                }}
+              />
+              {/* {formik.values.temporary_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadores temporales",
+                    "temporary_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -333,18 +496,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="permanent_production_workers"
+                name="permanent_production_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.permanent_production_workers}
+                value={formik.values.permanent_production_workers.value}
                 error={formik.errors.permanent_production_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.permanent_production_workers.isApproved}
+                label={
+                  formik.values.permanent_production_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "permanent_production_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.permanent_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadores de produccion permanentes",
+                    "permanent_production_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -369,18 +554,42 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="permanent_administrative_workers"
+                name="permanent_administrative_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.permanent_administrative_workers}
+                value={formik.values.permanent_administrative_workers.value}
                 error={formik.errors.permanent_administrative_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={
+                  formik.values.permanent_administrative_workers.isApproved
+                }
+                label={
+                  formik.values.permanent_administrative_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "permanent_administrative_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.permanent_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadores administrativos permanentes",
+                    "permanent_administrative_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -405,18 +614,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="female_production_workers"
+                name="female_production_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.female_production_workers}
+                value={formik.values.female_production_workers.value}
                 error={formik.errors.female_production_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.female_production_workers.isApproved}
+                label={
+                  formik.values.female_production_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "female_production_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.female_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadoras de produccion femeninas",
+                    "female_production_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -441,18 +672,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="male_production_workers"
+                name="male_production_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.male_production_workers}
+                value={formik.values.male_production_workers.value}
                 error={formik.errors.male_production_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.male_production_workers.isApproved}
+                label={
+                  formik.values.male_production_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "male_production_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.male_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadores de produccion masculinos",
+                    "male_production_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -477,18 +730,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="female_administrative_workers"
+                name="female_administrative_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.female_administrative_workers}
+                value={formik.values.female_administrative_workers.value}
                 error={formik.errors.female_administrative_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.female_administrative_workers.isApproved}
+                label={
+                  formik.values.female_administrative_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "female_administrative_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.female_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadoras administrativas femeninas",
+                    "female_administrative_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -513,18 +788,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="male_administrative_workers"
+                name="male_administrative_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.male_administrative_workers}
+                value={formik.values.male_administrative_workers.value}
                 error={formik.errors.male_administrative_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.male_administrative_workers.isApproved}
+                label={
+                  formik.values.male_administrative_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "male_administrative_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.male_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadores administrativos masculinos",
+                    "male_administrative_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -549,18 +846,42 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="female_workers_leadership_positions"
+                name="female_workers_leadership_position.value"
                 onChange={formik.handleChange}
-                value={formik.values.female_workers_leadership_positions}
+                value={formik.values.female_workers_leadership_positions.value}
                 error={formik.errors.female_workers_leadership_positions}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={
+                  formik.values.female_workers_leadership_positions.isApproved
+                }
+                label={
+                  formik.values.female_workers_leadership_positions.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "female_workers_leadership_positions.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.female_workers_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadoras femeninas en posiciones de liderazgo",
+                    "female_workers_leadership_positions"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -585,18 +906,42 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="male_workers_leadership_positions"
+                name="male_workers_leadership_positions.value"
                 onChange={formik.handleChange}
-                value={formik.values.male_workers_leadership_positions}
+                value={formik.values.male_workers_leadership_positions.value}
                 error={formik.errors.male_workers_leadership_positions}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={
+                  formik.values.male_workers_leadership_positions.isApproved
+                }
+                label={
+                  formik.values.male_workers_leadership_positions.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "male_workers_leadership_positions.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.male_workers_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad de trabajadores masculinos en posiciones de liderazgo",
+                    "male_workers_leadership_positions"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -621,18 +966,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="average_total_workers"
+                name="average_total_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.average_total_workers}
+                value={formik.values.average_total_workers.value}
                 error={formik.errors.average_total_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.average_total_workers.isApproved}
+                label={
+                  formik.values.average_total_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "average_total_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.average_total_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Cantidad promedio de trabajadores totales",
+                    "average_total_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -657,18 +1024,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="average_female_workers"
+                name="average_female_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.average_female_workers}
+                value={formik.values.average_female_workers.value}
                 error={formik.errors.average_female_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.average_female_workers.isApproved}
+                label={
+                  formik.values.average_female_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "average_female_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.average_female_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Promedio de trabajadoras femeninas",
+                    "average_female_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -693,18 +1082,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="average_male_workers"
+                name="average_male_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.average_male_workers}
+                value={formik.values.average_male_workers.value}
                 error={formik.errors.average_male_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.average_male_workers.isApproved}
+                label={
+                  formik.values.average_male_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "average_male_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.average_male_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Promedio de trabajadores masculinos",
+                    "average_male_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -727,18 +1138,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="percentage_female_workers"
+                name="percentage_female_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.percentage_female_workers}
+                value={formik.values.percentage_female_workers.value}
                 error={formik.errors.percentage_female_workers}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.percentage_female_workers.isApproved}
+                label={
+                  formik.values.percentage_female_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "percentage_female_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.percentage_female_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "% de trabajadoras femeninas",
+                    "percentage_female_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -761,18 +1194,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="percentage_female_workers"
+                name="percentage_female_workers.value"
                 onChange={formik.handleChange}
-                value={formik.values.percentage_male_workers}
-                error={formik.errors.percentage_female_workers}
+                value={formik.values.percentage_male_workers.value}
+                error={formik.errors.percentage_male_workers}
               />
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.percentage_male_workers.isApproved}
+                label={
+                  formik.values.percentage_male_workers.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "percentage_male_workers.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.percentage_male_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "% de trabajadores masculinos",
+                    "percentage_male_workers"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -795,18 +1250,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="percentage_total_female"
+                name="percentage_total_female.value"
                 onChange={formik.handleChange}
-                value={formik.values.percentage_total_female}
+                value={formik.values.percentage_total_female.value}
                 error={formik.errors.percentage_total_female}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.percentage_total_female.isApproved}
+                label={
+                  formik.values.percentage_total_female.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "percentage_total_female.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.percentage_total_female.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "% de mujeres totales",
+                    "percentage_total_female"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -829,18 +1306,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="percentage_total_male"
+                name="percentage_total_male.value"
                 onChange={formik.handleChange}
-                value={formik.values.percentage_total_male}
+                value={formik.values.percentage_total_male.value}
                 error={formik.errors.percentage_total_male}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.percentage_total_male.isApproved}
+                label={
+                  formik.values.percentage_total_male.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "percentage_total_male.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.percentage_total_male.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "% de hombres totales",
+                    "percentage_total_male"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -865,18 +1364,46 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="percentage_female_leadership_positions"
+                name="percentage_female_leadership_positions.value"
                 onChange={formik.handleChange}
-                value={formik.values.percentage_female_leadership_positions}
+                value={
+                  formik.values.percentage_female_leadership_positions.value
+                }
                 error={formik.errors.percentage_female_leadership_positions}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={
+                  formik.values.percentage_female_leadership_positions
+                    .isApproved
+                }
+                label={
+                  formik.values.percentage_female_leadership_positions
+                    .isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "percentage_female_leadership_positions.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.percentage_female_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "% de femeninas en posicion de liderazgo",
+                    "percentage_female_leadership_positions"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -901,19 +1428,42 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="price"
-                placeholder="Precio del curso"
+                name="percentage_male_leadership_positions.value"
                 onChange={formik.handleChange}
-                value={formik.values.percentage_male_leadership_positions}
+                value={formik.values.percentage_male_leadership_positions.value}
                 error={formik.errors.percentage_male_leadership_positions}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={
+                  formik.values.percentage_male_leadership_positions.isApproved
+                }
+                label={
+                  formik.values.percentage_male_leadership_positions.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "percentage_male_leadership_positions.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.percentage_male_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "% de masculinos en posicion de liderazgo",
+                    "percentage_male_leadership_positions"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -938,18 +1488,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="work_accidents_with_sick_days"
+                name="work_accidents_with_sick_days.value"
                 onChange={formik.handleChange}
-                value={formik.values.work_accidents_with_sick_days}
+                value={formik.values.work_accidents_with_sick_days.value}
                 error={formik.errors.work_accidents_with_sick_days}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.work_accidents_with_sick_days.isApproved}
+                label={
+                  formik.values.work_accidents_with_sick_days.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "work_accidents_with_sick_days.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.work_accidents_with_sick_days.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Accidentes de trabajo con dias de baja (+ de uno)",
+                    "work_accidents_with_sick_days"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -974,18 +1546,40 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="first_aid_without_sick_days"
+                name="first_aid_without_sick_days.value"
                 onChange={formik.handleChange}
-                value={formik.values.first_aid_without_sick_days}
+                value={formik.values.first_aid_without_sick_days.value}
                 error={formik.errors.first_aid_without_sick_days}
               />
             </Table.Cell>
             <Table.Cell>
+              <Form.Checkbox
+                toggle
+                checked={formik.values.first_aid_without_sick_days.isApproved}
+                label={
+                  formik.values.first_aid_without_sick_days.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue(
+                    "first_aid_without_sick_days.isApproved",
+                    checked
+                  );
+                }}
+              />
+              {/* {formik.values.first_aid_without_sick_days.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
               <Button
                 icon
+                type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite(
+                    "Primeros auxilios sin dias de baja (continua trabajando)",
+                    "first_aid_without_sick_days"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -1013,78 +1607,112 @@ export function SiteForm(props) {
           user={user}
         />
       </BasicModal>
-
-      <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {!siteForm ? "Guardar" : "Actualizar datos"}
-      </Form.Button>
+      <Form.Group widths="2">
+        <Form.Button type="submit" 
+          fluid 
+          primary 
+          loading={formik.isSubmitting}>
+          {!siteForm ? "Guardar" : "Actualizar datos"}
+        </Form.Button>
+        <Form.Button
+          type="button"
+          color="red"
+          secondary
+          fluid
+          onClick={() => {
+            onClose? onClose() : 
+            goBack();
+          }}
+        >
+          {"Cancelar"}
+        </Form.Button>
+      </Form.Group>
     </Form>
   );
 }
 
 function Comments(props) {
-  const { formik, user,  fieldName, onClose } = props;
-  const [comment, setComment]=useState("");
-  console.log(user)
+  const { formik, user, fieldName, onClose } = props;
+  const [comment, setComment] = useState("");
+  console.log(user);
 
-  const onChangeHandle= () =>{
-    if(comment && comment.length > 0){
-      let data=formik.values[fieldName].reviews;
+  const onChangeHandle = () => {
+    if (comment && comment.length > 0) {
+      let data = formik.values[fieldName].reviews;
       data.push({
-        "comment":comment,
-        date:new Date(),
-        reviewer_user:user? user._id: null
+        comment: comment,
+        date: new Date(),
+        reviewer_user: user ? user._id : null,
       });
       formik.setFieldValue(`${fieldName}.reviews`, data);
     }
-    onClose()
-  }   
+    onClose();
+  };
 
   const handleSaveComment = (id, editedContent) => {
-    let data=formik.values[fieldName].reviews;
-    data[id].comment=editedContent;
-    data[id].date=new Date();
+    let data = formik.values[fieldName].reviews;
+    data[id].comment = editedContent;
+    data[id].date = new Date();
     formik.setFieldValue(`${fieldName}.reviews`, data);
   };
 
   return (
     <>
       <CommentGroup minimal>
-      {formik.values[fieldName].reviews && formik.values[fieldName].reviews.length > 0 ? (
-                   formik.values[fieldName].reviews.map((review, index) => (
-                <>
-                  <EditableComment 
+        {formik.values[fieldName].reviews &&
+        formik.values[fieldName].reviews.length > 0
+          ? formik.values[fieldName].reviews.map((review, index) => (
+              <>
+                <EditableComment
                   id={index}
-                  author={review.reviewer_user? review.reviewer_user===user._id? user.firstname +" "+ user.lastname 
-                    : review.reviewer_user.firstname + " " + review.reviewer_user.lastname : ""} 
-                    date={formatDateHourCompleted(review.date)} 
-                    content= {review.comment} 
-                    onSave={handleSaveComment}
-                    active={review.reviewer_user? review.reviewer_user===user._id? true: false : false}
-                    />
-                    <Divider fitted />
-                    </>
-                   ))
-                 ) : (
-             null
-                 )}
-       <Form.TextArea
-      //  name={[fieldName].reviews.comments}
-         placeholder=""
-         rows={3}
-        style={{ minHeight: 100,  width: "100%" }}
-         // onChange={formik.handleChange}
-         onChange={(_, data) => setComment(data.value)}
-         value={formik.values[fieldName].reviews.comments}
-         error={formik.errors[fieldName]}
-       />
-       <Form.Button type="button"  icon='edit'  content={"Añadir comentario"} primary fluid onClick={onChangeHandle}>
-       </Form.Button>
-       </CommentGroup>
+                  author={
+                    review.reviewer_user
+                      ? review.reviewer_user === user._id
+                        ? user.firstname + " " + user.lastname
+                        : review.reviewer_user.firstname +
+                          " " +
+                          review.reviewer_user.lastname
+                      : ""
+                  }
+                  date={formatDateHourCompleted(review.date)}
+                  content={review.comment}
+                  onSave={handleSaveComment}
+                  active={
+                    review.reviewer_user
+                      ? review.reviewer_user === user._id
+                        ? true
+                        : false
+                      : false
+                  }
+                />
+                <Divider fitted />
+              </>
+            ))
+          : null}
+        <Form.TextArea
+          //  name={[fieldName].reviews.comments}
+          placeholder=""
+          rows={3}
+          style={{ minHeight: 100, width: "100%" }}
+          // onChange={formik.handleChange}
+          onChange={(_, data) => setComment(data.value)}
+          value={formik.values[fieldName].reviews.comments}
+          error={formik.errors[fieldName]}
+        />
+        <Form.Button
+          type="button"
+          icon="edit"
+          content={"Añadir comentario"}
+          primary
+          fluid
+          onClick={onChangeHandle}
+        ></Form.Button>
+      </CommentGroup>
     </>
   );
 }
 
-const EditableComment = ({id, author,date,  content, onSave, active }) => {
+const EditableComment = ({ id, author, date, content, onSave, active }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
 
@@ -1112,15 +1740,12 @@ const EditableComment = ({id, author,date,  content, onSave, active }) => {
       <Comment.Content>
         <Comment.Author>{author}</Comment.Author>
         <CommentMetadata>
-                        <div>{date}</div>
-                      </CommentMetadata>
+          <div>{date}</div>
+        </CommentMetadata>
         <Comment.Text>
           {isEditing ? (
             <Form reply>
-              <Form.TextArea
-                value={editedContent}
-                onChange={handleChange}
-              />
+              <Form.TextArea value={editedContent} onChange={handleChange} />
               <Button content="Guardar" onClick={handleSave} primary />
               <Button content="Cancelar" onClick={handleCancel} secondary />
             </Form>
@@ -1128,16 +1753,15 @@ const EditableComment = ({id, author,date,  content, onSave, active }) => {
             <div>{editedContent}</div>
           )}
         </Comment.Text>
-        {active?
-        <Comment.Actions>
-          <Comment.Action onClick={handleEdit}>Editar</Comment.Action>
-        </Comment.Actions>
-        : null}
+        {active ? (
+          <Comment.Actions>
+            <Comment.Action onClick={handleEdit}>Editar</Comment.Action>
+          </Comment.Actions>
+        ) : null}
       </Comment.Content>
     </Comment>
   );
 };
-
 
 // function ModalComments() {
 //   const [open, setOpen] = React.useState(false)

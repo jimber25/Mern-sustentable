@@ -27,7 +27,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   product_category:  {
     value:String,
@@ -39,7 +39,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   days_month: {
     value:Number,
@@ -51,7 +51,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   days_total:{
     value:Number,
@@ -63,7 +63,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   hours_month:{
     value:Number,
@@ -75,7 +75,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   hours_total:{
     value:Number,
@@ -87,7 +87,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   temporary_workers:{
     value:Number,
@@ -99,7 +99,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   permanent_production_workers:{
     value:Number,
@@ -111,7 +111,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   permanent_administrative_workers:{
     value:Number,
@@ -123,7 +123,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   female_production_workers:{
     value:Number,
@@ -135,7 +135,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   male_production_workers:{
     value:Number,
@@ -147,7 +147,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   female_administrative_workers:{
     value:Number,
@@ -159,7 +159,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   male_administrative_workers:{
     value:Number,
@@ -171,7 +171,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   female_workers_leadership_positions:{
     value:Number,
@@ -183,7 +183,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   male_workers_leadership_positions:{
     value:Number,
@@ -195,7 +195,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   // average_total_workers
   // average_female_workers
@@ -214,7 +214,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   first_aid_without_sick_days:{
     value:Number,
@@ -226,7 +226,7 @@ const SiteFormSchema = mongoose.Schema({
       },
       comments:String
     }],
-    state:Boolean
+    isApproved:Boolean
   },
   active:Boolean
 });

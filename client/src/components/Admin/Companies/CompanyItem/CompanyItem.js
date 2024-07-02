@@ -1,5 +1,5 @@
 import React, { useState , useEffect} from "react";
-import { Image, Button, Icon, Confirm, CommentAction } from "semantic-ui-react";
+import { Image, Button, Icon, Confirm, CommentAction, Table } from "semantic-ui-react";
 import { image } from "../../../../assets";
 import { Permission, Company } from "../../../../api";
 import { useAuth } from "../../../../hooks";
@@ -88,28 +88,15 @@ export function CompanyItem(props) {
 
   return (
     <>
-      <div className="company-item">
-        <div className="company-item__info">
-          {/* <Image
-            avatar
-            src={
-              user.avatar ? `${ENV.BASE_PATH}/${user.avatar}` : image.noAvatar
-            }
-          /> */}
-          <div>
-            <p>
-              {company.name} 
-            </p>
-            <p>{company.email}</p>
-          </div>
-        </div>
-
-        <div>
-          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
+        <Table.Row key={company._id}>
+        <Table.Cell>{company.name ? company.name : ""}</Table.Cell>
+        <Table.Cell>{company.email}</Table.Cell>
+        <Table.Cell>
+        {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
           <Button icon primary onClick={openUpdateCompany}>
             <Icon name="pencil" />
           </Button>) : null}
-          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
+          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "edit"))?(
           <Button
             icon
             color={company.active ? "orange" : "teal"}
@@ -117,12 +104,12 @@ export function CompanyItem(props) {
           >
             <Icon name={company.active ? "ban" : "check"} />
           </Button> ):null}
-          {(isAdmin(role) || hasPermission(permissionsByRole, role._id, "companies", "delete"))?(
+          {(isMaster(role) || hasPermission(permissionsByRole, role._id, "companies", "delete"))?(
           <Button icon color="red" onClick={openDeleteConfirm}>
             <Icon name="trash" />
           </Button> ) : null }
-        </div>
-      </div>
+        </Table.Cell>
+      </Table.Row>
 
       <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>
         <CompanyForm close={onOpenCloseModal} onReload={onReload} company={company} />

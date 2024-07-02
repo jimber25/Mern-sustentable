@@ -1,8 +1,8 @@
 import * as Yup from "yup";
 
 export function initialValues(user) {
-  console.log(user)
-  return {
+
+  let data = {
     avatar: user?.avatar || "",
     fileAvatar: null,
     firstname: user?.firstname || "",
@@ -10,10 +10,18 @@ export function initialValues(user) {
     email: user?.email || "",
     role: user? user.role && user.role._id? user.role._id : user.role : "",
     password: "",
-    company: user?.company || "",
+    // company: user?.company ||null,
+    // site: user?.site || null,
     position: user?.position || "",
     sector: user?.sector || "",
   };
+  if(user?.site){
+    data.site=user.site
+  }
+  if(user?.company){
+    data.company=user.company
+  }
+  return data;
 }
 
 export function validationSchema(user) {

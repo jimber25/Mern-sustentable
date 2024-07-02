@@ -28,3 +28,15 @@
   "avatar": "",
   "__v": 0
 }
+{
+  "_id": {
+    "$oid": "667aee1c75c480d68361fa07"
+  },
+  "email": "master@master.com",
+  "active": true,
+  "password": "$2a$10$BQbjFNCVhwxipFamS5P2ROrzXhxlsH.7vYV9aL5jKA0A1QOgV5Q8y",
+  "__v": 0,
+  "role": {
+    "$oid": "664e2935fe168b0ead363497"
+  }
+}

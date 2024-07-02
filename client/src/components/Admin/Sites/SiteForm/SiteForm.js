@@ -1,23 +1,24 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { Form, Image } from "semantic-ui-react";
 import { useFormik } from "formik";
-import { Role, Company } from "../../../../api";
+import { Role, Site } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { isAdmin, isMaster } from "../../../../utils/checkPermission";
-import { initialValues, validationSchema } from "./CompanyForm.form";
-import "./CompanyForm.scss";
-import { extractDomain } from "../../../../utils/formatEmail";
+import { initialValues, validationSchema } from "./SiteForm.form";
+import { useNavigate  } from 'react-router-dom';
+import "./SiteForm.scss";
 
-const companyController = new Company();
+const siteController = new Site();
 const roleController = new Role();
 
-export function CompanyForm(props) {
-  const { close, onReload, company } = props;
+export function SiteForm(props) {
+  const { close, onReload, site } = props;
   const {
     accessToken,
     user: { role },
   } = useAuth();
   const [listRoles, setListRoles] = useState([]);
+
 
   useEffect(() => {
     roleController.getRoles(accessToken, true).then((response) => {
@@ -26,35 +27,30 @@ export function CompanyForm(props) {
   }, []);
 
   const formik = useFormik({
-    initialValues: initialValues(company),
-    validationSchema: isMaster(role)? null:validationSchema(company),
+    initialValues: initialValues(site),
+    validationSchema: isMaster(role)? null:validationSchema(site),
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
-        if (!company) {
-          const response = await companyController.createCompany(
+        if (!site) {
+          const response = await siteController.createSite(
             accessToken,
             formValue
           );
           if (response.code && response.code === 500) {
           }
         } else {
-          await companyController.updateCompany(accessToken, company._id, formValue);
+          await siteController.updateSite(accessToken, site._id, formValue);
         }
         onReload(true);
         close();
+ 
       } catch (error) {
         // console.log(2)
         console.error(error);
       }
     },
   });
-
-  const handleChangeEmail= (e,formik)=>{
-    console.log(e.target.value);
-    formik.setFieldValue("email",  e.target.value)
-    formik.setFieldValue("domain",  extractDomain(e.target.value))
-  }
 
 
   return (
@@ -104,25 +100,13 @@ export function CompanyForm(props) {
           name="email"
           placeholder="Correo electronico"
           onChange={formik.handleChange}
-          // onChange={(e)=>{handleChangeEmail(e, formik)}}
           value={formik.values.email}
           error={formik.errors.email}
         />
       </Form.Group>
 
-      {/* <Form.Group widths="equal">
-        <Form.Input
-          label="Dominio"
-          name="domain"
-          placeholder="Dominio"
-          // onChange={formik.handleChange}
-          value={formik.values.domain}
-          error={formik.errors.domain}
-        />
-      </Form.Group> */}
-
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {company ? "Actualizar datos" : "Crear Empresa"}
+        {site ? "Actualizar datos" : "Crear Empresa"}
       </Form.Button>
     </Form>
   );
