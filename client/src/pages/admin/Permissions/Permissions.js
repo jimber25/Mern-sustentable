@@ -62,7 +62,7 @@ export function Permissions() {
     { isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "view")?
     (<>
     <div className="permissions-page">
-      {isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "create")?
+      {isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "create")?
         <Button className="permissions-page__add" primary onClick={onOpenCloseModal}>
           Nuevo permiso
         </Button>: null}

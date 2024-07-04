@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tab, Button } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { ListPost, PostForm } from "../../../components/Admin/Post";
+import { ViewReports } from "../../../components/Admin/Reports/ViewReports/ViewReports";
 import "./Reports.scss";
 
 export function Reports() {
@@ -23,6 +24,7 @@ export function Reports() {
 
   return (
     <>
+    <ViewReports/>
       {/* <div className="blog-page">
         <div className="blog-page__add">
           <Button primary onClick={onOpenCloseModal}>
