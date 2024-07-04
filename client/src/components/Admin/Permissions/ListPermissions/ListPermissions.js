@@ -238,13 +238,31 @@ function SearchStandardPermission(props) {
         setState({ isLoading: false, results: [], value: "" });
         return true;
       }
-      const re = new RegExp(_.escapeRegExp(value), "i");
-      const isMatch = (result) => re.test(result.role.name);
+      // const re = new RegExp(_.escapeRegExp(value), "i");
+      // const isMatch = (result) => re.test(result.role.name);
+      // setState({
+      //   isLoading: false,
+      //   results: _.filter(data, isMatch),
+      // });
+      const filteredData = dataOrigin.filter(item =>
+        Object.keys(item).some(k =>{
+          if(k === "module"){
+            return convertModulesEngToEsp(item[k]).toString().toLowerCase().includes(value.toLowerCase())
+          }else if(k === "action"){
+            return convertActionsEngToEsp(item[k]).toString().toLowerCase().includes(value.toLowerCase())
+          }else{
+            return item[k].toString().toLowerCase().includes(value.toLowerCase())
+          }
+        }
+          
+        )
+      );
       setState({
         isLoading: false,
-        results: _.filter(data, isMatch),
+        // results: _.filter(data, isMatch),
+        results:filteredData
       });
-      setData(_.filter(data, isMatch));
+      setData(filteredData);
     }, 300);
   };
 

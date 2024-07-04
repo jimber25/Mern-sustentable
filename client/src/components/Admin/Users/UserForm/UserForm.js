@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { Form, Image } from "semantic-ui-react";
+import { Form, Image, Message } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useDropzone } from "react-dropzone";
 import { User, Role, Company, Site } from "../../../../api";
@@ -26,6 +26,7 @@ export function UserForm(props) {
   const [listSites, setListSites] = useState([]);
   const [companyData, setCompanyData] = useState([]);
   const [siteData, setSiteData] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     roleController.getRoles(accessToken, true).then((response) => {
@@ -52,7 +53,7 @@ export function UserForm(props) {
 
   const formik = useFormik({
     initialValues: initialValues(user),
-    validationSchema: isAdmin(role) || isMaster(role)? null : validationSchema(user),
+    validationSchema:  validationSchema(user,role),
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
@@ -79,6 +80,7 @@ export function UserForm(props) {
         close();
       } catch (error) {
         // console.log(2)
+        setError(error.msg);
         console.error(error);
       }
     },
@@ -113,7 +115,10 @@ export function UserForm(props) {
         <input {...getInputProps()} />
         <Image avatar size="small" src={getAvatar()} />
       </div> */}
-
+      {error.length > 0 ? 
+    
+     <p className="login-form__error">{<Message visible={error.length > 0} negative>{error}</Message>}</p>  : null
+      }
       <Form.Group widths="equal">
         <Form.Input
           label="Nombre"

@@ -12,7 +12,12 @@ import {
   CommentMetadata,
   CommentText,
   CommentAuthor,
+  TableFooter,
+  TableHeaderCell,
+  TableRow,
+  Segment,
   Divider,
+  Header,
 } from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
@@ -104,14 +109,29 @@ export function SiteForm(props) {
     },
   });
 
-  const goBack=()=>{
+  const goBack = () => {
     navigate(`/admin/data/siteforms`, {
       state: { siteSelected: siteSelected },
     });
-  }
+  };
 
   return (
     <Form className="site-form" onSubmit={formik.handleSubmit}>
+      {siteForm ? (
+        <Segment>
+          <Header as="h4"> Fecha: {formatDateView(formik.values.date)}</Header>
+          <Header as="h4">
+            Usuario creador:{" "}
+            {formik.values.creator_user
+              ? formik.values.creator_user.lastname
+                ? formik.values.creator_user.lastname +
+                  " " +
+                  formik.values.creator_user.firstname
+                : formik.values.creator_user.email
+              : null}{" "}
+          </Header>
+        </Segment>
+      ) : null}
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
@@ -129,7 +149,7 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{ _id: 1, name: "ppp" }].map((ds) => {
+                options={[{ _id: "1", name: "tipo a" }].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
@@ -145,17 +165,35 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
-                toggle
-                checked={formik.values.installation_type.isApproved}
-                label={
-                  formik.values.installation_type.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
                 }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("installation_type.isApproved", checked);
-                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+                value={formik.values.installation_type.isApproved}
+                error={formik.errors.installation_type}
               />
               {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -186,9 +224,9 @@ export function SiteForm(props) {
               <label className="label">Categoria de productos</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Dropdown
+            <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{ _id: 1, name: "ppp" }].map((ds) => {
+                options={[{_id:"1",name:"categoria a"}, {_id:"2",name:"categoria b"}].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
@@ -204,7 +242,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.product_category.isApproved}
                 label={
@@ -215,6 +253,22 @@ export function SiteForm(props) {
                 onChange={(e, { checked }) => {
                   formik.setFieldValue("product_category.isApproved", checked);
                 }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("product_category.isApproved", data.value)
+                }
+                value={formik.values.product_category.isApproved}
+                error={formik.errors.product_category}
               />
               {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -253,7 +307,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.days_month.isApproved}
                 label={
@@ -262,6 +316,38 @@ export function SiteForm(props) {
                 onChange={(e, { checked }) => {
                   formik.setFieldValue("days_month.isApproved", checked);
                 }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
               />
               {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -301,7 +387,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.days_total.isApproved}
                 label={
@@ -310,6 +396,22 @@ export function SiteForm(props) {
                 onChange={(e, { checked }) => {
                   formik.setFieldValue("days_total.isApproved", checked);
                 }}
+              /> */}
+                 <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_total.isApproved", data.value)
+                }
+                value={formik.values.days_total.isApproved}
+                error={formik.errors.days_total}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -349,7 +451,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.hours_month.isApproved}
                 label={
@@ -358,6 +460,22 @@ export function SiteForm(props) {
                 onChange={(e, { checked }) => {
                   formik.setFieldValue("hours_month.isApproved", checked);
                 }}
+              /> */}
+                     <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("hours_month.isApproved", data.value)
+                }
+                value={formik.values.hours_month.isApproved}
+                error={formik.errors.hours_month}
               />
               {/* {formik.values.hours_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -398,7 +516,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.hours_total.isApproved}
                 label={
@@ -407,6 +525,22 @@ export function SiteForm(props) {
                 onChange={(e, { checked }) => {
                   formik.setFieldValue("hours_total.isApproved", checked);
                 }}
+              /> */}
+                         <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("hours_total.isApproved", data.value)
+                }
+                value={formik.values.hours_total.isApproved}
+                error={formik.errors.hours_total}
               />
               {/* {formik.values.hours_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -448,7 +582,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.temporary_workers.isApproved}
                 label={
@@ -459,6 +593,22 @@ export function SiteForm(props) {
                 onChange={(e, { checked }) => {
                   formik.setFieldValue("temporary_workers.isApproved", checked);
                 }}
+              /> */}
+                           <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("temporary_workers.isApproved", data.value)
+                }
+                value={formik.values.temporary_workers.isApproved}
+                error={formik.errors.temporary_workers}
               />
               {/* {formik.values.temporary_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -503,7 +653,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.permanent_production_workers.isApproved}
                 label={
@@ -517,6 +667,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                               <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("permanent_production_workers.isApproved", data.value)
+                }
+                value={formik.values.permanent_production_workers.isApproved}
+                error={formik.errors.permanent_production_workers}
               />
               {/* {formik.values.permanent_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -561,7 +727,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={
                   formik.values.permanent_administrative_workers.isApproved
@@ -577,6 +743,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("permanent_administrative_workers.isApproved", data.value)
+                }
+                value={formik.values.permanent_administrative_workers.isApproved}
+                error={formik.errors.permanent_administrative_workers}
               />
               {/* {formik.values.permanent_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -621,7 +803,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.female_production_workers.isApproved}
                 label={
@@ -635,6 +817,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                                 <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("female_production_workers.isApproved", data.value)
+                }
+                value={formik.values.female_production_workers.isApproved}
+                error={formik.errors.female_production_workers}
               />
               {/* {formik.values.female_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -679,7 +877,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.male_production_workers.isApproved}
                 label={
@@ -693,6 +891,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                                    <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("male_production_workers.isApproved", data.value)
+                }
+                value={formik.values.male_production_workers.isApproved}
+                error={formik.errors.male_production_workers}
               />
               {/* {formik.values.male_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -737,7 +951,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.female_administrative_workers.isApproved}
                 label={
@@ -751,6 +965,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                                        <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("female_administrative_workers.isApproved", data.value)
+                }
+                value={formik.values.female_administrative_workers.isApproved}
+                error={formik.errors.female_administrative_workers}
               />
               {/* {formik.values.female_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -795,7 +1025,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.male_administrative_workers.isApproved}
                 label={
@@ -809,6 +1039,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                                          <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("male_administrative_workers.isApproved", data.value)
+                }
+                value={formik.values.male_administrative_workers.isApproved}
+                error={formik.errors.male_administrative_workers}
               />
               {/* {formik.values.male_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -853,7 +1099,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={
                   formik.values.female_workers_leadership_positions.isApproved
@@ -869,6 +1115,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                                       <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("female_workers_leadership_positions.isApproved", data.value)
+                }
+                value={formik.values.female_workers_leadership_positions.isApproved}
+                error={formik.errors.female_workers_leadership_positions}
               />
               {/* {formik.values.female_workers_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -913,7 +1175,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={
                   formik.values.male_workers_leadership_positions.isApproved
@@ -929,6 +1191,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("male_workers_leadership_positions.isApproved", data.value)
+                }
+                value={formik.values.male_workers_leadership_positions.isApproved}
+                error={formik.errors.male_workers_leadership_positions}
               />
               {/* {formik.values.male_workers_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -973,7 +1251,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.average_total_workers.isApproved}
                 label={
@@ -987,6 +1265,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("average_total_workers.isApproved", data.value)
+                }
+                value={formik.values.average_total_workers.isApproved}
+                error={formik.errors.average_total_workers}
               />
               {/* {formik.values.average_total_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1031,7 +1325,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.average_female_workers.isApproved}
                 label={
@@ -1045,6 +1339,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+               <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("average_female_workers.isApproved", data.value)
+                }
+                value={formik.values.average_female_workers.isApproved}
+                error={formik.errors.average_female_workers}
               />
               {/* {formik.values.average_female_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1089,7 +1399,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.average_male_workers.isApproved}
                 label={
@@ -1103,6 +1413,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                     <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("average_male_workers.isApproved", data.value)
+                }
+                value={formik.values.average_male_workers.isApproved}
+                error={formik.errors.average_male_workers}
               />
               {/* {formik.values.average_male_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1145,7 +1471,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.percentage_female_workers.isApproved}
                 label={
@@ -1159,6 +1485,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("percentage_female_workers.isApproved", data.value)
+                }
+                value={formik.values.percentage_female_workers.isApproved}
+                error={formik.errors.percentage_female_workers}
               />
               {/* {formik.values.percentage_female_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1201,7 +1543,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.percentage_male_workers.isApproved}
                 label={
@@ -1215,6 +1557,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+               <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("percentage_male_workers.isApproved", data.value)
+                }
+                value={formik.values.percentage_male_workers.isApproved}
+                error={formik.errors.percentage_male_workers}
               />
               {/* {formik.values.percentage_male_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1257,7 +1615,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.percentage_total_female.isApproved}
                 label={
@@ -1271,6 +1629,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+               <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("percentage_total_female.isApproved", data.value)
+                }
+                value={formik.values.percentage_total_female.isApproved}
+                error={formik.errors.percentage_total_female}
               />
               {/* {formik.values.percentage_total_female.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1313,7 +1687,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.percentage_total_male.isApproved}
                 label={
@@ -1327,6 +1701,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                    <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("percentage_total_male.isApproved", data.value)
+                }
+                value={formik.values.percentage_total_male.isApproved}
+                error={formik.errors.percentage_total_male}
               />
               {/* {formik.values.percentage_total_male.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1373,7 +1763,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={
                   formik.values.percentage_female_leadership_positions
@@ -1391,6 +1781,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                         <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("percentage_female_leadership_positions.isApproved", data.value)
+                }
+                value={formik.values.percentage_female_leadership_positions.isApproved}
+                error={formik.errors.percentage_female_leadership_positions}
               />
               {/* {formik.values.percentage_female_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1435,7 +1841,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={
                   formik.values.percentage_male_leadership_positions.isApproved
@@ -1451,6 +1857,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                             <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("percentage_male_leadership_positions.isApproved", data.value)
+                }
+                value={formik.values.percentage_male_leadership_positions.isApproved}
+                error={formik.errors.percentage_male_leadership_positions}
               />
               {/* {formik.values.percentage_male_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1495,7 +1917,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.work_accidents_with_sick_days.isApproved}
                 label={
@@ -1509,6 +1931,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("work_accidents_with_sick_days.isApproved", data.value)
+                }
+                value={formik.values.work_accidents_with_sick_days.isApproved}
+                error={formik.errors.work_accidents_with_sick_days}
               />
               {/* {formik.values.work_accidents_with_sick_days.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1553,7 +1991,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              <Form.Checkbox
+              {/* <Form.Checkbox
                 toggle
                 checked={formik.values.first_aid_without_sick_days.isApproved}
                 label={
@@ -1567,6 +2005,22 @@ export function SiteForm(props) {
                     checked
                   );
                 }}
+              /> */}
+                        <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("first_aid_without_sick_days.isApproved", data.value)
+                }
+                value={formik.values.first_aid_without_sick_days.isApproved}
+                error={formik.errors.first_aid_without_sick_days}
               />
               {/* {formik.values.first_aid_without_sick_days.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -1595,6 +2049,22 @@ export function SiteForm(props) {
             </Table.Cell>
           </Table.Row>
         </Table.Body>
+
+        {/* <TableFooter fullWidth>
+      <TableRow>
+        <TableHeaderCell />
+        <TableHeaderCell colSpan='4'>
+          <Button
+            floated='right'
+            labelPosition='left'
+            secundary
+            size='small'
+          > Aprobar todos
+          </Button>
+        </TableHeaderCell>
+      </TableRow>
+    </TableFooter> */}
+
       </Table>
 
       <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>
@@ -1608,10 +2078,7 @@ export function SiteForm(props) {
         />
       </BasicModal>
       <Form.Group widths="2">
-        <Form.Button type="submit" 
-          fluid 
-          primary 
-          loading={formik.isSubmitting}>
+        <Form.Button type="submit" fluid primary loading={formik.isSubmitting}>
           {!siteForm ? "Guardar" : "Actualizar datos"}
         </Form.Button>
         <Form.Button
@@ -1620,8 +2087,7 @@ export function SiteForm(props) {
           secondary
           fluid
           onClick={() => {
-            onClose? onClose() : 
-            goBack();
+            onClose ? onClose() : goBack();
           }}
         >
           {"Cancelar"}

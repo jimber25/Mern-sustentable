@@ -45,19 +45,27 @@ async function createUser(req, res) {
     user.avatar = imagePath;
     user.avatar = "avatar/"+imagePath;
   }
-
-  user.save((error, userStored) => {
-    if (error) {
-      console.log(error)
-      res.status(500).send({ code:400, msg: "El usuario ya existe" });
-    } else {
-      if (!userStored) {
-        res.status(400).send({ msg: "Error al crear el usuario" });
-      } else {
-        res.status(200).send(userStored);
-      }
+  User.find({email:user.email}).then((result)=>{
+    console.log(result)
+    if (result && result.lenght > 0) {
+      console.log(result)
+      res.status(500).send({ code:500, msg: "El email ya esta registrado" });
+    }else{
+      user.save((error, userStored) => {
+        if (error) {
+          console.log(error)
+          res.status(500).send({ code:500, msg: "El usuario ya existe" });
+        } else {
+          if (!userStored) {
+            res.status(400).send({code:400,  msg: "Error al crear el usuario" });
+          } else {
+            res.status(200).send(userStored);
+          }
+        }
+      });
     }
-  });
+  })
+ 
 }
 
 async function updateUser(req, res) {

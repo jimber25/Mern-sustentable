@@ -61,13 +61,13 @@ export function AdminMenu() {
             to="/admin/dashboard"
             active={isCurrentPath("/admin/dashboard")}
           >
-            <Icon name="home" />
+            <Icon name="table" />
             Dashboard
           </Menu.Item>):null}
 
           {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "data", "menu") ? (
-            <Dropdown trigger={<span style={{marginRight:"40%"}}><Icon name='archive'/>Datos</span>} floating labeled item>
+            <Dropdown trigger={<span style={{marginRight:"40%"}}><Icon name='upload'/>Datos</span>} floating labeled item>
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "sites", "menu") ? (
@@ -127,7 +127,7 @@ export function AdminMenu() {
             to="/admin/reports"
             active={isCurrentPath("/admin/reports")}
           >
-            <Icon name="archive" />
+            <Icon name="file outline" />
             Reportes
           </Menu.Item>
           {isMaster(role) || 

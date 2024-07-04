@@ -11,6 +11,7 @@ import {
   isMaster,
 } from "../../../../utils/checkPermission";
 import "./SiteFormItem.scss";
+import { formatDateHourCompleted, formatDateView } from "../../../../utils/formatDate";
 
 const siteFormController = new Siteform();
 const permissionController = new Permission();
@@ -47,7 +48,7 @@ export function SiteFormItem(props) {
   }, [role]);
 
   const openUpdateSite = () => {
-    setTitleModal(`Actualizar ${siteForm.title}`);
+    setTitleModal(`Actualizar Formulario de Sitio`);
     onOpenCloseModal();
   };
 
@@ -68,7 +69,7 @@ export function SiteFormItem(props) {
         <Table.Cell>
           <Icon color={siteForm.active ? "green" : "red"} name="circle" />
         </Table.Cell>
-        <Table.Cell>{siteForm.date}</Table.Cell>
+        <Table.Cell>{formatDateView(siteForm.date)}</Table.Cell>
         <Table.Cell>
           {siteForm.creator_user? 
           siteForm.creator_user.lastname? siteForm.creator_user.lastname + " " + siteForm.creator_user.firstname
@@ -118,7 +119,7 @@ export function SiteFormItem(props) {
         open={showConfirm}
         onCancel={onOpenCloseConfirm}
         onConfirm={onDelete}
-        content={`Eliminar el formulario ${siteForm.title}`}
+        content={`Eliminar el formulario del sitio con fecha ${formatDateView(siteForm.date)}`}
         size="mini"
       />
     </>
