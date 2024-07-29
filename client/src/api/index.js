@@ -9,3 +9,7 @@ export * from "./blog";
 export * from "./company";
 export * from "./site";
 export * from "./siteform";
+export * from "./energyform";
+export * from "./productionform";
+export * from "./effluentform";
+export * from "./waterform";

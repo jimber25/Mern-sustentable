@@ -15,7 +15,10 @@ const permissionRoutes = require("./router/permission");
 const companyRoutes = require("./router/company");
 const siteRoutes = require("./router/site");
 const siteFormRoutes = require("./router/siteform");
-const newsletterRoutes = require("./router/newsletter");
+const energyRoutes = require("./router/energy");
+const effluentRoutes = require("./router/effluent");
+const productionRoutes = require("./router/production");
+const waterRoutes = require("./router/water");
 
 // Configure Body Parser
  app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,11 +35,14 @@ app.use(`/api/${API_VERSION}`, authRoutes);
 app.use(`/api/${API_VERSION}`, userRoutes);
 app.use(`/api/${API_VERSION}`, menuRoutes);
 app.use(`/api/${API_VERSION}`, courseRoutes);
-app.use(`/api/${API_VERSION}`, newsletterRoutes);
 app.use(`/api/${API_VERSION}`, roleRoutes);
 app.use(`/api/${API_VERSION}`, permissionRoutes);
 app.use(`/api/${API_VERSION}`, companyRoutes);
 app.use(`/api/${API_VERSION}`, siteRoutes);
 app.use(`/api/${API_VERSION}`, siteFormRoutes);
+app.use(`/api/${API_VERSION}`, energyRoutes);
+app.use(`/api/${API_VERSION}`, effluentRoutes);
+app.use(`/api/${API_VERSION}`, productionRoutes);
+app.use(`/api/${API_VERSION}`, waterRoutes);
 
 module.exports = app;

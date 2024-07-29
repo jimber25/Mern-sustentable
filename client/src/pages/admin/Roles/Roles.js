@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button } from "semantic-ui-react";
+import { Tab, Button, Icon } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { RoleForm, ListRoles } from "../../../components/Admin/Roles";
 import "./Roles.scss";
@@ -77,7 +77,7 @@ export function Roles() {
               primary
               onClick={onOpenCloseModal}
             >
-              Nuevo rol
+              <Icon name='plus' />  Nuevo rol
             </Button>
           ) : null}
           <Tab menu={{ secondary: true }} panes={panes} />

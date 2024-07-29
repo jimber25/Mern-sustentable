@@ -3,7 +3,7 @@ const multiparty = require("connect-multiparty");
 const WaterController = require("../controllers/water");
 const md_auth = require("../middlewares/authenticated");
 
-const api = express.Water();
+const api = express.Router();
 
 api.get("/water/:id", [md_auth.asureAuth], WaterController.getWater);
 api.get("/waters", [md_auth.asureAuth], WaterController.getWater);

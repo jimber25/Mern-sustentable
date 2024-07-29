@@ -3,7 +3,7 @@ const multiparty = require("connect-multiparty");
 const EnergyController = require("../controllers/energy");
 const md_auth = require("../middlewares/authenticated");
 
-const api = express.Energy();
+const api = express.Router();
 
 api.get("/energy/:id", [md_auth.asureAuth], EnergyController.getEnergy);
 api.get("/energies", [md_auth.asureAuth], EnergyController.getEnergies);

@@ -17,10 +17,10 @@ export function initialValues(user) {
     sector: user?.sector || "",
   };
   if(user?.site){
-    data.site=user.site
+    data.site=user.site._id
   }
   if(user?.company){
-    data.company=user.company
+    data.company=user.company._id
   }
   return data;
 }

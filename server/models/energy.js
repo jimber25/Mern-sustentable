@@ -22,10 +22,9 @@ const EnergySchema = mongoose.Schema({
     comments:String,
     state:String,
   }],
-  falta 
   active:Boolean
 });
 
-SiteSchema.plugin(mongoosePaginate);
+EnergySchema.plugin(mongoosePaginate);
 
-module.exports = mongoose.model("Site", SiteSchema);
+module.exports = mongoose.model("Energy", EnergySchema);

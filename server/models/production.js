@@ -27,6 +27,6 @@ const ProductionSchema = mongoose.Schema({
   active:Boolean
 });
 
-SiteSchema.plugin(mongoosePaginate);
+ProductionSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model("Production", ProductionSchema);

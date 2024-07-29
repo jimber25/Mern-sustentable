@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button } from "semantic-ui-react";
+import { Tab, Button, Icon } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { SiteForm, ListSites } from "../../../components/Admin/Sites";
 import "./Sites.scss";
@@ -76,7 +76,7 @@ export function Sites() {
               primary
               onClick={onOpenCloseModal}
              >
-               Nuevo Sitio
+              <Icon name='plus' /> Nuevo Sitio
              </Button>
            
           ) : null}

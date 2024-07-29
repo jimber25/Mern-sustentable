@@ -13,7 +13,7 @@ async function getEffluent(req, res) {
   }
 }
 
-async function getEffluent(req, res) {
+async function getEffluents(req, res) {
   const { active } = req.query;
   let response = null;
 
@@ -26,7 +26,7 @@ async function getEffluent(req, res) {
   res.status(200).send(response);
 }
 
-async function createeffluent(req, res) {
+async function createEffluent(req, res) {
   const site = new Eflluent({ ...req.body, active: true });
 
   effluent.save((error, effluentStored) => {

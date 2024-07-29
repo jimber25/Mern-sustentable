@@ -66,7 +66,7 @@ export function PermissionItem(props) {
   }, [role]);
 
   const openUpdateUser = () => {
-    setTitleModal(`Actualizar ${permission.action}`);
+    setTitleModal(`Actualizar Permiso: ${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}`);
     onOpenCloseModal();
   };
 
@@ -74,8 +74,8 @@ export function PermissionItem(props) {
     setIsDelete(false);
     setConfirmMessage(
       permission.active
-        ? `Desactivar permiso ${permission.action}`
-        : `Activar activar ${permission.action}`
+        ? `¿Está seguro que desea desactivar el permiso "${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}"?`
+        : `¿Está seguro que desea activar el permiso "${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}"?`
     );
     onOpenCloseConfirm();
   };
@@ -94,7 +94,7 @@ export function PermissionItem(props) {
 
   const openDeleteConfirm = () => {
     setIsDelete(true);
-    setConfirmMessage(`Eliminar el permiso ${permission.action}`);
+    setConfirmMessage(`¿Está seguro que desea eliminar el permiso "${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}"?`);
     onOpenCloseConfirm();
   };
 
@@ -168,7 +168,9 @@ export function PermissionItem(props) {
         onCancel={onOpenCloseConfirm}
         onConfirm={isDelete ? onDelete : onActivateDesactivate}
         content={confirmMessage}
-        size="mini"
+        size="tiny"
+        cancelButton='Cancelar'
+        confirmButton="Aceptar"
       />
     </>
   );

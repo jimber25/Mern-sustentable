@@ -3,7 +3,7 @@ import { ENV } from "../utils";
 export class Siteform {
   baseApi = ENV.BASE_API;
 
-  async getCompany(accessToken, idSiteForm) {
+  async getSiteForm(accessToken, idSiteForm) {
     try {
       const url = `${this.baseApi}/siteform/${idSiteForm}`;
       const params = {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button } from "semantic-ui-react";
+import { Tab, Button, Icon } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { CompanyForm, ListCompanies } from "../../../components/Admin/Companies";
 import "./Companies.scss";
@@ -74,7 +74,7 @@ export function Companies() {
               primary
               onClick={onOpenCloseModal}
             >
-              Nueva Empresa
+              <Icon name='plus' /> Nueva Empresa
             </Button>
           ) : null}
           <Tab menu={{ secondary: true }} panes={panes} />

@@ -30,7 +30,12 @@ export const MODULES = [
   "roles",
   "users",
   "sites",
-  "companies"
+  "companies",
+  "siteforms",
+  "productionforms",
+  "energyforms",
+  "effluentforms",
+  "waterforms"
 ];
 
 export const ACTIONS = [

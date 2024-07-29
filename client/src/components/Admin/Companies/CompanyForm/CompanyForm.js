@@ -27,7 +27,7 @@ export function CompanyForm(props) {
 
   const formik = useFormik({
     initialValues: initialValues(company),
-    validationSchema: isMaster(role)? null:validationSchema(company),
+    validationSchema: validationSchema(company),
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
@@ -62,9 +62,9 @@ export function CompanyForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Razon Social"
+          label="Razón Social"
           name="name"
-          placeholder="Razon social"
+          // placeholder="Razon social"
           onChange={formik.handleChange}
           value={formik.values.name}
           error={formik.errors.name}
@@ -72,7 +72,7 @@ export function CompanyForm(props) {
         <Form.Input
           label="CUIT"
           name="cuit"
-          placeholder="cuit"
+          // placeholder="cuit"
           onChange={formik.handleChange}
           value={formik.values.cuit}
           error={formik.errors.cuit}
@@ -81,17 +81,17 @@ export function CompanyForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Telefono"
+          label="Teléfono"
           name="phone"
-          placeholder="Telefono"
+          // placeholder="Telefono"
           onChange={formik.handleChange}
           value={formik.values.phone}
           error={formik.errors.phone}
         />
         <Form.Input
-          label="Direccion"
+          label="Dirección"
           name="address"
-          placeholder="Direccion"
+          // placeholder="Direccion"
           onChange={formik.handleChange}
           value={formik.values.address}
           error={formik.errors.address}
@@ -100,9 +100,9 @@ export function CompanyForm(props) {
     
       <Form.Group widths="equal">
         <Form.Input
-          label="Correo Electronico"
+          label="Correo Electrónico"
           name="email"
-          placeholder="Correo electronico"
+          // placeholder="Correo electronico"
           onChange={formik.handleChange}
           // onChange={(e)=>{handleChangeEmail(e, formik)}}
           value={formik.values.email}
