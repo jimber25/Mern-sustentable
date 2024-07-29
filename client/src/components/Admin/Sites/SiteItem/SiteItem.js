@@ -71,8 +71,8 @@ export function SiteItem(props) {
     setIsDelete(false);
     setConfirmMessage(
       site.active
-        ? `Desactivar sitio ${site.email}`
-        : `Activar sitio ${site.email}`
+        ? `¿Está seguro que desea desactivar "${site.name ? site.name : ""}"?`
+        : `¿Está seguro que desea activar "${site.name ? site.name : ""}"?`
     );
     onOpenCloseConfirm();
   };
@@ -91,7 +91,7 @@ export function SiteItem(props) {
 
   const openDeleteConfirm = () => {
     setIsDelete(true);
-    setConfirmMessage(`Eliminar sitio ${site.name ? site.name : ""}`);
+    setConfirmMessage(`¿Está seguro que desea eliminar "${site.name ? site.name : ""}"?`);
     onOpenCloseConfirm();
   };
 
@@ -145,7 +145,9 @@ export function SiteItem(props) {
         onCancel={onOpenCloseConfirm}
         onConfirm={isDelete ? onDelete : onActivateDesactivate}
         content={confirmMessage}
-        size="mini"
+        size="tiny"
+        cancelButton='Cancelar'
+        confirmButton="Aceptar"
       />
     </>
   );

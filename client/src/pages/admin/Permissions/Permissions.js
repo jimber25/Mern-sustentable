@@ -1,5 +1,5 @@
 import React, { useState , useEffect} from "react";
-import { Tab, Button , Search , Grid , GridColumn, Segment, Header } from "semantic-ui-react";
+import { Tab, Button , Icon } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { PermissionForm, ListPermissions } from "../../../components/Admin/Permissions";
 import { useAuth } from "../../../hooks";
@@ -64,7 +64,7 @@ export function Permissions() {
     <div className="permissions-page">
       {isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "create")?
         <Button className="permissions-page__add" primary onClick={onOpenCloseModal}>
-          Nuevo permiso
+         <Icon name='plus' />  Nuevo permiso
         </Button>: null}
         <Tab menu={{ secondary: true }} panes={panes} /> 
       </div>

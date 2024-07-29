@@ -1,14 +1,10 @@
 const bcrypt = require("bcryptjs");
-const Energy = require("../models/enerny");
-const Fuel = require("..models/energy")
-const { deleteEnergy } = require("./energy");
-const {deleteFuel} = require("./energy")
+const Energy = require("../models/energy");
 
 async function getEnergy(req, res) {
   const { id } = req.params;
         
-
-  const response = await Site.findById(id);
+  const response = await Energy.findById(id);
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado el formulario del Energia" });
   } else {
@@ -18,7 +14,7 @@ async function getEnergy(req, res) {
 
 }
 
-async function getEnergy(req, res) {
+async function getEnergies(req, res) {
   const { active } = req.query;
   let response = null;
 
@@ -70,8 +66,8 @@ async function deleteEnergy(req, res) {
 
 module.exports = {
   getEnergy,
-  getEnergy,
+  getEnergies,
   createEnergy,
   updateEnergy,
-  deleteEnergy,
+  deleteEnergy
 };

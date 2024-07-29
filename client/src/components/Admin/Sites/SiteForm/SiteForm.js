@@ -28,7 +28,7 @@ export function SiteForm(props) {
 
   const formik = useFormik({
     initialValues: initialValues(site),
-    validationSchema: isMaster(role)? null:validationSchema(site),
+    validationSchema: validationSchema(site),
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
@@ -58,9 +58,9 @@ export function SiteForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Razon Social"
+          label="Razón Social"
           name="name"
-          placeholder="Razon social"
+          // placeholder="Razon social"
           onChange={formik.handleChange}
           value={formik.values.name}
           error={formik.errors.name}
@@ -68,7 +68,7 @@ export function SiteForm(props) {
         <Form.Input
           label="CUIT"
           name="cuit"
-          placeholder="cuit"
+          // placeholder="cuit"
           onChange={formik.handleChange}
           value={formik.values.cuit}
           error={formik.errors.cuit}
@@ -77,17 +77,17 @@ export function SiteForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Telefono"
+          label="Teléfono"
           name="phone"
-          placeholder="Telefono"
+          // placeholder="Telefono"
           onChange={formik.handleChange}
           value={formik.values.phone}
           error={formik.errors.phone}
         />
         <Form.Input
-          label="Direccion"
+          label="Dirección"
           name="address"
-          placeholder="Direccion"
+          // placeholder="Direccion"
           onChange={formik.handleChange}
           value={formik.values.address}
           error={formik.errors.address}
@@ -96,9 +96,9 @@ export function SiteForm(props) {
     
       <Form.Group widths="equal">
         <Form.Input
-          label="Correo Electronico"
+          label="Correo Electrónico"
           name="email"
-          placeholder="Correo electronico"
+          // placeholder="Correo electrónico"
           onChange={formik.handleChange}
           value={formik.values.email}
           error={formik.errors.email}
@@ -106,7 +106,7 @@ export function SiteForm(props) {
       </Form.Group>
 
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {site ? "Actualizar datos" : "Crear Empresa"}
+        {site ? "Actualizar datos" : "Crear Sitio"}
       </Form.Button>
     </Form>
   );

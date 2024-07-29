@@ -75,6 +75,9 @@ export function PermissionForm(props) {
   useEffect(() => {
     if (listActionPermissions && listActionPermissions.length > 0) {
       let newList = ACTIONS.filter((i) => !listActionPermissions.includes(i));
+      if(formik && formik.values.action){
+        newList.push(formik.values.action);
+      }
       setListActions(newList);
     } else {
       setListActions(ACTIONS);
@@ -102,8 +105,8 @@ export function PermissionForm(props) {
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Dropdown
-          label="Modulo"
-          placeholder="Selecciona un modulo"
+          label="Módulo"
+          placeholder="Selecciona un módulo"
           options={MODULES.map((ds) => {
             return {
               key: ds,
@@ -117,10 +120,10 @@ export function PermissionForm(props) {
           error={formik.errors.module}
         />
         <Form.Dropdown
-          label="Accion"
+          label="Acción"
           placeholder={
             listActions && listActions.length > 0
-              ? "Selecciona una accion"
+              ? "Selecciona una acción"
               : " No hay acciones para elegir"
           }
           options={listActions.map((ds) => {
@@ -139,9 +142,9 @@ export function PermissionForm(props) {
       <Form.Group>
         <TextArea
           style={{ minHeight: 100 }}
-          label="Descripcion"
+          label="Descripción"
           name="description"
-          placeholder="Descripcion"
+          // placeholder="Descripcion"
           onChange={formik.handleChange}
           value={formik.values.description}
           error={formik.errors.description}
@@ -149,7 +152,7 @@ export function PermissionForm(props) {
       </Form.Group>
 
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {permission ? "Actualizar permisos" : "Crear permisos"}
+        {permission ? "Actualizar permisos" : "Crear permiso"}
       </Form.Button>
     </Form>
   );

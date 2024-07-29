@@ -83,7 +83,7 @@ export function SiteForms() {
           <Button primary 
           // onClick={onOpenCloseModal}
           >
-            Nuevo Formulario Sitio
+          <Icon name='plus' /> Nuevo Formulario Sitio
           </Button>
           </Link>: null}
         </div>

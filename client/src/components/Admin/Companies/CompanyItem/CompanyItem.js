@@ -52,8 +52,8 @@ export function CompanyItem(props) {
     setIsDelete(false);
     setConfirmMessage(
       company.active
-        ? `Desactivar empresa ${company.email}`
-        : `Activar empresa ${company.email}`
+        ? `¿Está seguro que desea desactivar "${company.name}"?`
+        : `¿Está seguro que desea activar "${company.name}"?`
     );
     onOpenCloseConfirm();
   };
@@ -72,7 +72,7 @@ export function CompanyItem(props) {
 
   const openDeleteConfirm = () => {
     setIsDelete(true);
-    setConfirmMessage(`Eliminar empresa ${company.name}`);
+    setConfirmMessage(`¿Está seguro que desea eliminar "${company.name}"?`);
     onOpenCloseConfirm();
   };
 
@@ -120,7 +120,9 @@ export function CompanyItem(props) {
         onCancel={onOpenCloseConfirm}
         onConfirm={isDelete ? onDelete : onActivateDesactivate}
         content={confirmMessage}
-        size="mini"
+        size="tiny"
+        cancelButton='Cancelar'
+        confirmButton="Aceptar"
       />
     </>
   );

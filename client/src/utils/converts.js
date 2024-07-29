@@ -33,6 +33,16 @@ export function convertModulesEngToEsp (a) {
             return "Empresas";
         case "sites":
             return "Sitios";
+        case "siteform":
+            return "Formulario de Sitio";
+        case "energyform":
+            return "Formulario de Energia";
+        case "productionform":
+            return "Formulario de Producción";
+        case "effluentform":
+            return "Formulario de Efluentes";
+        case "waterform":
+            return "Formulario de Agua";       
         default:
             return null;
     }

@@ -142,7 +142,7 @@ export function PermissionsRole(props) {
           <div className="permissions-role-item__info">
             <div>
               <Divider horizontal>
-                <Header as="h4">Modulo</Header>
+                <Header as="h4">Módulo</Header>
               </Divider>
               <Dropdown
                 label="Modulo"

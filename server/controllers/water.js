@@ -5,7 +5,7 @@ const { deleteCompany } = require("./company");
 async function getWater(req, res) {
   const { id } = req.params;
 
-  const response = await Site.findById(id);
+  const response = await Water.findById(id);
   if (!response) {
     res.status(400).send({ msg: "No se ha encontrado el formulario del Agua" });
   } else {

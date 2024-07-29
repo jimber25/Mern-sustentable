@@ -250,7 +250,10 @@ function SearchStandardPermission(props) {
             return convertModulesEngToEsp(item[k]).toString().toLowerCase().includes(value.toLowerCase())
           }else if(k === "action"){
             return convertActionsEngToEsp(item[k]).toString().toLowerCase().includes(value.toLowerCase())
-          }else{
+          }else if(k === "role"){
+            return item[k]?.name.toString().toLowerCase().includes(value.toLowerCase()) || false
+          }
+          else{
             return item[k].toString().toLowerCase().includes(value.toLowerCase())
           }
         }

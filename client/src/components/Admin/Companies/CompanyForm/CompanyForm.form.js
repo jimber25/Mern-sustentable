@@ -12,10 +12,10 @@ export function initialValues(company) {
 
 export function validationSchema(company) {
   return Yup.object({
-    name: Yup.string().required(true),
-    cuit: Yup.string().required(true),
-    address: Yup.string().required(true),
-    phone: Yup.string().required(true),
-    email: Yup.string().email(true).required(true),
+    name: Yup.string().required("El campo es requerido"),
+    cuit: Yup.string().required("El campo es requerido"),
+    address: Yup.string().required("El campo es requerido"),
+    phone: Yup.string().required("El campo es requerido"),
+    email: Yup.string().email("Ingrese un Correo Electrónico válido").required("El campo es requerido"),
   });
 }

@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const Router = require("../models/production");
+const Production = require("../models/production");
 const { deleteCompany } = require("./production");
 
 async function getProduction(req, res) {
@@ -13,12 +13,12 @@ async function getProduction(req, res) {
   }
 }
 
-async function getProduction(req, res) {
+async function getProductions(req, res) {
   const { active } = req.query;
   let response = null;
 
   if (active === undefined) {
-    response = await .find(Production);
+    response = await Production.find({});
   } else {
     response = await Production.find({ active });
   }
@@ -29,7 +29,7 @@ async function getProduction(req, res) {
 async function createProduction(req, res) {
   const production = new Production({ ...req.body, active: true });
 
-  router.save((error, routerStored) => {
+  production.save((error, productionStored) => {
     if (error) {
       res.status(400).send({ msg: "Error al crear el formulario del produccion" });
     } else {
@@ -65,8 +65,8 @@ async function deleteProduction(req, res) {
 
 module.exports = {
   getProduction,
-  getProduction,
+  getProductions,
   createProduction,
   updateProduction,
-  deleteProduction,
+  deleteProduction
 };

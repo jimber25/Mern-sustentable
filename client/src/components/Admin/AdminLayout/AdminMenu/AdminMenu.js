@@ -70,6 +70,61 @@ export function AdminMenu() {
             <Dropdown trigger={<span style={{marginRight:"40%"}}><Icon name='upload'/>Datos</span>} floating labeled item>
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "siteform", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/siteforms"
+                    active={isCurrentPath("/admin/data/siteforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Sitio"}
+                  </DropdownItem>
+                ) : null} 
+                    {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "productionform", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/productionforms"
+                    active={isCurrentPath("/admin/data/productionforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Producción"}
+                  </DropdownItem>
+                ) : null} 
+                    {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "energyform", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/energyforms"
+                    active={isCurrentPath("/admin/data/energyforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Energia"}
+                  </DropdownItem>
+                ) : null} 
+                    {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "waterform", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/waterforms"
+                    active={isCurrentPath("/admin/data/waterforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Agua"}
+                  </DropdownItem>
+                ) : null} 
+                      {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "effluentform", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/effluentforms"
+                    active={isCurrentPath("/admin/data/effluentforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Efluentes"}
+                  </DropdownItem>
+                ) : null} 
+                          {/* {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "sites", "menu") ? (
                   <DropdownItem
                     as={Link}
@@ -77,9 +132,42 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/siteforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Formulario Sitio"}
+                    {"Residuos"}
                   </DropdownItem>
                 ) : null} 
+                          {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "sites", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/siteforms"
+                    active={isCurrentPath("/admin/data/siteforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Residuos Peliigrosos"}
+                  </DropdownItem>
+                ) : null} 
+                            {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "sites", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/siteforms"
+                    active={isCurrentPath("/admin/data/siteforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Energia LB"}
+                  </DropdownItem>
+                ) : null} 
+                          {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "sites", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/siteforms"
+                    active={isCurrentPath("/admin/data/siteforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"KPIs"}
+                  </DropdownItem>
+                ) : null}  */}
                 {isMaster(role) || isAdmin(role) ||
                 hasPermission(
                   permissionActive,

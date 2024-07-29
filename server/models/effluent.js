@@ -31,6 +31,6 @@ const Effluentchema = mongoose.Schema({
   active:Boolean
 });
 
-SiteSchema.plugin(mongoosePaginate);
+Effluentchema.plugin(mongoosePaginate);
 
-module.exports = mongoose.model("Site", SiteSchema);
+module.exports = mongoose.model("Effluent", Effluentchema);

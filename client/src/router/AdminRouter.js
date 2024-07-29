@@ -14,6 +14,10 @@ import {
   SiteForms,
   Sites,
   NewSiteForm,
+  EnergyForms,
+  ProductionForms,
+  EffluentForms,
+  WaterForms
 } from "../pages/admin";
 import { useAuth } from "../hooks";
 
@@ -89,6 +93,24 @@ export function AdminRouter() {
           <Route
             path="/admin/siteforms/newsiteform"
             element={loadLayout(AdminLayout, NewSiteForm)}
+          />
+
+          <Route
+            path="/admin/data/energyforms"
+            element={loadLayout(AdminLayout, EnergyForms)}
+          />
+
+<Route
+            path="/admin/data/productionforms"
+            element={loadLayout(AdminLayout, ProductionForms)}
+          />
+<Route
+            path="/admin/data/effluentforms"
+            element={loadLayout(AdminLayout, EffluentForms)}
+          />
+<Route
+            path="/admin/data/waterforms"
+            element={loadLayout(AdminLayout, WaterForms)}
           />
         </>
       )}
