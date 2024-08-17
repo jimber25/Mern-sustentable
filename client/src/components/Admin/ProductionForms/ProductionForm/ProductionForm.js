@@ -21,7 +21,7 @@ import {
 } from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
-import { Productionform } from "../../../../api";
+import { Energyform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import { ENV } from "../../../../utils";
 import {
@@ -29,16 +29,16 @@ import {
   formatDateHourCompleted,
 } from "../../../../utils/formatDate";
 import { BasicModal } from "../../../Shared";
-import { initialValues, validationSchema } from "./ProductionForm.form";
+import { initialValues, validationSchema } from "./EnergyForm.form";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
-import "./ProductionForm.scss";
+import "./Energyform.scss";
 
-const productionFormController = new Productionform();
+const energyFormController = new Energyform();
 
-export function ProductionForm(props) {
-  const { onClose, onReload, productionForm, site } = props;
+export function EnergyForm(props) {
+  const { onClose, onReload, energyForm,energy } = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -47,9 +47,9 @@ export function ProductionForm(props) {
   const { user } = useAuth();
 
   const location = useLocation();
-  const { siteSelected } = location.state || {};
+  const { energySelected } = location.state || {};
 
-  if (!siteSelected) {
+  if (!energySelected) {
     // // Manejo de caso donde no hay datos en state (por ejemplo, acceso directo a la URL)
     // return <div>No se encontraron detalles de producto.</div>;
   }
@@ -66,33 +66,33 @@ export function ProductionForm(props) {
   };
 
   const formik = useFormik({
-    initialValues: initialValues(productionForm),
+    initialValues: initialValues(energyForm),
     validationSchema: validationSchema(),
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
-        if (!productionForm) {
+        if (!energyForm) {
           formValue.creator_user = user._id;
           formValue.date = new Date();
           if (user?.site) {
             formValue.site = user.site._id;
           } else {
-            if (site) {
-              formValue.site = site;
+            if (energy) {
+              formValue.site = energy;
             } else {
               // Desencriptar los datos recibidos
-              if (!productionForm) {
-                const siteData = decrypt(siteSelected);
-                formValue.site = siteData;
+              if (!energyForm) {
+                const energyData = decrypt(energySelected);
+                formValue.energy = energyData;
               }
             }
           }
-          await productionFormController.createProductionForm(accessToken, formValue);
+          await energyFormController.createEnergyForm(accessToken, formValue);
           //console.log(formValue);
         } else {
-          await productionFormController.updateProductionForm(
+          await energyFormController.updateEnergyForm(
             accessToken,
-            productionForm._id,
+            energyForm._id,
             formValue
           );
         }
@@ -110,14 +110,14 @@ export function ProductionForm(props) {
   });
 
   const goBack = () => {
-    navigate(`/admin/data/productionforms`, {
-      state: { siteSelected: siteSelected },
+    navigate(`/admin/data/energyforms`, {
+      state: { siteSelected: energySelected },
     });
   };
 
   return (
-    <Form className="production-form" onSubmit={formik.handleSubmit}>
-      {productionForm ? (
+    <Form className="energy-form" onSubmit={formik.handleSubmit}>
+      {energyForm ? (
         <Segment>
           <Header as="h4"> Fecha: {formatDateView(formik.values.date)}</Header>
           <Header as="h4">
@@ -142,168 +142,19 @@ export function ProductionForm(props) {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">Tipo de instalacion</label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{ _id: "1", name: "tipo a" }].map((ds) => {
-                  return {
-                    key: ds._id,
-                    text: ds.name,
-                    value: ds._id,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.value", data.value)
-                }
-                value={formik.values.installation_type.value}
-                error={formik.errors.installation_type}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.value,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.isApproved", data.value)
-                }
-              /> */}
-              <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.isApproved", data.value)
-                }
-                value={formik.values.installation_type.isApproved}
-                error={formik.errors.installation_type}
-              />
-              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite("tipo de instalacion", "installation_type");
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite("tipo de instalacion", "installation_type");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
 
-          <Table.Row>
+
+        <Table.Row>
             <Table.Cell>
-              <label className="label">Categoria de productos</label>
-            </Table.Cell>
-            <Table.Cell>
-            <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{_id:"1",name:"categoria a"}, {_id:"2",name:"categoria b"}].map((ds) => {
-                  return {
-                    key: ds._id,
-                    text: ds.name,
-                    value: ds._id,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("product_category.value", data.value)
-                }
-                value={formik.values.product_category.value}
-                error={formik.errors.product_category}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.product_category.isApproved}
-                label={
-                  formik.values.product_category.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("product_category.isApproved", checked);
-                }}
-              /> */}
-              <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("product_category.isApproved", data.value)
-                }
-                value={formik.values.product_category.isApproved}
-                error={formik.errors.product_category}
-              />
-              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                primary
-                type="button"
-                onClick={() => {
-                  openUpdateSite("Categoria de productos", "product_category");
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos", "product_category");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">Dias trabajados en el mes</label>
+              <label className="label">Electricidad standard en MHW</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="days_month.value"
+                name="standard_electricity.value"
                 onChange={formik.handleChange}
-                value={formik.values.days_month.value}
-                error={formik.errors.days_month}
+                value={formik.values.standard_electricity.value}
+                error={formik.errors.standard_electricity}
               />
             </Table.Cell>
             <Table.Cell>
@@ -344,10 +195,10 @@ export function ProductionForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("days_month.isApproved", data.value)
+                  formik.setFieldValue("standard_electricity.isApproved", data.value)
                 }
-                value={formik.values.days_month.isApproved}
-                error={formik.errors.days_month}
+                value={formik.values.standard_electricity.isApproved}
+                error={formik.errors.standard_electricity}
               />
               {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -357,7 +208,7 @@ export function ProductionForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Dias trabajados en el mes", "days_month");
+                  openUpdateSite("Electricidad standard en MHW", "standard_electricity");
                 }}
               >
                 <Icon name="comment outline" />
@@ -365,7 +216,7 @@ export function ProductionForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  openUpdateSite("Categoria de prodcuto");
                 }}
               >
                 <Icon name="paperclip" />
@@ -375,29 +226,42 @@ export function ProductionForm(props) {
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">Dias totales trabajados</label>
+              <label className="label">Costo de Electicidad</label> 
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="days_total.value"
-                onChange={formik.handleChange}
-                value={formik.values.days_total.value}
-                error={formik.errors.days_total}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "MHW" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("electricity_cost.value", data.value)
+                }
+                value={formik.values.electricity_cost.value}
+                error={formik.errors.electricity_cost}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.days_total.isApproved}
-                label={
-                  formik.values.days_total.isApproved ? "Aprobado" : "Aprobado"
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
                 }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("days_total.isApproved", checked);
-                }}
               /> */}
-                 <Form.Dropdown
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -408,12 +272,12 @@ export function ProductionForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("days_total.isApproved", data.value)
+                  formik.setFieldValue("electricity_cost.isApproved", data.value)
                 }
-                value={formik.values.days_total.isApproved}
-                error={formik.errors.days_total}
+                value={formik.values.electricity_cost.isApproved}
+                error={formik.errors.electricity_cost}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -421,7 +285,7 @@ export function ProductionForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Dias totales trabajados", "days_total");
+                  openUpdateSite("Conto de lectricidad ", "electricity_cost");
                 }}
               >
                 <Icon name="comment outline" />
@@ -429,13 +293,2446 @@ export function ProductionForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("tipo de instalacion", "installation_type");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
           </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("electricity_cost.value", data.value)
+                }
+                value={formik.values.electricity_cost.value}
+                error={formik.errors.electricity_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("electricity_cost.isApproved", data.value)
+                }
+                value={formik.values.electricity_cost.isApproved}
+                error={formik.errors.electricity_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo de electricidad", "electricity_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+          
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Energia Renovable</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="renewable_Energies.value"
+                onChange={formik.handleChange}
+                value={formik.values.renewable_Energies.value}
+                error={formik.errors.renewable_Energies}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("renewable_Energies.isApproved", data.value)
+                }
+                value={formik.values.renewable_Energies.isApproved}
+                error={formik.errors.renewable_Energies}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Energias renovables", "");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Energias renovables");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+          
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Energia Renovable Producidas</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="renewable_energies_produced .value"
+                onChange={formik.handleChange}
+                value={formik.values.renewable_energies_produced.value}
+                error={formik.errors.renewable_energies_produced}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("renewable_energies_produced .isApproved", data.value)
+                }
+                value={formik.values.renewable_energies_produced.isApproved}
+                error={formik.errors.renewable_energies_produced}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Energias renovables producidas", "");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Energias renovables producidas");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+          
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Vapor</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="steam.value"
+                onChange={formik.handleChange}
+                value={formik.values.steam.value}
+                error={formik.errors.steam}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("steam.isApproved", data.value)
+                }
+                value={formik.values.steam.isApproved}
+                error={formik.errors.steam}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Vapor", "");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Vapor");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo de vapor</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("steam_cost.value", data.value)
+                }
+                value={formik.values.steam_cost.value}
+                error={formik.errors.steam_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("steam_cost.isApproved", data.value)
+                }
+                value={formik.values.steam_cost.isApproved}
+                error={formik.errors.steam_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de vapor", "steam_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("steam_cost.value", data.value)
+                }
+                value={formik.values.steam_cost.value}
+                error={formik.errors.steam_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("steam_cost.isApproved", data.value)
+                }
+                value={formik.values.steam_cost.isApproved}
+                error={formik.errors.steam_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo de vapor", "steam_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Costo de vapor", "steam_cost");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Gas Natural</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="natural_gas.value"
+                onChange={formik.handleChange}
+                value={formik.values.natural_gas.value}
+                error={formik.errors.natural_gas}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("natural_gas.isApproved", data.value)
+                }
+                value={formik.values.natural_gas.isApproved}
+                error={formik.errors.natural_gas}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Vapor", "");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Gas natural");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo de gas natural</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("natural_gas_cost.value", data.value)
+                }
+                value={formik.values.natural_gas_cost.value}
+                error={formik.errors.natural_gas_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("natural_gas_cost.isApproved", data.value)
+                }
+                value={formik.values.natural_gas_cost.isApproved}
+                error={formik.errors.natural_gas_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de gas natural", "natural_gas_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("natural_gas_cost.value", data.value)
+                }
+                value={formik.values.natural_gas_cost.value}
+                error={formik.errors.natural_gas_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("natural_gas_cost.isApproved", data.value)
+                }
+                value={formik.values.natural_gas_cost.isApproved}
+                error={formik.errors.natural_gas_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo de gas natural", "natural_gas_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Gas licuado de petroleo</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="renewable_Energies.value"
+                onChange={formik.handleChange}
+                value={formik.values.liquefied_petroleum_gas.value}
+                error={formik.errors.liquefied_petroleum_gas}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("liquefied_petroleum_gas.isApproved", data.value)
+                }
+                value={formik.values.liquefied_petroleum_gas.isApproved}
+                error={formik.errors.liquefied_petroleum_gas}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Gas licuado de petroleo", "liquefied_petroleum_gas");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo gas licuado de petroleo</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("liquefied_petroleum_gas_cost.value", data.value)
+                }
+                value={formik.values.liquefied_petroleum_gas_cost.value}
+                error={formik.errors.liquefied_petroleum_gas_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("liquefied_petroleum_gas_cost.isApproved", data.value)
+                }
+                value={formik.values.liquefied_petroleum_gas_cost.isApproved}
+                error={formik.errors.liquefied_petroleum_gas_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de gas licuado de petroleo", "liquefied_petroleum_gas_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("liquefied_petroleum_gas_cost.value", data.value)
+                }
+                value={formik.values.liquefied_petroleum_gas_cost.value}
+                error={formik.errors.liquefied_petroleum_gas_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("liquefied_petroleum_gas_cost.isApproved", data.value)
+                }
+                value={formik.values.liquefied_petroleum_gas_cost.isApproved}
+                error={formik.errors.liquefied_petroleum_gas_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo de gas licuado de petroleo", "liquefied_petroleum_gas_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+        
+
+
+          
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Aceite combustible</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="renewable_Energies.value"
+                onChange={formik.handleChange}
+                value={formik.values.heavy_fuel_oil.value}
+                error={formik.errors.heavy_fuel_oil}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("heavy_fuel_oil.isApproved", data.value)
+                }
+                value={formik.values.heavy_fuel_oil.isApproved}
+                error={formik.errors.heavy_fuel_oil}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Aceite combustible", "heavy_fuel_oil");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo aceite combustible</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("heavy_fuel_oil_cost.value", data.value)
+                }
+                value={formik.values.heavy_fuel_oil_cost.value}
+                error={formik.errors.heavy_fuel_oil_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("heavy_fuel_oil_cost.isApproved", data.value)
+                }
+                value={formik.values.heavy_fuel_oil_cost.isApproved}
+                error={formik.errors.heavy_fuel_oil_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo aceite combustible", "heavy_fuel_oil_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("heavy_fuel_oil_cost.value", data.value)
+                }
+                value={formik.values.heavy_fuel_oil_cost.value}
+                error={formik.errors.heavy_fuel_oil_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("heavy_fuel_oil_cost.isApproved", data.value)
+                }
+                value={formik.values.heavy_fuel_oil_cost.isApproved}
+                error={formik.errors.heavy_fuel_oil_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo aceite combustible", "heavy_fuel_oil_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+          
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Aceite combustible liviano</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="light_fuel_oil"
+                onChange={formik.handleChange}
+                value={formik.values.light_fuel_oil.value}
+                error={formik.errors.light_fuel_oil}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("light_fuel_oil.isApproved", data.value)
+                }
+                value={formik.values.light_fuel_oil.isApproved}
+                error={formik.errors.light_fuel_oil}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Aceite combustible liviano", "light_fuel_oil");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo aceite combustible liviano</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("light_fuel_oil_cost.value", data.value)
+                }
+                value={formik.values.light_fuel_oil_cost.value}
+                error={formik.errors.light_fuel_oil_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("light_fuel_oil_cost.isApproved", data.value)
+                }
+                value={formik.values.light_fuel_oil_cost.isApproved}
+                error={formik.errors.light_fuel_oil_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo aceite combustible liviano", "light_fuel_oil_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("light_fuel_oil_cost.value", data.value)
+                }
+                value={formik.values.light_fuel_oil_cost.value}
+                error={formik.errors.light_fuel_oil_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("light_fuel_oil_cost.isApproved", data.value)
+                }
+                value={formik.values.light_fuel_oil_cost.isApproved}
+                error={formik.errors.light_fuel_oil_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo aceite combustible liviano", "light_fuel_oil_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Carbon</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="light_fuel_oil"
+                onChange={formik.handleChange}
+                value={formik.values.coal.value}
+                error={formik.errors.coal }
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("coal.isApproved", data.value)
+                }
+                value={formik.values.coal.isApproved}
+                error={formik.errors.coal }
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Carbon", "coal");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo carbon</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("coal_cost.value", data.value)
+                }
+                value={formik.values.coal_cost.value}
+                error={formik.errors.coal_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("coal_cost.isApproved", data.value)
+                }
+                value={formik.values.coal_cost.isApproved}
+                error={formik.errors.coal_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo coal", "coal_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("coal_cost.value", data.value)
+                }
+                value={formik.values.coal_cost.value}
+                error={formik.errors.coal_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("coal_cost.isApproved", data.value)
+                }
+                value={formik.values.coal_cost.isApproved}
+                error={formik.errors.coal_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo carbon", "coal_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+
+          
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Diesel</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="diesel"
+                onChange={formik.handleChange}
+                value={formik.values.diesel.value}
+                error={formik.errors.diesel}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("diesel.isApproved", data.value)
+                }
+                value={formik.values.diesel.isApproved}
+                error={formik.errors.diesel }
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Diesel", "diesel");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo diesel</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("diesel_cost.value", data.value)
+                }
+                value={formik.values.diesel_cost.value}
+                error={formik.errors.diesel_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("diesel_cost.isApproved", data.value)
+                }
+                value={formik.values.diesel_cost.isApproved}
+                error={formik.errors.diesel_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo diesel", "diesel_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("diesel_cost.value", data.value)
+                }
+                value={formik.values.diesel_cost.value}
+                error={formik.errors.diesel_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("diesel_cost.isApproved", data.value)
+                }
+                value={formik.values.diesel_cost.isApproved}
+                error={formik.errors.diesel_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo diesel", "diesel_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Gasolina vehiculos internos</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="gasoline_for_internal_vehicles"
+                onChange={formik.handleChange}
+                value={formik.values.gasoline_for_internal_vehicles.value}
+                error={formik.errors.gasoline_for_internal_vehicles}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("gasoline_for_internal_vehicles.isApproved", data.value)
+                }
+                value={formik.values.gasoline_for_internal_vehicles.isApproved}
+                error={formik.errors.gasoline_for_internal_vehicles}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Asolina para vehiculos internos", "gasoline_for_internal_vehicles");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo gasolina de vehiculos internos</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("gasoline_for_internal_vehicles_cost.value", data.value)
+                }
+                value={formik.values.gasoline_for_internal_vehicles_cost.value}
+                error={formik.errors.gasoline_for_internal_vehicles_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("gasoline_for_internal_vehicles_cost.isApproved", data.value)
+                }
+                value={formik.values.gasoline_for_internal_vehicles_cost.isApproved}
+                error={formik.errors.gasoline_for_internal_vehicles_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de gasolina para veiculos intrernos", "gasoline_for_internal_vehicles_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("gasoline_for_internal_vehicles_cost.value", data.value)
+                }
+                value={formik.values.gasoline_for_internal_vehicles_cost.value}
+                error={formik.errors.gasoline_for_internal_vehicles_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("gasoline_for_internal_vehicles_cost.isApproved", data.value)
+                }
+                value={formik.values.gasoline_for_internal_vehicles_cost.isApproved}
+                error={formik.errors.gasoline_for_internal_vehicles_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo de gasolina para vheiculos internos", "gasoline_for_internal_vehicles_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Biomasa</label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
+                type="number"
+                name="biomass"
+                onChange={formik.handleChange}
+                value={formik.values.biomass.value}
+                error={formik.errors.biomass}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.days_month.isApproved}
+                label={
+                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("days_month.isApproved", checked);
+                }}
+              /> */}
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={["Aprobado", "No aprobado"].map((ds) => {
+                  return {
+                    key: ds,
+                    text: ds,
+                    value: ds,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("days_month.isApproved", data.value)
+                }
+                value={formik.values.days_month.isApproved}
+                error={formik.errors.days_month}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("biomass.isApproved", data.value)
+                }
+                value={formik.values.biomass.isApproved}
+                error={formik.errors.biomass}
+              />
+              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Biomasa", "biomass");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categotris de producto");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo Biomasa</label> 
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{ _id: "1", name: "name" }].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("biomass_cost.value", data.value)
+                }
+                value={formik.values.biomass_cost.value}
+                error={formik.errors.biomass_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.value,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("installation_type.isApproved", data.value)
+                }
+              /> */}
+
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("biomass_cost.isApproved", data.value)
+                }
+                value={formik.values.biomass_cost.isApproved}
+                error={formik.errors.biomass_cost}
+              />
+              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de biomasa", "biomass_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("tipo de instalacion", "installation_type");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Moneda</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{_id:"1",name:" $ Arg "}, {_id:"2",name:"US$"}, {_id:"3",name:"R$"},{_id:"4",name:"$ Mxn"}].map((ds) => {
+                  return {
+                    key: ds._id,
+                    text: ds.name,
+                    value: ds._id,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("biomass_cost.value", data.value)
+                }
+                value={formik.values.biomass_cost.value}
+                error={formik.errors.biomass_cost}
+              />
+            </Table.Cell>
+            <Table.Cell>
+              {/* <Form.Checkbox
+                toggle
+                checked={formik.values.product_category.isApproved}
+                label={
+                  formik.values.product_category.isApproved
+                    ? "Aprobado"
+                    : "Aprobado"
+                }
+                onChange={(e, { checked }) => {
+                  formik.setFieldValue("product_category.isApproved", checked);
+                }}
+              /> */}
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("biomass_cost.isApproved", data.value)
+                }
+                value={formik.values.biomass_cost.isApproved}
+                error={formik.errors.biomass_cost}
+              />
+              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                primary
+                type="button"
+                onClick={() => {
+                  openUpdateSite("Costo de biomasa", "biomass_cost");
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  openUpdateSite("Categoria de producto", "");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+          
+
+
+
 
           <Table.Row>
             <Table.Cell>
@@ -2073,13 +4370,13 @@ export function ProductionForm(props) {
           fieldName={fieldName}
           onClose={onOpenCloseModal}
           onReload={onReload}
-          productionForm={productionForm}
+          energyForm={energyForm}
           user={user}
         />
       </BasicModal>
       <Form.Group widths="2">
         <Form.Button type="submit" fluid primary loading={formik.isSubmitting}>
-          {!productionForm ? "Guardar" : "Actualizar datos"}
+          {!energyForm ? "Guardar" : "Actualizar datos"}
         </Form.Button>
         <Form.Button
           type="button"
@@ -2100,6 +4397,7 @@ export function ProductionForm(props) {
 function Comments(props) {
   const { formik, user, fieldName, onClose } = props;
   const [comment, setComment] = useState("");
+  console.log(user);
 
   const onChangeHandle = () => {
     if (comment && comment.length > 0) {
