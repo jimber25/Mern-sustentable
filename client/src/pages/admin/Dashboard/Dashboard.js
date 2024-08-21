@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Line, Pie, Column } from '@ant-design/charts';
-import { Tab, TabPane } from "semantic-ui-react";
+import { Line, Pie, Column} from '@ant-design/charts';
+import { Tab, TabPane, Segment, Header } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { UserForm, ListUsers } from "../../../components/Admin/Users";
 import { useAuth } from "../../../hooks";
 import { isAdmin, hasPermission } from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../Error";
+import { DashBoard } from "../../../components/Admin/Dashboard/Dashboard/DashBoard";
 
 export function Dashboard() {
 
@@ -149,9 +150,6 @@ const data2 = [
 
 return (
   <>
-   <Tab 
-  //  menu={{ pointing: true }}
-   menu={{ borderless: true, attached: false, tabular: false }}
-   panes={panes} />
+  <DashBoard/>
   </>)
 }
