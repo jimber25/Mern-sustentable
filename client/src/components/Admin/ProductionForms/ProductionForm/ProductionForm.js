@@ -148,7 +148,14 @@ export function ProductionForm(props) {
               <label className="label">Volumen de produccion</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Dropdown
+            <Form.Input
+                type="number"
+                name="production_volume.value"
+                onChange={formik.handleChange}
+                value={formik.values.production_volume.value}
+                error={formik.errors.production_volume}
+              />
+              {/* <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{ _id: "1", name: "tipo a" }].map((ds) => {
                   return {
@@ -159,11 +166,11 @@ export function ProductionForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("production_valume.value", data.value)
+                  formik.setFieldValue("production_volume.value", data.value)
                 }
-                value={formik.values.production_valume.value}
-                error={formik.errors.production_valume}
-              />
+                value={formik.values.production_volume.value}
+                error={formik.errors.production_volume}
+              /> */}
             </Table.Cell>
             <Table.Cell>
               {/* <Form.Dropdown
@@ -191,10 +198,10 @@ export function ProductionForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("production_valume.isApproved", data.value)
+                  formik.setFieldValue("production_volume.isApproved", data.value)
                 }
-                value={formik.values.production_valume.isApproved}
-                error={formik.errors.production_valume}
+                value={formik.values.production_volume.isApproved}
+                error={formik.errors.production_volume}
               />
               {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
@@ -226,26 +233,23 @@ export function ProductionForm(props) {
               <label className="label">Promedio anual basado en los reportes</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
+              {/* <Form.Input
                 type="number"
                 name="average_annual.value"
                 onChange={formik.handleChange}
                 value={formik.average_annual.value}
                 error={formik.errors.average_annual}
+              /> */}
+                    <Form.Input
+                type="number"
+                name="average_annual.value"
+                onChange={formik.handleChange}
+                value={formik.values.average_annual.value}
+                error={formik.errors.average_annual}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.days_total.isApproved}
-                label={
-                  formik.values.days_total.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("days_total.isApproved", checked);
-                }}
-              /> */}
-                 <Form.Dropdown
+            <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {

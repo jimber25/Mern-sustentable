@@ -11,10 +11,11 @@ export function initialValues(production) {
       ],
       isApproved:false
     },
-    annual_average: production?.average_annual || {
+    average_annual: production?.average_annual || {
       value:"",
       reviews:[
-      ]
+      ],
+      isApproved:false
     },
     
    
