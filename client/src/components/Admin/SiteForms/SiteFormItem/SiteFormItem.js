@@ -120,7 +120,9 @@ export function SiteFormItem(props) {
         onCancel={onOpenCloseConfirm}
         onConfirm={onDelete}
         content={`Eliminar el formulario del sitio con fecha ${formatDateView(siteForm.date)}`}
-        size="mini"
+        size="tiny"
+        cancelButton='Cancelar'
+        confirmButton="Aceptar"
       />
     </>
   );

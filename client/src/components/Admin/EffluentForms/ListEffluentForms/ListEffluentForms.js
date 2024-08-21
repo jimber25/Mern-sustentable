@@ -91,7 +91,7 @@ export function ListEffluentForms(props) {
             <Table.Body>
             {map(effluentForms, (effluentForm) => (
               //TODO:DESCOMENTAR CUANDO ESTE TODO COMPLETO
-             <EffluentFormItem key={effluentForm._id} effluentForm={effluentForm} onReload={onReload} />
+             <EffluentFormItem key={effluentForm._id} effluentForm={effluentForm} onReload={onReload} siteSelected={siteSelected}/>
               ))
       }
            </Table.Body>

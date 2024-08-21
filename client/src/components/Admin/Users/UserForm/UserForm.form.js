@@ -12,15 +12,15 @@ export function initialValues(user) {
     role: user? user.role && user.role._id? user.role._id : user.role : "",
     password: "",
     // company: user?.company ||null,
-    // site: user?.site || null,
+    site: user?.site || null,
     position: user?.position || "",
     sector: user?.sector || "",
   };
-  if(user?.site){
-    data.site=user.site._id
-  }
+  // if(user?.site){
+  //   data.site=user.site._id
+  // }
   if(user?.company){
-    data.company=user.company._id
+    data.company=user.company
   }
   return data;
 }

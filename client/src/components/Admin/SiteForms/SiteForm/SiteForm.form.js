@@ -14,7 +14,8 @@ export function initialValues(site) {
     product_category: site?.product_category || {
       value:"",
       reviews:[
-      ]
+      ],
+      isApproved:false
     },
     days_month:site?.days_month || {
       value:"",

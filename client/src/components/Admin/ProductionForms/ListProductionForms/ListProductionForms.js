@@ -89,9 +89,9 @@ export function ListProductionForms(props) {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-            {map(productionforms, (produtionForm) => (
+            {map(productionforms, (productionForm) => (
               //TODO:DESCOMENTAR CUANDO ESTE TODO COMPLETO
-             <ProductionFormItem key={produtionForm._id} energyForm={produtionForm} onReload={onReload} />
+             <ProductionFormItem key={productionForm._id} productionForm={productionForm} onReload={onReload} />
               ))
       }
            </Table.Body>

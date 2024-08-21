@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Form , Message} from "semantic-ui-react";
+import { Form, Message, Grid, GridColumn, Segment, Divider } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { Auth } from "../../../../api";
 import { initialValues, validationSchema } from "./RegisterForm.form";
+import { Presentation } from "../Presentation";
 import "./RegisterForm.scss";
 
 const authController = new Auth();
@@ -20,9 +21,11 @@ export function RegisterForm(props) {
     onSubmit: async (formValue) => {
       try {
         setError("");
-        await authController.register(formValue).then(result=>{
-          if(result.code && result.code === 200){
-            setMessage("El usuario ha sido creado correctamente en espera de ser habilitado por el administrador")
+        await authController.register(formValue).then((result) => {
+          if (result.code && result.code === 200) {
+            setMessage(
+              "El usuario ha sido creado correctamente en espera de ser habilitado por el administrador"
+            );
             setViewMessage(true);
             formik.resetForm();
           }
@@ -36,52 +39,76 @@ export function RegisterForm(props) {
   });
 
   return (
-    <Form className="register-form" onSubmit={formik.handleSubmit}>
+    <Segment placeholder style={{ height: "500px"}}>
+    <Grid centered columns={2} stackable>
+      <GridColumn floated="left" textAlign="center">
+        <Presentation />
+      </GridColumn>
 
-    {viewMessage?
-  <Message
-    info
-    header='Información Importante'
-    content={message}
-  /> : null}
-      <Form.Input
-        name="email"
-        placeholder="Correo electronico"
-        onChange={formik.handleChange}
-        value={formik.values.email}
-        error={formik.errors.email}
-      />
-      <Form.Input
-        name="password"
-        type="password"
-        placeholder="Contraseña"
-        onChange={formik.handleChange}
-        value={formik.values.password}
-        error={formik.errors.password}
-      />
-      <Form.Input
-        name="repeatPassword"
-        type="password"
-        placeholder="Repetir contraseña"
-        onChange={formik.handleChange}
-        value={formik.values.repeatPassword}
-        error={formik.errors.repeatPassword}
-      />
-      <Form.Checkbox
-        name="conditionsAccepted"
-        label="He leído y acepto las poíticas de privacidad"
-        onChange={(_, data) =>
-          formik.setFieldValue("conditionsAccepted", data.checked)
-        }
-        checked={formik.values.conditionsAccepted}
-        error={formik.errors.conditionsAccepted}
-      />
+      <GridColumn floated="rigth">
+        <Form className="register-form" onSubmit={formik.handleSubmit}>
+          {viewMessage ? (
+            <Message info header="Información Importante" content={message} />
+          ) : null}
+          <Form.Input
+            name="email"
+            placeholder="Correo electronico"
+            icon='user' 
+            iconPosition='left' 
+            size='large'
+            label="Nombre de Usuario"
+            onChange={formik.handleChange}
+            value={formik.values.email}
+            error={formik.errors.email}
+          />
+          <Form.Input
+            name="password"
+            type="password"
+            icon='lock' 
+            iconPosition='left' 
+            placeholder="Contraseña"
+            label="Contraseña"
+            size='large'
+            onChange={formik.handleChange}
+            value={formik.values.password}
+            error={formik.errors.password}
+          />
+          <Form.Input
+            name="repeatPassword"
+            type="password"
+            icon='lock' 
+            iconPosition='left' 
+            size='large'
+            placeholder="Repetir contraseña"
+            label="Repetir Contraseña"
+            onChange={formik.handleChange}
+            value={formik.values.repeatPassword}
+            error={formik.errors.repeatPassword}
+          />
+          <Form.Checkbox
+            name="conditionsAccepted"
+            label="He leído y acepto las poíticas de privacidad"
+            onChange={(_, data) =>
+              formik.setFieldValue("conditionsAccepted", data.checked)
+            }
+            checked={formik.values.conditionsAccepted}
+            error={formik.errors.conditionsAccepted}
+          />
 
-      <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        Crear cuenta
-      </Form.Button>
+          <Form.Button
+            type="submit"
+            primary
+            fluid
+            loading={formik.isSubmitting}
+          >
+            Crear cuenta
+          </Form.Button>
 
-      <p className="register-form__error">{error}</p>
-    </Form>
+          <p className="register-form__error">{error}</p>
+        </Form>
+      </GridColumn>
+    </Grid>
+    <Divider vertical></Divider>
+    </Segment>
   );
 }

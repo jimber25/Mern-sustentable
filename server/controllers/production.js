@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const Production = require("../models/production");
 const { deleteCompany } = require("./production");
+const production = require("../models/production");
+const mongoose = require('mongoose');
 
 async function getProduction(req, res) {
   const { id } = req.params;
@@ -14,16 +16,33 @@ async function getProduction(req, res) {
 }
 
 async function getProductions(req, res) {
-  const { active } = req.query;
-  let response = null;
+  const { active,  page = 1, limit = 50, site } = req.query;
 
-  if (active === undefined) {
-    response = await Production.find({});
-  } else {
-    response = await Production.find({ active });
+  const filter={}
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    populate: [
+      {
+        path : 'creator_user',
+      },
+    ]
+  };
+
+  if(active !== undefined){
+    options.active=active;
+  }
+  if(site !== undefined){
+    filter.site=mongoose.Types.ObjectId(site);
   }
 
-  res.status(200).send(response);
+  Production.paginate(filter, options, (error, productions) => {
+    if (error) {
+      res.status(400).send({ msg: "Error al obtener los formularios de producción" });
+    } else {
+      res.status(200).send(productions);
+    }
+  });
 }
 
 async function createProduction(req, res) {
@@ -31,6 +50,7 @@ async function createProduction(req, res) {
 
   production.save((error, productionStored) => {
     if (error) {
+      console.log(error)
       res.status(400).send({ msg: "Error al crear el formulario del produccion" });
     } else {
       res.status(200).send(productionStored);

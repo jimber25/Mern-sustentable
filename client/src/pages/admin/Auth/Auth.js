@@ -36,6 +36,8 @@ export function Auth() {
         panes={panes}
         className="auth__forms"
         activeIndex={activeIndex}
+        // menu={{ fluid: true, vertical: true }}
+        // menuPosition="right"
         onTabChange={(_, data) => setActiveIndex(data.activeIndex)}
       />
     </div>

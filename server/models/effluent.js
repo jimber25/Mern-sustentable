@@ -13,21 +13,78 @@ const Effluentchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
   },
-  reviews:[{
-    date:Date,
-    reviewer_user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    comments:String,
-    state:String,
-  }],
-  Total_domestic_effluents:Number,
-  Total_industrial_effluents:Number,
-  Sludge_Mud_sent_for_disposal_landfill:Number,
-  Total_effluents_per_unit_produced:Number,
-  Percentage_Domestic_effluents:Number,
-  Percentage_Industrial_effluents:Number,
+  total_domestic_effluents:{
+    value:Number,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    isApproved:Boolean
+  },
+  total_industrial_effluents:{
+    value:Number,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    isApproved:Boolean
+  },
+  sludge_mud_sent_for_disposal_landfill:{
+    value:Number,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    isApproved:Boolean
+  },
+  total_effluents_per_unit_produced:{
+    value:Number,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    isApproved:Boolean
+  },
+  percentage_domestic_effluents:{
+    value:Number,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    isApproved:Boolean
+  },
+  percentage_industrial_effluents:{
+    value:Number,
+    reviews:[{
+      date:Date,
+      reviewer_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      comments:String
+    }],
+    isApproved:Boolean
+  },
   active:Boolean
 });
 

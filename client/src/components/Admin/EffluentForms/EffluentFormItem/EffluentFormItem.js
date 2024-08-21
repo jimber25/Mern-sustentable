@@ -121,7 +121,9 @@ export function EffluentFormItem(props) {
         onCancel={onOpenCloseConfirm}
         onConfirm={onDelete}
         content={`Eliminar el formulario de efluentes con fecha ${formatDateView(effluentForm.date)}`}
-        size="mini"
+        size="tiny"
+        cancelButton='Cancelar'
+        confirmButton="Aceptar"
       />
     </>
   );
