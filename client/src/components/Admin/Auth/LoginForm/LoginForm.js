@@ -13,7 +13,7 @@ import { useAuth } from "../../../../hooks";
 import { inititalValues, validationSchema } from "./LoginForm.form";
 import { Presentation } from "../Presentation";
 import "./LoginForm.scss";
-import ImageVacia from "../../../../utils/imagen-vacia.png";
+//import ImageVacia from "../../../../utils/imagen-vacia.png";
 
 const authController = new Auth();
 

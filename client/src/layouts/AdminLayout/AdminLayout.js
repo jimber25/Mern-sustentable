@@ -21,6 +21,10 @@ import { Site } from "../../api";
 import { useSite } from "../../contexts/SiteContext";
 import { formatDateView } from "../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
+import 'moment/locale/es'; //importo el lenguaje en español
+//import "moment/locale/en";
+//import "moment/locale/fr";
 
 const siteController = new Site();
 
@@ -58,7 +62,10 @@ export function AdminLayout(props) {
       </div>
       <div className="admin-layout__right">
       <div className="admin-layout__right-pre">
-        <div style={{float:"left"}}> {formatDateView(new Date())}</div>
+        <div style={{float:"left"}}> {
+          moment().format('LLLL')
+        //formatDateView(new Date())
+        }</div>
       </div>
         <div className="admin-layout__right-header">
           {/* <SiteSelector /> */}
