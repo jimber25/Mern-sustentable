@@ -62,7 +62,6 @@ export class Effluentform {
       }
       if(paramsEffluent?.site){
         url = `${url}&${siteFilter}`
-        console.log(url)
       }
       const params = {
         headers: {

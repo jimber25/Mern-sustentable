@@ -74,7 +74,9 @@ export function UserForm(props) {
           }else if(isAdmin(role) && !user.site){
             formValue.site=siteData._id;
           }
-          await userController.updateUser(accessToken, user._id, formValue);
+          const newData=removeNullFields(formValue);
+          console.log(newData)
+          await userController.updateUser(accessToken, user._id, newData);
         }
         onReload(true);
         close();
@@ -258,4 +260,20 @@ export function UserForm(props) {
       </Form.Button>
     </Form>
   );
+}
+
+
+function removeNullFields(obj) {
+  // Recorre las propiedades del objeto
+  for (const key in obj) {
+    // Verifica si el campo es null
+    if (obj[key] === null) {
+      // Elimina el campo del objeto
+      delete obj[key];
+    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+      // Si el valor es un objeto, llama a la función recursivamente
+      removeNullFields(obj[key]);
+    }
+  }
+  return obj;
 }

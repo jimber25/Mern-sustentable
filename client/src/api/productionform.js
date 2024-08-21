@@ -30,6 +30,7 @@ export class Productionform {
       //   formData.append(key, data[key]);
       // });
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USER}`;
+      console.log(data)
       const url = `${this.baseApi}/add-production`;
       const params = {
         method: "POST",
@@ -62,7 +63,6 @@ export class Productionform {
       }
       if(paramsProduction?.site){
         url = `${url}&${siteFilter}`
-        console.log(url)
       }
       const params = {
         headers: {

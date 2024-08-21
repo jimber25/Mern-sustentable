@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Effluent = require("../models/effluent");
 const { deleteCompany } = require("./company");
+const mongoose = require('mongoose');
 
 async function getEffluent(req, res) {
   const { id } = req.params;
@@ -14,20 +15,37 @@ async function getEffluent(req, res) {
 }
 
 async function getEffluents(req, res) {
-  const { active } = req.query;
-  let response = null;
+  const { active,  page = 1, limit = 50, site } = req.query;
 
-  if (active === undefined) {
-    response = await Effluent.find();
-  } else {
-    response = await Effluent.find({ active });
+  const filter={}
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    populate: [
+      {
+        path : 'creator_user',
+      },
+    ]
+  };
+
+  if(active !== undefined){
+    options.active=active;
+  }
+  if(site !== undefined){
+    filter.site=mongoose.Types.ObjectId(site);
   }
 
-  res.status(200).send(response);
+  Effluent.paginate(filter, options, (error, effluents) => {
+    if (error) {
+      res.status(400).send({ msg: "Error al obtener los formularios de efluentes" });
+    } else {
+      res.status(200).send(effluents);
+    }
+  });
 }
 
 async function createEffluent(req, res) {
-  const site = new Eflluent({ ...req.body, active: true });
+  const effluent = new Effluent({ ...req.body, active: true });
 
   effluent.save((error, effluentStored) => {
     if (error) {

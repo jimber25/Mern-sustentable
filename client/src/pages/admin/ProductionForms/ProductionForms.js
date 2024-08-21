@@ -95,7 +95,7 @@ export function ProductionForms() {
 
       {/* EN CASO DE QUE NO SE REQUIERA EL MODAL COMENTAR */}
       <BasicModal show={showModal} close={onOpenCloseModal} title="Formulario Producción" size={"fullscreen"}>
-        <ProductionForm onClose={onOpenCloseModal} onReload={onReload} />
+        <ProductionForm onClose={onOpenCloseModal} onReload={onReload} siteSelected={siteSelected}/>
       </BasicModal>
     </>
   );
