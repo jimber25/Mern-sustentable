@@ -4,6 +4,8 @@ const effluent = require("./effluent");
 
 const Effluentchema = mongoose.Schema({
   date: Date,
+  period:String,
+  year:String,
   creator_user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -13,7 +15,12 @@ const Effluentchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
   },
+  site:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Site'
+  },
   total_domestic_effluents:{
+    code:String,
     value:Number,
     reviews:[{
       date:Date,
@@ -26,6 +33,7 @@ const Effluentchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_industrial_effluents:{
+    code:String,
     value:Number,
     reviews:[{
       date:Date,
@@ -38,6 +46,7 @@ const Effluentchema = mongoose.Schema({
     isApproved:Boolean
   },
   sludge_mud_sent_for_disposal_landfill:{
+    code:String,
     value:Number,
     reviews:[{
       date:Date,
@@ -50,6 +59,7 @@ const Effluentchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_effluents_per_unit_produced:{
+    code:String,
     value:Number,
     reviews:[{
       date:Date,
@@ -62,6 +72,7 @@ const Effluentchema = mongoose.Schema({
     isApproved:Boolean
   },
   percentage_domestic_effluents:{
+    code:String,
     value:Number,
     reviews:[{
       date:Date,
@@ -74,6 +85,7 @@ const Effluentchema = mongoose.Schema({
     isApproved:Boolean
   },
   percentage_industrial_effluents:{
+    code:String,
     value:Number,
     reviews:[{
       date:Date,

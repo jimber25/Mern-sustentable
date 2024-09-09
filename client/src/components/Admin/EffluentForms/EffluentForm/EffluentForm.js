@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Form,
   Image,
@@ -8,9 +8,9 @@ import {
   Button,
   Comment,
   CommentGroup,
-  CommentContent,
+  GridColumn,
   CommentMetadata,
-  CommentText,
+  GridRow,
   CommentAuthor,
   TableFooter,
   TableHeaderCell,
@@ -33,21 +33,24 @@ import { initialValues, validationSchema } from "./EffluentForm.form";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
+import { PERIODS } from "../../../../utils";
+import { convertPeriodsEngToEsp } from "../../../../utils/converts";
 import "./EffluentForm.scss";
 
 const effluentFormController = new Effluentform();
 
 export function EffluentForm(props) {
-  const { onClose, onReload, effluentForm, site, siteSelected} = props;
+  const { onClose, onReload, effluentForm, siteSelected , year, period} = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [fieldName, setFieldName] = useState("");
+  const [listPeriods, setListPeriods] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const { user } = useAuth();
 
   const location = useLocation();
- // const { siteSelected } = location.state || {};
+  // const { siteSelected } = location.state || {};
 
   if (!siteSelected) {
     // // Manejo de caso donde no hay datos en state (por ejemplo, acceso directo a la URL)
@@ -66,7 +69,7 @@ export function EffluentForm(props) {
   };
 
   const formik = useFormik({
-    initialValues: initialValues(effluentForm),
+    initialValues: initialValues(effluentForm, period, year),
     validationSchema: validationSchema(),
     validateOnChange: false,
     onSubmit: async (formValue) => {
@@ -77,18 +80,22 @@ export function EffluentForm(props) {
           if (user?.site) {
             formValue.site = user.site._id;
           } else {
-            if (site) {
-              formValue.site = site;
-            } else {
-              // Desencriptar los datos recibidos
-              if (!effluentForm) {
-                //const siteData = decrypt(siteSelected);
-                //formValue.site = siteData;
-                formValue.site = siteSelected;
-              }
-            }
+            if (siteSelected) {
+              formValue.site = siteSelected;
+            } 
+            // else {
+            //   // Desencriptar los datos recibidos
+            //   if (!effluentForm) {
+            //     //const siteData = decrypt(siteSelected);
+            //     //formValue.site = siteData;
+            //     formValue.site = siteSelected;
+            //   }
+            // }
           }
-          await effluentFormController.createEffluentForm(accessToken, formValue);
+          await effluentFormController.createEffluentForm(
+            accessToken,
+            formValue
+          );
           //console.log(formValue);
         } else {
           await effluentFormController.updateEffluentForm(
@@ -115,6 +122,35 @@ export function EffluentForm(props) {
       state: { siteSelected: siteSelected },
     });
   };
+  
+  // Generar una lista de años (por ejemplo, del 2000 al 2024)
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response =
+          await effluentFormController.getPeriodsEffluentFormsBySiteAndYear(
+            accessToken,
+            siteSelected,
+            formik.values.year
+          );
+          const periods = PERIODS.map((item) => item);
+          const availablePeriods = periods
+            .filter((period) => !response.periods.includes(period))
+            .map((period) => period);
+  
+          setListPeriods(availablePeriods);
+          console.log(availablePeriods)
+      } catch (error) {
+        console.error(error);
+        setListPeriods([]);
+      }
+    })();
+  }, [formik.values.year]);
+
+  console.log(period, formik.values.period)
 
   return (
     <Form className="effluent-form" onSubmit={formik.handleSubmit}>
@@ -133,9 +169,56 @@ export function EffluentForm(props) {
           </Header>
         </Segment>
       ) : null}
+      {!effluentForm ? (
+        <>
+          <Grid columns={2} divided>
+            <GridRow>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Año"
+                  placeholder="Seleccione"
+                  options={years.map((year) => {
+                    return {
+                      key: year,
+                      text: year,
+                      value: year,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("year", data.value)
+                  }
+                  value={formik.values.year}
+                  error={formik.errors.year}
+                />
+              </GridColumn>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Periodo"
+                  placeholder="Seleccione"
+                  options={listPeriods.map((period) => {
+                    return {
+                      key: period,
+                      text: convertPeriodsEngToEsp(period),
+                      value: period,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("period", data.value)
+                  }
+                  value={formik.values.period}
+                  error={formik.errors.period}
+                />
+              </GridColumn>
+            </GridRow>
+          </Grid>
+        </>
+      ) : null}
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
+            <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="3">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Estado</Table.HeaderCell>
@@ -145,26 +228,36 @@ export function EffluentForm(props) {
         <Table.Body>
           <Table.Row>
             <Table.Cell>
+              <label className="label">
+                {formik.values.total_domestic_effluents.code}{" "}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
               <label className="label">Total efluentes domésticos </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
-                onChange={(e, { name, value })=> 
-                  formik.setFieldValue("total_domestic_effluents", value)
-                }
+                name="total_domestic_effluents.value"
+                onChange={formik.handleChange}
+                // onChange={(e, { name, value })=>
+                //   formik.setFieldValue("total_domestic_effluents", value)
+                // }
                 value={formik.values.total_domestic_effluents.value}
                 error={formik.errors.total_domestic_effluents}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -173,7 +266,10 @@ export function EffluentForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_domestic_effluents.isApproved", data.value)
+                  formik.setFieldValue(
+                    "total_domestic_effluents.isApproved",
+                    data.value
+                  )
                 }
                 value={formik.values.total_domestic_effluents.isApproved}
                 error={formik.errors.total_domestic_effluents}
@@ -186,7 +282,10 @@ export function EffluentForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Total efluentes domésticos", "total_domestic_effluents");
+                  openUpdateSite(
+                    "Total efluentes domésticos",
+                    "total_domestic_effluents"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -204,18 +303,22 @@ export function EffluentForm(props) {
 
           <Table.Row>
             <Table.Cell>
+              <label className="label">
+                {formik.values.total_industrial_effluents.code}{" "}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
               <label className="label">Total efluentes industriales</label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
-                onChange={(e, { name, value })=> 
-                  formik.setFieldValue("total_industrial_effluents", value)
-                }
+                onChange={formik.handleChange}
+                name="total_industrial_effluents.value"
                 value={formik.values.total_industrial_effluents.value}
                 error={formik.errors.total_industrial_effluents}
               />
@@ -223,7 +326,10 @@ export function EffluentForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -232,7 +338,10 @@ export function EffluentForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_industrial_effluents.isApproved", data.value)
+                  formik.setFieldValue(
+                    "total_industrial_effluents.isApproved",
+                    data.value
+                  )
                 }
                 value={formik.values.total_industrial_effluents.isApproved}
                 error={formik.errors.total_industrial_effluents}
@@ -245,7 +354,10 @@ export function EffluentForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("Total efluentes industriales", "total_industrial_effluents");
+                  openUpdateSite(
+                    "Total efluentes industriales",
+                    "total_industrial_effluents"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -253,7 +365,10 @@ export function EffluentForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Total efluentes industriales", "total_industrial_effluents");
+                  openUpdateSite(
+                    "Total efluentes industriales",
+                    "total_industrial_effluents"
+                  );
                 }}
               >
                 <Icon name="paperclip" />
@@ -263,26 +378,38 @@ export function EffluentForm(props) {
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">Lodos/ Barros enviados a disponer (relleno sanitario)</label>
+              <label className="label">
+                {formik.values.sludge_mud_sent_for_disposal_landfill.code}{" "}
+              </label>
+            </Table.Cell>
+
+            <Table.Cell>
+              <label className="label">
+                Lodos/ Barros enviados a disponer (relleno sanitario)
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
-                onChange={(e, { name, value })=> 
-                  formik.setFieldValue("sludge_mud_sent_for_disposal_landfill", value)
+                onChange={formik.handleChange}
+                name="sludge_mud_sent_for_disposal_landfill.value"
+                value={
+                  formik.values.sludge_mud_sent_for_disposal_landfill.value
                 }
-                value={formik.values.sludge_mud_sent_for_disposal_landfill.value}
                 error={formik.errors.sludge_mud_sent_for_disposal_landfill}
               />
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -291,9 +418,14 @@ export function EffluentForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("sludge_mud_sent_for_disposal_landfill.isApproved", data.value)
+                  formik.setFieldValue(
+                    "sludge_mud_sent_for_disposal_landfill.isApproved",
+                    data.value
+                  )
                 }
-                value={formik.values.sludge_mud_sent_for_disposal_landfill.isApproved}
+                value={
+                  formik.values.sludge_mud_sent_for_disposal_landfill.isApproved
+                }
                 error={formik.errors.sludge_mud_sent_for_disposal_landfill}
               />
               {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -304,7 +436,10 @@ export function EffluentForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("Lodos/ Barros enviados a disponer", "sludge_mud_sent_for_disposal_landfill");
+                  openUpdateSite(
+                    "Lodos/ Barros enviados a disponer",
+                    "sludge_mud_sent_for_disposal_landfill"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -312,7 +447,10 @@ export function EffluentForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Lodos/ Barros enviados a disponer", "sludge_mud_sent_for_disposal_landfill");
+                  openUpdateSite(
+                    "Lodos/ Barros enviados a disponer",
+                    "sludge_mud_sent_for_disposal_landfill"
+                  );
                 }}
               >
                 <Icon name="paperclip" />
@@ -322,18 +460,24 @@ export function EffluentForm(props) {
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">Total efluentes por unidad producida</label>
+              <label className="label">
+                {formik.values.total_effluents_per_unit_produced.code}{" "}
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                Total efluentes por unidad producida
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
-                onChange={(e, { name, value })=> 
-                  formik.setFieldValue("total_effluents_per_unit_produced", value)
-                }
+                onChange={formik.handleChange}
+                name="total_effluents_per_unit_produced.value"
                 value={formik.values.total_effluents_per_unit_produced.value}
                 error={formik.errors.total_effluents_per_unit_produced}
               />
@@ -341,7 +485,10 @@ export function EffluentForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -350,9 +497,14 @@ export function EffluentForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_effluents_per_unit_produced.isApproved", data.value)
+                  formik.setFieldValue(
+                    "total_effluents_per_unit_produced.isApproved",
+                    data.value
+                  )
                 }
-                value={formik.values.total_effluents_per_unit_produced.isApproved}
+                value={
+                  formik.values.total_effluents_per_unit_produced.isApproved
+                }
                 error={formik.errors.total_effluents_per_unit_produced}
               />
               {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -363,7 +515,10 @@ export function EffluentForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("Total efluentes por unidad producida", "total_effluents_per_unit_produced");
+                  openUpdateSite(
+                    "Total efluentes por unidad producida",
+                    "total_effluents_per_unit_produced"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -371,7 +526,10 @@ export function EffluentForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Total efluentes por unidad producida", "total_effluents_per_unit_produced");
+                  openUpdateSite(
+                    "Total efluentes por unidad producida",
+                    "total_effluents_per_unit_produced"
+                  );
                 }}
               >
                 <Icon name="paperclip" />
@@ -381,18 +539,22 @@ export function EffluentForm(props) {
 
           <Table.Row>
             <Table.Cell>
+              <label className="label">
+                {formik.values.percentage_domestic_effluents.code}{" "}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
               <label className="label">% Efluentes domésticos</label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
-                onChange={(e, { name, value })=> 
-                  formik.setFieldValue("percentage_domestic_effluents", value)
-                }
+                onChange={formik.handleChange}
+                name="percentage_domestic_effluents.value"
                 value={formik.values.percentage_domestic_effluents.value}
                 error={formik.errors.percentage_domestic_effluents}
               />
@@ -400,7 +562,10 @@ export function EffluentForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -409,7 +574,10 @@ export function EffluentForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_domestic_effluents.isApproved", data.value)
+                  formik.setFieldValue(
+                    "percentage_domestic_effluents.isApproved",
+                    data.value
+                  )
                 }
                 value={formik.values.percentage_domestic_effluents.isApproved}
                 error={formik.errors.percentage_domestic_effluents}
@@ -422,7 +590,10 @@ export function EffluentForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("% Efluentes domésticos", "percentage_domestic_effluents");
+                  openUpdateSite(
+                    "% Efluentes domésticos",
+                    "percentage_domestic_effluents"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -430,7 +601,10 @@ export function EffluentForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("% Efluentes domésticos", "percentage_domestic_effluents");
+                  openUpdateSite(
+                    "% Efluentes domésticos",
+                    "percentage_domestic_effluents"
+                  );
                 }}
               >
                 <Icon name="paperclip" />
@@ -440,18 +614,22 @@ export function EffluentForm(props) {
 
           <Table.Row>
             <Table.Cell>
+              <label className="label">
+                {formik.values.percentage_industrial_effluents.code}{" "}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
               <label className="label">% Efluentes industriales</label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
                   }
                 }}
-                onChange={(e, { name, value })=> 
-                  formik.setFieldValue("percentage_industrial_effluents", value)
-                }
+                onChange={formik.handleChange}
+                name="percentage_industrial_effluents.value"
                 value={formik.values.percentage_industrial_effluents.value}
                 error={formik.errors.percentage_industrial_effluents}
               />
@@ -459,7 +637,10 @@ export function EffluentForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -468,7 +649,10 @@ export function EffluentForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_industrial_effluents.isApproved", data.value)
+                  formik.setFieldValue(
+                    "percentage_industrial_effluents.isApproved",
+                    data.value
+                  )
                 }
                 value={formik.values.percentage_industrial_effluents.isApproved}
                 error={formik.errors.percentage_industrial_effluents}
@@ -481,7 +665,10 @@ export function EffluentForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("% Efluentes industriales", "percentage_industrial_effluents");
+                  openUpdateSite(
+                    "% Efluentes industriales",
+                    "percentage_industrial_effluents"
+                  );
                 }}
               >
                 <Icon name="comment outline" />
@@ -489,14 +676,16 @@ export function EffluentForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("% Efluentes industriales", "percentage_industrial_effluents");
+                  openUpdateSite(
+                    "% Efluentes industriales",
+                    "percentage_industrial_effluents"
+                  );
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
           </Table.Row>
-
         </Table.Body>
 
         {/* <TableFooter fullWidth>
@@ -513,7 +702,6 @@ export function EffluentForm(props) {
         </TableHeaderCell>
       </TableRow>
     </TableFooter> */}
-
       </Table>
 
       <BasicModal show={showModal} close={onOpenCloseModal} title={titleModal}>

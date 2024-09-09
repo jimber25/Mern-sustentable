@@ -39,8 +39,8 @@ export function RegisterForm(props) {
   });
 
   return (
-    <Segment placeholder style={{ height: "500px"}}>
-    <Grid centered columns={2} stackable>
+    <Segment placeholder style={{ width:"100%", background:"white"}} >
+    <Grid centered columns={2}>
       <GridColumn floated="left" textAlign="center">
         <Presentation />
       </GridColumn>

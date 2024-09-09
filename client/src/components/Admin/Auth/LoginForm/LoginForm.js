@@ -46,8 +46,8 @@ export function LoginForm() {
   };
 
   return (
-    <Segment placeholder style={{ height: "500px" }}>
-      <Grid centered columns={2} stackable>
+    <Segment style={{ width:"100%"}} >
+      <Grid centered columns={2}>
         <GridColumn floated="left" textAlign="center">
           <Presentation />
         </GridColumn>

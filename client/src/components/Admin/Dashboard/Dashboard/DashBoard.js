@@ -63,33 +63,31 @@ export function DashBoard() {
       render: () => (
         <TabPane attached={false}>
           {" "}
-          <div>
-          <Grid columns={2} divided>
+          <Grid columns={2} divided className="main-cointainer">
             <GridColumn textAlign="center">
-              <div className="chart-container">
+              <div className="chart-container_chart_line">
               <Line {...config}  
             />
               </div>
             </GridColumn>
             <GridColumn>
-            <div className="chart-container">
+            <div className="chart-container_chart_column">
             <Column {...config3} />
             </div>
             </GridColumn>
           </Grid>
-          <Grid columns={2} divided>
+          <Grid columns={2} divided className="main-cointainer">
             <GridColumn>
-            <div className="chart-container">
+            <div className="chart-container_chart_line">
               <Line {...config} />
               </div>
             </GridColumn>
             <GridColumn>
-            <div className="chart-container">
+            <div className="chart-container_chart_column">
             <Column {...config3} />
             </div>
             </GridColumn>
           </Grid>
-          </div>
         </TabPane>
       ),
     },

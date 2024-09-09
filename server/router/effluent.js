@@ -10,5 +10,8 @@ api.get("/effluents", [md_auth.asureAuth], EffluentController.getEffluents);
 api.post("/add-effluent", [md_auth.asureAuth], EffluentController.createEffluent);
 api.put("/update-effluent/:id",[md_auth.asureAuth], EffluentController.updateEffluent);
 api.delete("/delete-effluent/:id", [md_auth.asureAuth], EffluentController.deleteEffluent);
+api.get("/effluent-exists-site/:site/:period/:year", [md_auth.asureAuth], EffluentController.existsEffluentFormBySiteAndPeriodAndYear);
+api.get("/effluents-periods-site-year/:site/:year", [md_auth.asureAuth], EffluentController.getPeriodEffluentFormsBySiteAndYear);
+api.get("/effluents-site-year/:site/:year", [md_auth.asureAuth], EffluentController.getEffluentFormsBySiteAndYear);
 
 module.exports = api;

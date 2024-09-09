@@ -45,3 +45,18 @@ export const ACTIONS = [
   "menu",
   "view",
 ]
+
+export const PERIODS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+]

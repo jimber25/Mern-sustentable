@@ -47,3 +47,53 @@ export function convertModulesEngToEsp (a) {
             return null;
     }
 };
+
+export function convertPeriodsEngToEsp (a) {
+    switch (a) {
+        case "January":
+            return "Enero";
+        case "February":
+            return "Febrero";
+        case "March":
+            return "Marzo";
+        case "April":
+            return "Abril";
+        case "May":
+            return "Mayo";
+        case "June":
+            return "Junio";
+        case "July":
+            return "Julio";
+        case "August":
+            return "Agosto";
+        case "September":
+            return "Septiembre";
+        case "October":
+            return "Octubre";
+        case "November":
+            return "Noviembre";
+        case "December":
+            return "Diciembre";
+        default:
+            return null;
+    }
+};
+
+export function convertEffluentFieldsEngToEsp (a) {
+    switch (a) {
+        case "total_domestic_effluents":
+            return "Total efluentes domésticos ";
+        case "total_industrial_effluents":
+            return "Total efluentes industriales";
+        case "sludge_mud_sent_for_disposal_landfill":
+            return "Lodos/ Barros ";
+        case "total_effluents_per_unit_produced":
+            return "Total efluentes";
+        case "percentage_domestic_effluents":
+            return "Costo de tratamiento de efluentes";
+        case "percentage_industrial_effluents":
+            return "Costo tratamiento de lodos";
+        default:
+            return null;
+    }
+};
