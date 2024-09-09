@@ -132,4 +132,68 @@ export class Effluentform {
       throw error;
     }
   }
+
+  async existsEffluentFormByPeriodAndYear(accessToken, siteId, period, year) {
+    try {
+      const url = `${this.baseApi}/effluent-exists-site/${siteId}/${period}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPeriodsEffluentFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/effluents-periods-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getEffluentFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/effluents-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
+

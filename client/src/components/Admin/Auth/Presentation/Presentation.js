@@ -10,11 +10,17 @@ import {
 
 export function Presentation() {
   return (
-    <div>
-         <Segment>
-         <p>Tu aliado para gestionar y reducir los impactos de tus procesos</p>
-         <p>Un paso sustentable a la vez</p>
-        </Segment>
+    <div style={{ width:"100%"}}>
+     <Container style={{marginTop:"50px", width:"80%"}} text textAlign="center">
+         <p style={styleText}>Tu aliado para gestionar y reducir los impactos de tus procesos</p>
+         <p style={styleText}>Un paso sustentable a la vez</p>
+       </Container>
     </div>
   );
+}
+
+const styleText={
+  fontFamily:"Cambria",
+  font:"bold",
+  fontSize:"160%"
 }

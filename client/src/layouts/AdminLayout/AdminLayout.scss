@@ -11,6 +11,7 @@ $widthLeftMenu: 200px;
   &__left {
     background-color: $background-dark;
     width: $widthLeftMenu;
+    
 
     .logo {
       height: 30px;
@@ -26,9 +27,10 @@ $widthLeftMenu: 200px;
       position: absolute;
       color: white;
       align-items: center;
-      margin-top: 30px;
-     margin-left: 50px;
-    //  font-size: 1rem; /* Tamaño grande de fuente para mayor visibilidad */
+      margin-top: 25px;
+      margin-left: 50px;
+      float: left;
+     //  font-size: 1rem; /* Tamaño grande de fuente para mayor visibilidad */
      // font-weight: bold; /* Negrita para destacar */
     //color: #333; /* Color de texto oscuro para contraste */
     //background-color: #fff; /* Fondo blanco para mejor visibilidad */
@@ -37,7 +39,17 @@ $widthLeftMenu: 200px;
     //box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para efecto de profundidad */
     //background-size: cover;
     font-weight: bold;
+    width: 100%;  
     }
+
+    @media (max-width: 300px) {
+      &-pre {
+          width: 90%;
+          height: 20%;
+          max-width: 100px;
+          max-height: 5px;
+      }
+  }
 
     &-header {
       background-color: $background-dark;

@@ -9,7 +9,7 @@ import {
   HeaderContent,
   Label,
   Menu,
-  Confirm
+  Confirm,
 } from "semantic-ui-react";
 import { Icon } from "../../assets";
 import { AdminMenu, Logout } from "../../components/Admin/AdminLayout";
@@ -22,7 +22,7 @@ import { useSite } from "../../contexts/SiteContext";
 import { formatDateView } from "../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import 'moment/locale/es'; //importo el lenguaje en español
+import "moment/locale/es"; //importo el lenguaje en español
 //import "moment/locale/en";
 //import "moment/locale/fr";
 
@@ -57,34 +57,22 @@ export function AdminLayout(props) {
     <div className="admin-layout">
       <div className="admin-layout__left">
         {/* <Icon.LogoWhite className="logo" /> // aca iria el logo de la empresa sustemia */}
-      <div style={{ marginTop: "50px" }}></div>
+        <div style={{ marginTop: "60px" }}></div>
         <AdminMenu />
       </div>
       <div className="admin-layout__right">
-      <div className="admin-layout__right-pre">
-        <div style={{float:"left"}}> {
-          moment().format('LLLL')
-        //formatDateView(new Date())
-        }</div>
-      </div>
+        <div className="admin-layout__right-pre">
+        <div className="admin-layout__right_date">
+            {moment().format("LLLL")}
+          </div>
+        </div>
         <div className="admin-layout__right-header">
           {/* <SiteSelector /> */}
-          <LanguageSelector/>
-          {/* <Button
-            icon="bars"
-            //basic
-            //primary
-            // circular={true}
-            onClick={(e) => {
-              openUpdateUser();
-            }}
-          > */}
-            {/* <IconUI name="user" /> {user.email} */}
-          {/* </Button> */}
-          <Profile updateUser={openUpdateUser}/>
+          <LanguageSelector />
+          <Profile updateUser={openUpdateUser} />
           <Label size="large" basic>
-    <IconUI name="user" />  {user.email}
-  </Label>
+            <IconUI name="user" /> {user.email}
+          </Label>
           {/* <Button
             icon="bars"
             //primary
@@ -126,8 +114,11 @@ const SiteSelector = () => {
   }, [listSites]);
 
   return (
-    <div style={{ 
-      background: "white"}}>
+    <div
+      style={{
+        background: "white",
+      }}
+    >
       <span>
         Sitio{" "}
         <Dropdown
@@ -138,11 +129,12 @@ const SiteSelector = () => {
           floating
           labeled
           //icon='world'
-          style={{ 
+          style={{
             background: "transparent",
             boxShadow: "none",
             border: "none",
-            color: "black" }}
+            color: "black",
+          }}
           search
           options={listSites.map((option) => ({
             key: option._id,
@@ -159,10 +151,10 @@ const SiteSelector = () => {
 
 export default SiteSelector;
 
-function LanguageSelector (props) {
+function LanguageSelector(props) {
   const [listLanguages, setListLanguages] = useState([]);
   //const { language, changeLanguage } = useLanguage();//deberia mantener el estado del idioma crear otro contexto
-  const [ language, setLanguage]=useState("Español");
+  const [language, setLanguage] = useState("Español");
 
   const handleChange = (event, data) => {
     setLanguage(data.value);
@@ -177,35 +169,40 @@ function LanguageSelector (props) {
       // } else {
       //   setListLanguages([]);
       // }
-      setListLanguages(["Español", "Ingles", "Frances"])
+      setListLanguages(["Español", "Inglés", "Francés"]);
     })();
   }, []);
 
   return (
-    <div  style={{ marginRight:"50px"}}>
-        <Dropdown
-          button
-          className='icon'
-          floating
-          labeled
-          icon='world'
-          //icon='world'
-          style={{background:"transparent", border:"none", color:"white",  "boxShadow": "none"}}
-          search
-          options={listLanguages.map((option) => ({
-            key: option,
-            text: option,
-            value: option,
-          }))}
-          onChange={handleChange}
-          value={language}
-        />
-        </div>
+    <div style={{ marginRight: "50px" }}>
+      <Dropdown
+        button
+        className="icon"
+        floating
+        labeled
+        icon="world"
+        //icon='world'
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "white",
+          boxShadow: "none",
+        }}
+        search
+        options={listLanguages.map((option) => ({
+          key: option,
+          text: option,
+          value: option,
+        }))}
+        onChange={handleChange}
+        value={language}
+      />
+    </div>
   );
-};
+}
 
-function Profile (props) {
-  const {updateUser}=props;
+function Profile(props) {
+  const { updateUser } = props;
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -213,9 +210,8 @@ function Profile (props) {
 
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
 
-
   const handleProfileEdit = () => {
-    console.log('Editar perfil');
+    console.log("Editar perfil");
     // Aquí puedes redirigir a la página de edición de perfil o abrir un modal
   };
 
@@ -225,11 +221,32 @@ function Profile (props) {
   };
 
   return (
-    <div style={{marginRight:"30px"}}>
-      <Dropdown icon="bars" style={{background:"transparent", border:"none", color:"white",  "boxShadow": "none", "height":'150px !important'}}>
+    <div style={{ marginRight: "30px" }}>
+      <Dropdown
+        icon="bars"
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "white",
+          boxShadow: "none",
+          height: "150px !important",
+        }}
+      >
         <DropdownMenu>
-        <DropdownItem  icon="edit" onClick={()=>{updateUser()}}  text='Editar perfil' />
-      <DropdownItem icon="power off" onClick={()=> {onOpenCloseConfirm()}} text='Cerrar sesión'  />
+          <DropdownItem
+            icon="edit"
+            onClick={() => {
+              updateUser();
+            }}
+            text="Editar perfil"
+          />
+          <DropdownItem
+            icon="power off"
+            onClick={() => {
+              onOpenCloseConfirm();
+            }}
+            text="Cerrar sesión"
+          />
         </DropdownMenu>
       </Dropdown>
       <Confirm
@@ -243,4 +260,4 @@ function Profile (props) {
       />
     </div>
   );
-};
+}
