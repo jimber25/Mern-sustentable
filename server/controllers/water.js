@@ -27,7 +27,7 @@ async function getWaters(req, res) {
 }
 
 async function createWater(req, res) {
-  const water = new Site({ ...req.body, active: true });
+  const water = new Water({ ...req.body, active: true });
 
   water.save((error, waterStored) => {
     if (error) {
@@ -63,10 +63,80 @@ async function deleteWater(req, res) {
   });
 }
 
+async function existsWaterFormBySiteAndPeriodAndYear(req, res) {
+  const { period, year, site } = req.params;
+
+  Water.find(
+    { period: period, year: year, site: site },
+    {},
+    (error, waters) => {
+      if (error) {
+        res
+          .status(400)
+          .send({ msg: "Error al obtener los formularios de agua" });
+      } else {
+        if (waters && waters.length > 0) {
+          res.status(200).send({ code: 200, exist: true });
+        } else {
+          res.status(200).send({ code: 200, exist: false });
+        }
+      }
+    }
+  );
+}
+
+async function getPeriodWaterFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  Water.find(
+    { year: year, site: site },
+    { _id: 0, period: 1 },
+    (error, periods) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de agua de acuerdo al año",
+          });
+      } else {
+        const newData = periods.map((item) => item.period);
+        res.status(200).send({ code: 200, periods: newData });
+      }
+    }
+  );
+}
+
+async function getWaterFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  Water.find(
+    {
+      $and: [
+        { year: { $exists: true, $eq: year } },
+        { site: { $exists: true, $eq: site } },
+      ],
+    },
+    {},
+    (error, waterForms) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de agua de acuerdo al año",
+          });
+      } else {
+        res.status(200).send({ code: 200, waterForms: waterForms });
+      }
+    }
+  );
+}
 module.exports = {
   getWater,
   getWaters,
   createWater,
   updateWater,
   deleteWater,
+  existsWaterFormBySiteAndPeriodAndYear,
+  getPeriodWaterFormsBySiteAndYear,
+  getWaterFormsBySiteAndYear
 };

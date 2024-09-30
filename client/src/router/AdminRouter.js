@@ -17,7 +17,10 @@ import {
   EnergyForms,
   ProductionForms,
   EffluentForms,
-  WaterForms
+  WaterForms,
+  WasteForms,
+  DangerousForms,
+  KPIsForms
 } from "../pages/admin";
 import { useAuth } from "../hooks";
 
@@ -100,17 +103,30 @@ export function AdminRouter() {
             element={loadLayout(AdminLayout, EnergyForms)}
           />
 
-<Route
+          <Route
             path="/admin/data/productionforms"
             element={loadLayout(AdminLayout, ProductionForms)}
           />
-<Route
+          <Route
             path="/admin/data/effluentforms"
             element={loadLayout(AdminLayout, EffluentForms)}
           />
-<Route
+          <Route
             path="/admin/data/waterforms"
             element={loadLayout(AdminLayout, WaterForms)}
+          />
+          <Route
+            path="/admin/data/wasteforms"
+            element={loadLayout(AdminLayout, WasteForms)}
+          />
+          <Route
+            path="/admin/data/dangerousforms"
+            element={loadLayout(AdminLayout, DangerousForms)}
+          />
+
+          <Route
+            path="/admin/data/kpisforms"
+            element={loadLayout(AdminLayout, KPIsForms)}
           />
         </>
       )}

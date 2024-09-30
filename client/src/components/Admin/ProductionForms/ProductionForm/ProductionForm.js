@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Form,
   Image,
@@ -8,22 +8,18 @@ import {
   Button,
   Comment,
   CommentGroup,
-  CommentContent,
   CommentMetadata,
-  CommentText,
-  CommentAuthor,
-  TableFooter,
-  TableHeaderCell,
-  TableRow,
   Segment,
   Divider,
   Header,
+  GridColumn,
+  GridRow
 } from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
 import { Productionform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
-import { ENV } from "../../../../utils";
+import { ENV, PERIODS } from "../../../../utils";
 import {
   formatDateView,
   formatDateHourCompleted,
@@ -34,16 +30,18 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import "./ProductionForm.scss";
+import { convertPeriodsEngToEsp } from "../../../../utils/converts";
 
 const productionFormController = new Productionform();
 
 export function ProductionForm(props) {
-  const { onClose, onReload, productionForm, production } = props;
+  const { onClose, onReload, productionForm, production, siteSelected, period, year } = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [fieldName, setFieldName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [listPeriods, setListPeriods] = useState([]);
   const { user } = useAuth();
 
   const location = useLocation();
@@ -66,7 +64,7 @@ export function ProductionForm(props) {
   };
 
   const formik = useFormik({
-    initialValues: initialValues(productionForm),
+    initialValues: initialValues(productionForm, period, year),
     validationSchema: validationSchema(),
     validateOnChange: false,
     onSubmit: async (formValue) => {
@@ -77,15 +75,16 @@ export function ProductionForm(props) {
           if (user?.production) {
             formValue.site = user.production._id;
           } else {
-            if (production) {
-              formValue.production = production;
-            } else {
-              // Desencriptar los datos recibidos
-              if (!productionForm) {
-                const productionData = decrypt(productionSelected);
-                formValue.production = productionData;
-              }
+            if (siteSelected) {
+              formValue.site = siteSelected;
             }
+            // } else {
+            //   // Desencriptar los datos recibidos
+            //   if (!productionForm) {
+            //     const productionData = decrypt(productionSelected);
+            //     formValue.production = productionData;
+            //   }
+            // }
           }
           await productionFormController.createProductionForm(accessToken, formValue);
           //console.log(formValue);
@@ -115,6 +114,33 @@ export function ProductionForm(props) {
     });
   };
 
+    // Generar una lista de años (por ejemplo, del 2000 al 2024)
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+  
+    useEffect(() => {
+      (async () => {
+        try {
+          const response =
+            await productionFormController.getPeriodsProductionFormsBySiteAndYear(
+              accessToken,
+              siteSelected,
+              formik.values.year
+            );
+            const periods = PERIODS.map((item) => item);
+            const availablePeriods = periods
+              .filter((period) => !response.periods.includes(period))
+              .map((period) => period);
+    
+            setListPeriods(availablePeriods);
+            console.log(availablePeriods)
+        } catch (error) {
+          console.error(error);
+          setListPeriods([]);
+        }
+      })();
+    }, [formik.values.year]);
+
   return (
     <Form className="production-form" onSubmit={formik.handleSubmit}>
       {productionForm ? (
@@ -131,6 +157,52 @@ export function ProductionForm(props) {
               : null}{" "}
           </Header>
         </Segment>
+      ) : null}
+            {!productionForm ? (
+        <>
+          <Grid columns={2} divided>
+            <GridRow>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Año"
+                  placeholder="Seleccione"
+                  options={years.map((year) => {
+                    return {
+                      key: year,
+                      text: year,
+                      value: year,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("year", data.value)
+                  }
+                  value={formik.values.year}
+                  error={formik.errors.year}
+                />
+              </GridColumn>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Periodo"
+                  placeholder="Seleccione"
+                  options={listPeriods.map((period) => {
+                    return {
+                      key: period,
+                      text: convertPeriodsEngToEsp(period),
+                      value: period,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("period", data.value)
+                  }
+                  value={formik.values.period}
+                  error={formik.errors.period}
+                />
+              </GridColumn>
+            </GridRow>
+          </Grid>
+        </>
       ) : null}
       <Table size="small" celled>
         <Table.Header>

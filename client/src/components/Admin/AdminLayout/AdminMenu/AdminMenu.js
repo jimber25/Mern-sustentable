@@ -124,6 +124,39 @@ export function AdminMenu() {
                     {"Efluentes"}
                   </DropdownItem>
                 ) : null} 
+                      {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "wasteforms", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/wasteforms"
+                    active={isCurrentPath("/admin/data/wasteforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Residuos"}
+                  </DropdownItem>
+                ) : null} 
+                       {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "dangerousforms", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/dangerousforms"
+                    active={isCurrentPath("/admin/data/dangerousforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"Peligrosos"}
+                  </DropdownItem>
+                ) : null} 
+                         {isMaster(role)|| isAdmin(role) ||
+                hasPermission(permissionActive, role._id, "kpisforms", "menu") ? (
+                  <DropdownItem
+                    as={Link}
+                    to="/admin/data/kpisforms"
+                    active={isCurrentPath("/admin/data/kpisforms")}
+                  >
+                    <Icon name="file alternate" /> 
+                    {"KPIs"}
+                  </DropdownItem>
+                ) : null} 
                           {/* {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "sites", "menu") ? (
                   <DropdownItem

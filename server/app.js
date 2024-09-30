@@ -19,6 +19,10 @@ const energyRoutes = require("./router/energy");
 const effluentRoutes = require("./router/effluent");
 const productionRoutes = require("./router/production");
 const waterRoutes = require("./router/water");
+const wasteRoutes = require("./router/waste");
+const dangerousRoutes = require("./router/dangerous");
+const KPIsRoutes = require("./router/kpis");
+
 
 // Configure Body Parser
  app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,5 +48,8 @@ app.use(`/api/${API_VERSION}`, energyRoutes);
 app.use(`/api/${API_VERSION}`, effluentRoutes);
 app.use(`/api/${API_VERSION}`, productionRoutes);
 app.use(`/api/${API_VERSION}`, waterRoutes);
+app.use(`/api/${API_VERSION}`, wasteRoutes);
+app.use(`/api/${API_VERSION}`, dangerousRoutes);
+app.use(`/api/${API_VERSION}`, KPIsRoutes);
 
 module.exports = app;

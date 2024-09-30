@@ -150,7 +150,6 @@ export function EffluentForm(props) {
     })();
   }, [formik.values.year]);
 
-  console.log(period, formik.values.period)
 
   return (
     <Form className="effluent-form" onSubmit={formik.handleSubmit}>

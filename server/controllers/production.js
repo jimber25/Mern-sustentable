@@ -83,10 +83,81 @@ async function deleteProduction(req, res) {
   });
 }
 
+async function existsProductionFormBySiteAndPeriodAndYear(req, res) {
+  const { period, year, site } = req.params;
+
+  Production.find(
+    { period: period, year: year, site: site },
+    {},
+    (error, productions) => {
+      if (error) {
+        res
+          .status(400)
+          .send({ msg: "Error al obtener los formularios de produccion" });
+      } else {
+        if (productions && productions.length > 0) {
+          res.status(200).send({ code: 200, exist: true });
+        } else {
+          res.status(200).send({ code: 200, exist: false });
+        }
+      }
+    }
+  );
+}
+
+async function getPeriodProductionFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  Production.find(
+    { year: year, site: site },
+    { _id: 0, period: 1 },
+    (error, periods) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de produccion de acuerdo al año",
+          });
+      } else {
+        const newData = periods.map((item) => item.period);
+        res.status(200).send({ code: 200, periods: newData });
+      }
+    }
+  );
+}
+
+async function getProductionFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  Production.find(
+    {
+      $and: [
+        { year: { $exists: true, $eq: year } },
+        { site: { $exists: true, $eq: site } },
+      ],
+    },
+    {},
+    (error, productionForms) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de produccion de acuerdo al año",
+          });
+      } else {
+        res.status(200).send({ code: 200, productionForms: productionForms });
+      }
+    }
+  );
+}
+
 module.exports = {
   getProduction,
   getProductions,
   createProduction,
   updateProduction,
-  deleteProduction
+  deleteProduction,
+  existsProductionFormBySiteAndPeriodAndYear,
+  getPeriodProductionFormsBySiteAndYear,
+  getProductionFormsBySiteAndYear
 };

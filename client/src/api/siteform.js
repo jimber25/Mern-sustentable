@@ -133,4 +133,67 @@ export class Siteform {
       throw error;
     }
   }
+
+  async existsSiteFormByPeriodAndYear(accessToken, siteId, period, year) {
+    try {
+      const url = `${this.baseApi}/siteform-exists-site/${siteId}/${period}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPeriodsSiteFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/siteforms-periods-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async getSiteFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/siteforms-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

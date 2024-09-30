@@ -13,3 +13,6 @@ export * from "./energyform";
 export * from "./productionform";
 export * from "./effluentform";
 export * from "./waterform";
+export * from "./wasteform";
+export * from "./dangerousform";
+export * from "./kpisform";
