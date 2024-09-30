@@ -1,10 +1,13 @@
 import * as Yup from "yup";
 
-export function initialValues(production) {
+export function initialValues(production, period, year) {
   return {
     date: production?.date || "",
     creator_user: production?.creator_user || "",
     state: production?.state || "",
+    site:production?.site || "",
+    period:production?.period || period,
+    year:production?.year || year,
     production_volume: production?.production_volume|| {
       value:"",
       reviews:[

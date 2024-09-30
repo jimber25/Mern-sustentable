@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Loader, Pagination, Table, Grid, GridColumn, Input, Divider, Button, Modal, Dropdown, TableHeaderCell, TableRow } from "semantic-ui-react";
+import { Loader, Pagination, Table, Grid, GridColumn, Input, Divider, Confirm, Modal, Dropdown, TableHeaderCell, TableRow } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Waterform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
@@ -10,13 +10,19 @@ import {
   isMaster,
 } from "../../../../utils/checkPermission";
 import "./ListWaterForms.scss";
+import { BasicModal } from "../../../Shared";
+import { PERIODS } from "../../../../utils";
+import { formatDateView } from "../../../../utils/formatDate";
+import { WaterForm}  from "../WaterForm/WaterForm";
+import { convertPeriodsEngToEsp, convertWaterFieldsEngToEsp } from "../../../../utils/converts";
+import { waterCodes } from "../../../../utils/codes";
 const _ = require("lodash");
 
 
 const waterFormController = new Waterform();
 
 export function ListWaterForms(props) {
-  const { reload, onReload , siteSelected} = props;
+  const { reload, onReload , siteSelected, yearSelected} = props;
   const [waterForms, setWaterForms] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState();
@@ -27,48 +33,46 @@ export function ListWaterForms(props) {
     } = useAuth();
   
 
-  useEffect(() => {
-    (async () => {
-      try {
-        let limit=50;
-        let options={ page, limit };
-        if(site){
-          options.site=site?._id;
-        }else if(siteSelected){
-          options.site=siteSelected;
+    useEffect(() => {
+      (async () => {
+        if(yearSelected!=="" && siteSelected!==undefined)
+        try {
+          const response = await waterFormController.getWaterFormsBySiteAndYear(
+            accessToken,
+            siteSelected,
+            yearSelected
+          );
+          if (response.code ===200) {
+            setWaterForms(response.waterForms);
+          } else {
+            setWaterForms([]);
+          }
+  
+        } catch (error) {
+          console.error(error);
         }
-        const response = await waterFormController.getWaterForms(accessToken,options);
-        if(response.docs){
-          setWaterForms(response.docs);
-        }else{
-          setWaterForms([]);
-        }
-        
-        // setSites(response.docs);
-        setPagination({
-          limit: response.limit,
-          page: response.current,
-          pages: response.pages,
-          total: response.total,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [page, reload]);
+      })();
+    }, [yearSelected,siteSelected, reload]);
 
   const changePage = (_, data) => {
     setPage(data.activePage);
   };
 
   if (!waterForms) return <Loader active inline="centered" />;
-  if (size(waterForms) === 0) return "No hay resultados ";
+  //if (size(waterForms) === 0) return "No hay resultados ";
 
   return (
     <div className="list-water-forms">
       {/* {map(siteforms, (siteForm) => (
         <SiteFormItem key={siteForm._id} siteForm={siteForm} onReload={onReload} />
       ))} */}
+       <TablePeriods
+        data={waterForms}
+        onReload={onReload}
+        accessToken={accessToken}
+        year={yearSelected}
+        site={siteSelected}
+      />
 
       <div className="list-water-forms__pagination">
           {/* <SearchStandardPermission
@@ -77,9 +81,9 @@ export function ListWaterForms(props) {
             // setData={setPermissionsFilter}
           /> */}
         </div>
-        <Divider clearing/>
+        {/* <Divider clearing/> */}
 
-      <Table celled>
+      {/* <Table celled>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Estado</Table.HeaderCell>
@@ -95,7 +99,7 @@ export function ListWaterForms(props) {
               ))
       }
            </Table.Body>
-           </Table>
+           </Table> */}
         {/* <Pagination
           totalPages={pagination.pages}
           defaultActivePage={pagination.page}
@@ -104,11 +108,11 @@ export function ListWaterForms(props) {
           lastItem={null}--
           onPageChange={changePage}
         /> */}
-        <Pagination
+        {/* <Pagination
         activePage={pagination.page}
         totalPages={pagination.pages}
         onPageChange={changePage}
-      />  
+      />   */}
       </div>
   );
 }
@@ -162,106 +166,208 @@ function SearchStandardPermission(props) {
   );
 }
 
-function TablePeriods (props){
-  // Datos de ejemplo
- // Datos de ejemplo
-  // Datos de ejemplo actualizados
-  const data = [
-    {
-      period: 'Enero',
-      electricity: { value: 100, code: 'E100' },
-      water: { value: 30, code: 'W30' }
-    },
-    {
-      period: 'Febrero',
-      electricity: { value: 120, code: 'E120' },
-      water: { value: 40, code: 'W40' }
-    },
-    {
-      period: 'Marzo',
-      electricity: { value: 110, code: 'E110' },
-      water: { value: 35, code: 'W35' }
-    },
-    {
-      period: 'Abril',
-      electricity: { value: 95, code: 'E95' },
-      water: { value: 20, code: 'W20' }
-    },
-    {
-      period: 'Mayo',
-      electricity: { value: 115, code: 'E115' },
-      water: { value: 45, code: 'W45' }
-    }
-  ];
+function TablePeriods(props) {
+
+  const { data, onReload, accessToken , year, site} = props;
+
+  const [showModal, setShowModal] = useState(false);
+  const [titleModal, setTitleModal] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const [confirmContent, setConfirmContent] = useState("");
+  const [dataDeleted, setDataDelete] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleConfirm = (e) => setDataDelete(e)
+
+
   // Estado para controlar el modal
-  const [modalOpen, setModalOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
+
+  const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
+  const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
 
   // Función para abrir el modal con datos del período seleccionado
   const handleOpenModal = (period) => {
-    setSelectedPeriod(data.find(item => item.period === period));
-    setModalOpen(true);
+    setSelectedPeriod(data.find((item) => item.period === period));
+    //setModalOpen(true);
+    onOpenCloseModal();
   };
 
   // Función para cerrar el modal
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setSelectedPeriod(null);
+  const handleDeleteModal = (period) => {
+    const form = data.find((item) => item.period === period);
+    setConfirmContent(
+      `Eliminar el formulario de efluentes con fecha ${formatDateView(
+        form.date
+      )}`
+    );
+    setDataDelete(form)
+    onOpenCloseConfirm();
   };
 
-// Obtén los nombres de los períodos para las columnas
-const periods = data.map(item => item.period);
-
-  // Obtén los valores de electricidad y agua
-  const electricityValues = data.map(item => item.electricity.value);
-  const waterValues = data.map(item => item.water.value);
-  
-  // Códigos de electricidad y agua
-  // const electricityCodes = data.map(item => item.electricity.code);
-  // const waterCodes = data.map(item => item.water.code);
-  const codes = {
-    electricityCode: 'E100',
-    waterCode: 'W30'
+  const openUpdateEffluentForm = (period) => {
+    //setFieldName(name);
+    const form = data.find((item) => item.period === period);
+    setTitleModal(
+      `Actualizar formulario efluente: ${convertPeriodsEngToEsp(form.period)}-${
+        form.year
+      }`
+    );
+    setModalContent(
+      <WaterForm
+        onClose={onOpenCloseModal}
+        onReload={onReload}
+        waterForm={form}
+      />
+    );
+    setShowModal(true);
   };
-  
-  // Calcula el total y el promedio para electricidad
-  const totalElectricity = electricityValues.reduce((acc, val) => acc + val, 0);
-  const averageElectricity = totalElectricity / electricityValues.length;
-  
-  // Calcula el total y el promedio para agua
-  const totalWater = waterValues.reduce((acc, val) => acc + val, 0);
-  const averageWater = totalWater / waterValues.length;
 
-return (
-  <>
-  <Table celled>
-    <Table.Header>
-      <Table.Row>
-      <Table.HeaderCell>Codigo</Table.HeaderCell>
-        <Table.HeaderCell>Item</Table.HeaderCell>
-        {periods.map((period, index) => (
-          <Table.HeaderCell key={index}>{period}
-              <Dropdown
-                  button
-                  icon='ellipsis vertical'
-                  floating
-                  className='icon'
-                  style={{ marginLeft: '10px' }}
-                >
-                  <Dropdown.Menu>
-                    <Dropdown.Item
-                      text='Ver Detalles'
-                      onClick={() => handleOpenModal(period)}
-                    />
-                  </Dropdown.Menu>
-                </Dropdown></Table.HeaderCell>
-        ))}
-                 <Table.HeaderCell>Total</Table.HeaderCell>
-                 <Table.HeaderCell>Promedio</Table.HeaderCell>
+  const openNewWaterForm = (period) => {
+    setTitleModal(`Nuevo formulario Agua`);
+    setModalContent(
+      <WaterForm onClose={onOpenCloseModal} onReload={onReload} period={period} year={year} siteSelected={site}/>
+    );
+    setShowModal(true);
+  };
+
+  const onDelete = async () => {
+    try {
+      //TODO: modificar por controlador correspondiente
+      await waterFormController.deleteWaterForm(accessToken, dataDeleted._id);
+      setDataDelete("");
+      onReload();
+      onOpenCloseConfirm();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Obtén los nombres de los períodos para las columnas
+  const periods = PERIODS;
+
+  // Determinar los campos únicos y si tienen código
+  const determineFields = () => {
+    const fields = new Set();
+
+    Object.keys(waterCodes).forEach((key) => {
+      fields.add(key);
+    });
+
+    return Array.from(fields);
+  };
+
+  // Retorna el código
+  const hasCode = (field) => {
+    return waterCodes[field];
+  };
+
+  const hasDataPeriod = (period) => {
+    const existsPeriod = data.some((entry) => entry.period === period);
+    return existsPeriod;
+  };
+
+  // Obtener todos los campos únicos
+  const uniqueFields = determineFields();
+  console.log(uniqueFields)
+
+  const calculateTotalAndAverage = (field) => {
+    const values = data.map((item) => item[field]?.value || 0);
+    const total = values.reduce((acc, val) => acc + val, 0);
+    const average = values.length ? total / values.length : 0;
+    return { total, average };
+  };
+
+  return (
+    <>
+      <Table celled structured>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Codigo</Table.HeaderCell>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Item</Table.HeaderCell>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Unidades</Table.HeaderCell>
+            <Table.HeaderCell colSpan='14' textAlign="center">PERIODO DE REPORTE {year}</Table.HeaderCell>
       </Table.Row>
-    </Table.Header>
+      <Table.Row>
+            {periods.map((period, index) => (
+              <Table.HeaderCell key={index}>
 
-    <Table.Body>
+                {convertPeriodsEngToEsp(period)}
+                {hasDataPeriod(period) ? (
+                  <>
+                    <Dropdown
+                      inline
+                      size="tiny"
+                      icon="ellipsis vertical"
+                      floating
+                      className="icon"
+    
+                    >
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          text="Editar"
+                          icon="edit"
+                          onClick={() => openUpdateEffluentForm(period)}
+                        />
+                        <Dropdown.Item
+                          text="Eliminar"
+                          icon="trash"
+                          onClick={() => handleDeleteModal(period)}
+                        />
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </>
+                ) : (
+                  <>
+                    <Dropdown
+                      link
+                      icon="ellipsis vertical"
+                      floating
+                      size="tiny"
+                      className="icon"
+                      // style={{ marginLeft: "10px" }}
+                    >
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          text="Cargar datos"
+                          icon="plus"
+                          onClick={() => openNewWaterForm(period)}
+                        />
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </>
+                )}
+              </Table.HeaderCell>
+            ))}
+            <Table.HeaderCell>Total</Table.HeaderCell>
+            <Table.HeaderCell>Promedio</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {uniqueFields.map((field) => (
+            <React.Fragment key={field}>
+              <Table.Row>
+                <Table.Cell>{waterCodes[field]}</Table.Cell>
+                <Table.Cell>{convertWaterFieldsEngToEsp(field)}</Table.Cell>
+                <Table.Cell>{"-"}</Table.Cell>
+                {periods.map((period) => {
+                  const item = data.find((d) => d.period === period);
+                  return (
+                    <Table.Cell key={`${field}-${period}`}>
+                      {item && item[field] ? item[field].value : "-"}
+                    </Table.Cell>
+                  );
+                })}
+                <Table.Cell>{calculateTotalAndAverage(field).total}</Table.Cell>
+                <Table.Cell>
+                  {calculateTotalAndAverage(field).average.toFixed(2)}
+                </Table.Cell>
+              </Table.Row>
+            </React.Fragment>
+          ))}
+        </Table.Body>
+
+        {/* <Table.Body>
       <Table.Row>
       <Table.Cell>      {codes.electricityCode}</Table.Cell>
         <Table.Cell>Electricidad</Table.Cell>
@@ -280,27 +386,30 @@ return (
           <Table.Cell>{totalWater}</Table.Cell>
           <Table.Cell>{averageWater.toFixed(2)}</Table.Cell>
       </Table.Row>
-    </Table.Body>
-  </Table>
-   {/* Modal para mostrar detalles del período seleccionado */}
-   {selectedPeriod && (
-        <Modal
-          open={modalOpen}
-          onClose={handleCloseModal}
-          size='small'
-        >
-          <Modal.Header>Detalles del Período: {selectedPeriod.period}</Modal.Header>
-          <Modal.Content>
-            <p>Electricidad: {selectedPeriod.electricity.value}</p>
-            <p>Agua: {selectedPeriod.water.value}</p>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button onClick={handleCloseModal} color='black'>
-              Cerrar
-            </Button>
-          </Modal.Actions>
-        </Modal>
-      )}
-  </>
-);
-};
+    </Table.Body> */}
+      </Table>
+      {/* Modal para mostrar detalles del período seleccionado */}
+      {showModal ? (
+        <>
+          <BasicModal
+            show={showModal}
+            close={onOpenCloseModal}
+            title={titleModal}
+            size={"fullscreen"}
+          >
+            {modalContent}
+          </BasicModal>
+        </>
+      ) : null}
+      <Confirm
+        open={showConfirm}
+        onCancel={onOpenCloseConfirm}
+        onConfirm={onDelete}
+        content={confirmContent}
+        size="tiny"
+        cancelButton="Cancelar"
+        confirmButton="Aceptar"
+      />
+    </>
+  );
+}

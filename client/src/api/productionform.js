@@ -133,4 +133,67 @@ export class Productionform {
       throw error;
     }
   }
+
+  async existsProductionFormByPeriodAndYear(accessToken, siteId, period, year) {
+    try {
+      const url = `${this.baseApi}/production-exists-site/${siteId}/${period}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPeriodsProductionFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/productions-periods-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async getProductionFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/productions-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

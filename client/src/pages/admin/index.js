@@ -18,3 +18,6 @@ export * from "./EnergyForms";
 export * from "./WaterForms";
 export * from "./ProductionForms";
 export * from "./EffluentForms";
+export * from "./WasteForms";
+export * from "./DangerousForms";
+export * from "./KPIsForms";

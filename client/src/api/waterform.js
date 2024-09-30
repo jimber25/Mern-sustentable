@@ -133,4 +133,67 @@ export class Waterform {
       throw error;
     }
   }
+
+  async existsWaterFormByPeriodAndYear(accessToken, siteId, period, year) {
+    try {
+      const url = `${this.baseApi}/water-exists-site/${siteId}/${period}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPeriodsWaterFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/waters-periods-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async getWaterFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/waters-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -133,4 +133,67 @@ export class Energyform {
       throw error;
     }
   }
+
+  async existsEnergyFormByPeriodAndYear(accessToken, siteId, period, year) {
+    try {
+      const url = `${this.baseApi}/energy-exists-site/${siteId}/${period}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getPeriodsEnergyFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/energies-periods-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async getEnergyFormsBySiteAndYear(accessToken, siteId, year) {
+    try {
+      const url = `${this.baseApi}/energies-site-year/${siteId}/${year}`;
+      
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

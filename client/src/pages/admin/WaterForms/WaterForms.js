@@ -1,36 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button , Table, Divider, Icon} from "semantic-ui-react";
+import { Tab, Button, Table, Divider, Icon , Dropdown} from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
-import { ListWaterForms, WaterForm } from "../../../components/Admin/WaterForms";
+import {
+  ListWaterForms,
+  WaterForm,
+} from "../../../components/Admin/WaterForms";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../hooks";
 import { Site } from "../../../api";
-import { encrypt,decrypt } from '../../../utils/cryptoUtils'; 
-import { useLocation } from 'react-router-dom';
-import { hasPermission, isAdmin, isMaster } from "../../../utils/checkPermission";
+import { encrypt, decrypt } from "../../../utils/cryptoUtils";
+import { useLocation } from "react-router-dom";
+import {
+  hasPermission,
+  isAdmin,
+  isMaster,
+} from "../../../utils/checkPermission";
 import "./WaterForms.scss";
 
-const siteController= new Site();
+const siteController = new Site();
 
 export function WaterForms() {
   const [showModal, setShowModal] = useState(false);
   const [reload, setReload] = useState(false);
-  const {accessToken,user:{role, site}}=useAuth();
+  const {
+    accessToken,
+    user: { role, site },
+  } = useAuth();
   const [sitesFilter, setSitesFilter] = useState([]);
-  const [siteSelected, setSiteSelected]=useState(null);
+  const [siteSelected, setSiteSelected] = useState(null);
+  const [yearSelected, setYearSelected] = useState(new Date().getFullYear());
 
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
   const onReload = () => setReload((prevState) => !prevState);
 
   const location = useLocation();
-  
+
   useEffect(() => {
     (async () => {
       try {
         if (!site && !location.state?.siteSelected) {
-          const response = await siteController.getSites(
-            accessToken
-          );
+          const response = await siteController.getSites(accessToken);
           setSitesFilter(response);
         }
       } catch (error) {
@@ -43,7 +52,7 @@ export function WaterForms() {
   useEffect(() => {
     (async () => {
       try {
-        if(location.state?.siteSelected){
+        if (location.state?.siteSelected) {
           setSiteSelected(decrypt(location.state.siteSelected));
         }
       } catch (error) {
@@ -52,93 +61,135 @@ export function WaterForms() {
     })();
   }, [location]);
 
-  const handleSelected=(idSite)=>{
+  const handleSelected = (idSite) => {
     setSiteSelected(idSite._id);
-  }
+  };
 
   const panes = [
     {
       render: () => (
         <Tab.Pane attached={false}>
-         {siteSelected===null && (isMaster(role) || (isAdmin(role) && !site))? 
-          <SelectedListSites sitesFilter={sitesFilter} handleSelected={handleSelected}/>
-          : 
-          (!site && siteSelected!==null)?
-          <ListWaterForms reload={reload} onReload={onReload} siteSelected={siteSelected} />
-          : <ListWaterForms reload={reload} onReload={onReload} /> 
-          }
+          {siteSelected === null &&
+          (isMaster(role) || (isAdmin(role) && !site)) ? (
+            <SelectedListSites
+              sitesFilter={sitesFilter}
+              handleSelected={handleSelected}
+            />
+          ) : !site && siteSelected !== null ? (
+            <ListWaterForms
+              reload={reload}
+              onReload={onReload}
+              siteSelected={siteSelected}
+              yearSelected={yearSelected}
+            />
+          ) : (
+            <ListWaterForms 
+            siteSelected={siteSelected}
+            yearSelected={yearSelected}
+            reload={reload} 
+            onReload={onReload} />
+          )}
         </Tab.Pane>
       ),
     },
   ];
 
+   // Generar una lista de años (por ejemplo, del 2000 al 2024)
+   const currentYear = new Date().getFullYear();
+   const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
   return (
     <>
       <div className="water-forms-page">
         <div className="water-forms-page__add">
-        {siteSelected!==null || site ? 
-    //      <Link to={"/admin/waterforms/newwaterform"} state= {{siteSelected: encrypt(siteSelected) }}
-    // >
-          <Button primary 
-           onClick={onOpenCloseModal}
-          >
-           <Icon name='plus' /> Nuevo Formulario Agua
-          </Button>
-          // </Link>
-          : null}
+          {siteSelected !== null || site ? (
+            //      <Link to={"/admin/waterforms/newwaterform"} state= {{siteSelected: encrypt(siteSelected) }}
+            // >
+            <Button primary onClick={onOpenCloseModal}>
+              <Icon name="plus" /> Nuevo Formulario Agua
+            </Button>
+          ) : // </Link>
+          null}
         </div>
-
+        <>
+        {siteSelected !== null || site ? (
+          <Dropdown
+            label="Año"
+            placeholder="Seleccione"
+            options={years.map((year) => {
+              return {
+                key: year,
+                text: year,
+                value: year,
+              };
+            })}
+            selection
+            onChange={(_, data) => setYearSelected(data.value)}
+            value={yearSelected}
+          />) : null}
+        </>
         <Tab menu={{ secondary: true }} panes={panes} />
       </div>
 
-      <BasicModal show={showModal} close={onOpenCloseModal} title="Formulario Agua" size={"fullscreen"}>
-        <WaterForm onClose={onOpenCloseModal} onReload={onReload} />
+      <BasicModal
+        show={showModal}
+        close={onOpenCloseModal}
+        title="Formulario Agua"
+        size={"fullscreen"}
+      >
+        <WaterForm onClose={onOpenCloseModal} onReload={onReload}   year={yearSelected}
+          siteSelected={siteSelected}/>
       </BasicModal>
     </>
   );
 }
 
-
-function SelectedListSites(props){
-  const {sitesFilter,role, permissionByRole, handleSelected}=props;
+function SelectedListSites(props) {
+  const { sitesFilter, role, permissionByRole, handleSelected } = props;
 
   return (
     <div>
       {/* { isMaster(role) || isAdmin(role) ||
       hasPermission(permissionByRole, role._id, "sites", "view") ? ( */}
+      <div>
         <div>
-          <div>
-            {/* <SearchStandardSite
+          {/* <SearchStandardSite
               dataOrigin={sites}
               data={sitesFilter}
               setData={setSitesFilter}
             /> */}
-          </div>
-          <Divider clearing />
+        </div>
+        <Divider clearing />
 
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Razon Social</Table.HeaderCell>
-                <Table.HeaderCell >Email</Table.HeaderCell>
-                <Table.HeaderCell >Acciones</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Razon Social</Table.HeaderCell>
+              <Table.HeaderCell>Email</Table.HeaderCell>
+              <Table.HeaderCell>Acciones</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {sitesFilter.map((site) => (
-                  <Table.Row key={site._id}>
-                  <Table.Cell>{site.name ? site.name : ""}</Table.Cell>
-                  <Table.Cell>{site.email}</Table.Cell>
-                  <Table.Cell>
-                    { 
+              <Table.Row key={site._id}>
+                <Table.Cell>{site.name ? site.name : ""}</Table.Cell>
+                <Table.Cell>{site.email}</Table.Cell>
+                <Table.Cell>
+                  {
                     // isMaster(role) || isAdmin(role) ||
                     // hasPermission(permissionsByRole, role._id, "sites", "edit") ? (
-                      <Button icon primary onClick={()=>{handleSelected(site)}}>
-                        <Icon name="eye" />
-                      </Button>
+                    <Button
+                      icon
+                      primary
+                      onClick={() => {
+                        handleSelected(site);
+                      }}
+                    >
+                      <Icon name="eye" />
+                    </Button>
                     // ) : null
-                    }
-                    {/* {isMaster(role) || isAdmin(role) ||
+                  }
+                  {/* {isMaster(role) || isAdmin(role) ||
                     hasPermission(permissionsByRole, role._id, "sites", "edit") ? (
                       <Button
                         icon
@@ -148,18 +199,18 @@ function SelectedListSites(props){
                         <Icon name={site.active ? "ban" : "check"} />
                       </Button>
                     ) : null} */}
-                    {/* {isMaster(role) || isAdmin(role) ||
+                  {/* {isMaster(role) || isAdmin(role) ||
                     hasPermission(permissionsByRole, role._id, "sites", "delete") ? (
                       <Button icon color="red" onClick={openDeleteConfirm}>
                         <Icon name="trash" />
                       </Button>
-                    ) : null} */} 
-                  </Table.Cell>
-                </Table.Row>
-          ))}
-           </Table.Body>
-           </Table>
-        </div>
+                    ) : null} */}
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </div>
       {/* ) : (
         // <ErrorAccessDenied />
         <></>

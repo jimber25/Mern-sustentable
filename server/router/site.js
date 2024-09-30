@@ -11,4 +11,5 @@ api.post("/add-site", [md_auth.asureAuth], SiteController.createSite);
 api.put("/update-site/:id",[md_auth.asureAuth], SiteController.updateSite);
 api.delete("/delete-site/:id", [md_auth.asureAuth], SiteController.deleteSite);
 
+
 module.exports = api;

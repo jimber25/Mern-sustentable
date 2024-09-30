@@ -9,10 +9,8 @@ const SiteFormSchema = mongoose.Schema({
     ref: 'User'
   },
   state: String,
-  // company:{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Company'
-  // }, 
+  period:String, 
+  year:String,
   site:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Site'
@@ -203,7 +201,7 @@ const SiteFormSchema = mongoose.Schema({
   // percentage_total_female
   // percentage_total_male
   // percentage_female_leadership_positions
-  // males_Leadership_positions 
+  // percentage_male_leadership_positions 
   work_accidents_with_sick_days:{
     value:Number,
     reviews:[{

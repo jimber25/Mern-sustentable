@@ -8,6 +8,8 @@ const ProductionSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  period:String,
+  year:String,
   state: String,
   // company:{
   //   type: mongoose.Schema.Types.ObjectId,

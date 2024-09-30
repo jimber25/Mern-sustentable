@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Form,
   Image,
@@ -8,22 +8,19 @@ import {
   Button,
   Comment,
   CommentGroup,
-  CommentContent,
   CommentMetadata,
-  CommentText,
-  CommentAuthor,
-  TableFooter,
-  TableHeaderCell,
-  TableRow,
+  GridColumn,
+  GridRow,
   Segment,
   Divider,
   Header,
+  Label
 } from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
 import { Energyform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
-import { ENV } from "../../../../utils";
+import { ENV, PERIODS } from "../../../../utils";
 import {
   formatDateView,
   formatDateHourCompleted,
@@ -34,20 +31,22 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import "./SiteForm.scss";
+import { convertEnergyFieldsEngToEsp, convertPeriodsEngToEsp } from "../../../../utils/converts";
 
 const energyFormController = new Energyform();
 
 export function EnergyForm(props) {
-  const { onClose, onReload, energyForm, site } = props;
+  const { onClose, onReload, energyForm, site, siteSelected , year, period } = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [fieldName, setFieldName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [listPeriods, setListPeriods] = useState([]);
   const { user } = useAuth();
 
   const location = useLocation();
-  const { siteSelected } = location.state || {};
+  // const { siteSelected } = location.state || {};
 
   if (!siteSelected) {
     // // Manejo de caso donde no hay datos en state (por ejemplo, acceso directo a la URL)
@@ -66,7 +65,7 @@ export function EnergyForm(props) {
   };
 
   const formik = useFormik({
-    initialValues: initialValues(energyForm),
+    initialValues: initialValues(energyForm, period, year),
     validationSchema: validationSchema(),
     validateOnChange: false,
     onSubmit: async (formValue) => {
@@ -77,15 +76,16 @@ export function EnergyForm(props) {
           if (user?.site) {
             formValue.site = user.site._id;
           } else {
-            if (site) {
-              formValue.site = site;
-            } else {
-              // Desencriptar los datos recibidos
-              if (!energyForm) {
-                const siteData = decrypt(siteSelected);
-                formValue.site = siteData;
-              }
-            }
+            if (siteSelected) {
+              formValue.site = siteSelected;
+            } 
+            // else {
+            //   // Desencriptar los datos recibidos
+            //   if (!energyForm) {
+            //     const siteData = decrypt(siteSelected);
+            //     formValue.site = siteData;
+            //   }
+            // }
           }
           await energyFormController.createEnergyForm(accessToken, formValue);
           //console.log(formValue);
@@ -115,6 +115,33 @@ export function EnergyForm(props) {
     });
   };
 
+  // Generar una lista de años (por ejemplo, del 2000 al 2024)
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response =
+          await energyFormController.getPeriodsEnergyFormsBySiteAndYear(
+            accessToken,
+            siteSelected,
+            formik.values.year
+          );
+          const periods = PERIODS.map((item) => item);
+          const availablePeriods = periods
+            .filter((period) => !response.periods.includes(period))
+            .map((period) => period);
+  
+          setListPeriods(availablePeriods);
+          console.log(availablePeriods)
+      } catch (error) {
+        console.error(error);
+        setListPeriods([]);
+      }
+    })();
+  }, [formik.values.year]);
+
   return (
     <Form className="energy-form" onSubmit={formik.handleSubmit}>
       {energyForm ? (
@@ -132,6 +159,52 @@ export function EnergyForm(props) {
           </Header>
         </Segment>
       ) : null}
+      {!energyForm ? (
+        <>
+          <Grid columns={2} divided>
+            <GridRow>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Año"
+                  placeholder="Seleccione"
+                  options={years.map((year) => {
+                    return {
+                      key: year,
+                      text: year,
+                      value: year,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("year", data.value)
+                  }
+                  value={formik.values.year}
+                  error={formik.errors.year}
+                />
+              </GridColumn>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Periodo"
+                  placeholder="Seleccione"
+                  options={listPeriods.map((period) => {
+                    return {
+                      key: period,
+                      text: convertPeriodsEngToEsp(period),
+                      value: period,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("period", data.value)
+                  }
+                  value={formik.values.period}
+                  error={formik.errors.period}
+                />
+              </GridColumn>
+            </GridRow>
+          </Grid>
+        </>
+      ) : null}
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
@@ -142,43 +215,37 @@ export function EnergyForm(props) {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          <Table.Row>
+          {/* Electricidad */}
+        <Table.Row>
             <Table.Cell>
-              <label className="label">Tipo de instalacion</label>
+            <Label ribbon>Electricidad</Label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{ _id: "1", name: "tipo a" }].map((ds) => {
-                  return {
-                    key: ds._id,
-                    text: ds.name,
-                    value: ds._id,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.value", data.value)
-                }
-                value={formik.values.installation_type.value}
-                error={formik.errors.installation_type}
+            </Table.Cell>
+            <Table.Cell>
+            </Table.Cell>
+            <Table.Cell>
+            </Table.Cell>
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Electricidad standard en MHW</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="electricity.electricity_standard.value"
+                value={formik.values.electricity.electricity_standard.value}
+                error={formik.errors.electricity}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.value,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.isApproved", data.value)
-                }
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -190,12 +257,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.isApproved", data.value)
+                  formik.setFieldValue(`electricity.electricity_standard.isApproved`, data.value)
                 }
-                value={formik.values.installation_type.isApproved}
-                error={formik.errors.installation_type}
+                value={formik.values.electricity.electricity_standard.isApproved}
+                error={formik.errors.electricity}
               />
-              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.electricity.electricity_standard.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -203,7 +270,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("tipo de instalacion", "installation_type");
+                  openUpdateSite("Electricidad standard en MHW", `electricity.electricity_standard}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -211,49 +278,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  // openUpdateSite("tipo de instalacion", "installation_type");
+                  // openUpdateSite("Electricidad standard en MHW", "electricity.electricity_standard");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">Categoria de productos</label>
+              <label className="label">Costo electricidad</label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{_id:"1",name:"categoria a"}, {_id:"2",name:"categoria b"}].map((ds) => {
-                  return {
-                    key: ds._id,
-                    text: ds.name,
-                    value: ds._id,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("product_category.value", data.value)
-                }
-                value={formik.values.product_category.value}
-                error={formik.errors.product_category}
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="electricity.electricity_cost.value"
+                value={formik.values.electricity.electricity_cost.value}
+                error={formik.errors.electricity}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.product_category.isApproved}
-                label={
-                  formik.values.product_category.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("product_category.isApproved", checked);
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -265,20 +316,20 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("product_category.isApproved", data.value)
+                  formik.setFieldValue(`electricity.electricity_cost.isApproved`, data.value)
                 }
-                value={formik.values.product_category.isApproved}
-                error={formik.errors.product_category}
+                value={formik.values.electricity.electricity_cost.isApproved}
+                error={formik.errors.electricity}
               />
-              {/* {formik.values.product_category.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.electricity.electricity_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
                 icon
-                primary
                 type="button"
+                primary
                 onClick={() => {
-                  openUpdateSite("Categoria de productos", "product_category");
+                  openUpdateSite("Costo electricidad ", `electricity.electricity_cost}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -286,53 +337,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos", "product_category");
+                  // openUpdateSite("Costo electricidad ", "electricity.electricity_cost");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
+          
           <Table.Row>
             <Table.Cell>
-              <label className="label">Dias trabajados en el mes</label>
+              <label className="label">Energías Renovables (PPA o compra) en MHW</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="days_month.value"
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
                 onChange={formik.handleChange}
-                value={formik.values.days_month.value}
-                error={formik.errors.days_month}
+                name="electricity.renewable_energies.value"
+                value={formik.values.electricity.renewable_energies.value}
+                error={formik.errors.electricity}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.days_month.isApproved}
-                label={
-                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("days_month.isApproved", checked);
-                }}
-              /> */}
-              {/* <Form.Dropdown
-                placeholder="Seleccione"
-                options={["Aprobado", "No aprobado"].map((ds) => {
-                  return {
-                    key: ds,
-                    text: ds,
-                    value: ds,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("days_month.isApproved", data.value)
-                }
-                value={formik.values.days_month.isApproved}
-                error={formik.errors.days_month}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -344,12 +375,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("days_month.isApproved", data.value)
+                  formik.setFieldValue(`electricity.renewable_energies.isApproved`, data.value)
                 }
-                value={formik.values.days_month.isApproved}
-                error={formik.errors.days_month}
+                value={formik.values.electricity.renewable_energies.isApproved}
+                error={formik.errors.electricity}
               />
-              {/* {formik.values.days_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.electricity.renewable_energies.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -357,7 +388,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Dias trabajados en el mes", "days_month");
+                  openUpdateSite("Energías Renovables (PPA o compra) en MHW", `electricity.renewable_energies}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -365,833 +396,32 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Energías Renovables (PPA o compra) en MHW", "electricity.renewable_energies");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
-
+      
           <Table.Row>
             <Table.Cell>
-              <label className="label">Dias totales trabajados</label>
+              <label className="label">Energías renovables producidas y consumidas en el sitio en MHW</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="days_total.value"
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
                 onChange={formik.handleChange}
-                value={formik.values.days_total.value}
-                error={formik.errors.days_total}
-              />
+                name="electricity.renewable_energies_produced_and_consumed_on_site.value"
+                value={formik.values.electricity.renewable_energies_produced_and_consumed_on_site.value}
+                error={formik.errors.electricity}/>
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.days_total.isApproved}
-                label={
-                  formik.values.days_total.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("days_total.isApproved", checked);
-                }}
-              /> */}
-                 <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("days_total.isApproved", data.value)
-                }
-                value={formik.values.days_total.isApproved}
-                error={formik.errors.days_total}
-              />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite("Dias totales trabajados", "days_total");
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">Horas trabajadas en el mes</label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="hours_month.value"
-                onChange={formik.handleChange}
-                value={formik.values.hours_month.value}
-                error={formik.errors.hours_month}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.hours_month.isApproved}
-                label={
-                  formik.values.hours_month.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("hours_month.isApproved", checked);
-                }}
-              /> */}
-                     <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("hours_month.isApproved", data.value)
-                }
-                value={formik.values.hours_month.isApproved}
-                error={formik.errors.hours_month}
-              />
-              {/* {formik.values.hours_month.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite("Horas trabajadas en el mes", "hours_month");
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">Horas totales trabajadas</label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="hours_total.value"
-                disabled={true}
-                onChange={formik.handleChange}
-                value={formik.values.hours_total.value}
-                error={formik.errors.hours_total}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.hours_total.isApproved}
-                label={
-                  formik.values.hours_total.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("hours_total.isApproved", checked);
-                }}
-              /> */}
-                         <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("hours_total.isApproved", data.value)
-                }
-                value={formik.values.hours_total.isApproved}
-                error={formik.errors.hours_total}
-              />
-              {/* {formik.values.hours_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite("Horas totales trabajadas", "hours_total");
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadores temporales
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="temporary_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.temporary_workers.value}
-                error={formik.errors.temporary_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.temporary_workers.isApproved}
-                label={
-                  formik.values.temporary_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("temporary_workers.isApproved", checked);
-                }}
-              /> */}
-                           <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("temporary_workers.isApproved", data.value)
-                }
-                value={formik.values.temporary_workers.isApproved}
-                error={formik.errors.temporary_workers}
-              />
-              {/* {formik.values.temporary_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadores temporales",
-                    "temporary_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadores de produccion permanentes
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="permanent_production_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.permanent_production_workers.value}
-                error={formik.errors.permanent_production_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.permanent_production_workers.isApproved}
-                label={
-                  formik.values.permanent_production_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "permanent_production_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                               <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("permanent_production_workers.isApproved", data.value)
-                }
-                value={formik.values.permanent_production_workers.isApproved}
-                error={formik.errors.permanent_production_workers}
-              />
-              {/* {formik.values.permanent_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadores de produccion permanentes",
-                    "permanent_production_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadores administrativos permanentes
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="permanent_administrative_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.permanent_administrative_workers.value}
-                error={formik.errors.permanent_administrative_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.permanent_administrative_workers.isApproved
-                }
-                label={
-                  formik.values.permanent_administrative_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "permanent_administrative_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                              <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("permanent_administrative_workers.isApproved", data.value)
-                }
-                value={formik.values.permanent_administrative_workers.isApproved}
-                error={formik.errors.permanent_administrative_workers}
-              />
-              {/* {formik.values.permanent_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadores administrativos permanentes",
-                    "permanent_administrative_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadoras de produccion femeninas
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="female_production_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.female_production_workers.value}
-                error={formik.errors.female_production_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.female_production_workers.isApproved}
-                label={
-                  formik.values.female_production_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "female_production_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                                 <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("female_production_workers.isApproved", data.value)
-                }
-                value={formik.values.female_production_workers.isApproved}
-                error={formik.errors.female_production_workers}
-              />
-              {/* {formik.values.female_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadoras de produccion femeninas",
-                    "female_production_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadores de produccion masculinos
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="male_production_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.male_production_workers.value}
-                error={formik.errors.male_production_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.male_production_workers.isApproved}
-                label={
-                  formik.values.male_production_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "male_production_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                                    <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("male_production_workers.isApproved", data.value)
-                }
-                value={formik.values.male_production_workers.isApproved}
-                error={formik.errors.male_production_workers}
-              />
-              {/* {formik.values.male_production_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadores de produccion masculinos",
-                    "male_production_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadoras administrativas femeninas
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="female_administrative_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.female_administrative_workers.value}
-                error={formik.errors.female_administrative_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.female_administrative_workers.isApproved}
-                label={
-                  formik.values.female_administrative_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "female_administrative_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                                        <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("female_administrative_workers.isApproved", data.value)
-                }
-                value={formik.values.female_administrative_workers.isApproved}
-                error={formik.errors.female_administrative_workers}
-              />
-              {/* {formik.values.female_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadoras administrativas femeninas",
-                    "female_administrative_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadores administrativos masculinos
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="male_administrative_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.male_administrative_workers.value}
-                error={formik.errors.male_administrative_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.male_administrative_workers.isApproved}
-                label={
-                  formik.values.male_administrative_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "male_administrative_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                                          <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("male_administrative_workers.isApproved", data.value)
-                }
-                value={formik.values.male_administrative_workers.isApproved}
-                error={formik.errors.male_administrative_workers}
-              />
-              {/* {formik.values.male_administrative_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadores administrativos masculinos",
-                    "male_administrative_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadoras femeninas en posiciones de liderazgo
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="female_workers_leadership_position.value"
-                onChange={formik.handleChange}
-                value={formik.values.female_workers_leadership_positions.value}
-                error={formik.errors.female_workers_leadership_positions}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.female_workers_leadership_positions.isApproved
-                }
-                label={
-                  formik.values.female_workers_leadership_positions.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "female_workers_leadership_positions.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                                       <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("female_workers_leadership_positions.isApproved", data.value)
-                }
-                value={formik.values.female_workers_leadership_positions.isApproved}
-                error={formik.errors.female_workers_leadership_positions}
-              />
-              {/* {formik.values.female_workers_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadoras femeninas en posiciones de liderazgo",
-                    "female_workers_leadership_positions"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Cantidad de trabajadores masculinos en posiciones de liderazgo
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="male_workers_leadership_positions.value"
-                onChange={formik.handleChange}
-                value={formik.values.male_workers_leadership_positions.value}
-                error={formik.errors.male_workers_leadership_positions}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.male_workers_leadership_positions.isApproved
-                }
-                label={
-                  formik.values.male_workers_leadership_positions.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "male_workers_leadership_positions.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1203,12 +433,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("male_workers_leadership_positions.isApproved", data.value)
+                  formik.setFieldValue(`electricity.renewable_energies_produced_and_consumed_on_site.isApproved`, data.value)
                 }
-                value={formik.values.male_workers_leadership_positions.isApproved}
-                error={formik.errors.male_workers_leadership_positions}
+                value={formik.values.electricity.renewable_energies_produced_and_consumed_on_site.isApproved}
+                error={formik.errors.electricity}
               />
-              {/* {formik.values.male_workers_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.electricity.renewable_energies_produced_and_consumed_on_site.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1216,10 +446,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "Cantidad de trabajadores masculinos en posiciones de liderazgo",
-                    "male_workers_leadership_positions"
-                  );
+                  openUpdateSite("Energías renovables producidas y consumidas en el sitio en MHW", `electricity.renewable_energies_produced_and_consumed_on_site}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1227,45 +454,47 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Energías renovables producidas y consumidas en el sitio en MHW", "electricity.renewable_energies_produced_and_consumed_on_site");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
+          </Table.Row>
+
+{/* Combustibles */}
+<Table.Row>
+            <Table.Cell>
+            <Label ribbon>Combustibles</Label>
+              {/* <label className="label">Combustibles</label> */}
+            </Table.Cell>
+            <Table.Cell>
+            </Table.Cell>
+            <Table.Cell>
+            </Table.Cell>
+            <Table.Cell>
+            </Table.Cell>
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">
-                Cantidad promedio de trabajadores totales
-              </label>
+              <label className="label">Vapor</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="average_total_workers.value"
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
                 onChange={formik.handleChange}
-                value={formik.values.average_total_workers.value}
-                error={formik.errors.average_total_workers}
+                name="fuels.steam.value"
+                value={formik.values.fuels.steam.value}
+                error={formik.errors.fuels}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.average_total_workers.isApproved}
-                label={
-                  formik.values.average_total_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "average_total_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1277,12 +506,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("average_total_workers.isApproved", data.value)
+                  formik.setFieldValue(`fuels.steam.isApproved`, data.value)
                 }
-                value={formik.values.average_total_workers.isApproved}
-                error={formik.errors.average_total_workers}
+                value={formik.values.fuels.steam.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.average_total_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.steam.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1290,10 +519,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "Cantidad promedio de trabajadores totales",
-                    "average_total_workers"
-                  );
+                  openUpdateSite("Vapor", `fuels.steam}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1301,191 +527,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Vapor", "fuels.steam");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">
-                Promedio de trabajadoras femeninas
-              </label>
+              <label className="label">Costo del vapor</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="average_female_workers.value"
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
                 onChange={formik.handleChange}
-                value={formik.values.average_female_workers.value}
-                error={formik.errors.average_female_workers}
+                name="fuels.steam_cost.value"
+                value={formik.values.fuels.steam_cost.value}
+                error={formik.errors.fuels}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.average_female_workers.isApproved}
-                label={
-                  formik.values.average_female_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "average_female_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-               <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("average_female_workers.isApproved", data.value)
-                }
-                value={formik.values.average_female_workers.isApproved}
-                error={formik.errors.average_female_workers}
-              />
-              {/* {formik.values.average_female_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Promedio de trabajadoras femeninas",
-                    "average_female_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">
-                Promedio de trabajadores masculinos
-              </label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="average_male_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.average_male_workers.value}
-                error={formik.errors.average_male_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.average_male_workers.isApproved}
-                label={
-                  formik.values.average_male_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "average_male_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-                     <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.key,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("average_male_workers.isApproved", data.value)
-                }
-                value={formik.values.average_male_workers.isApproved}
-                error={formik.errors.average_male_workers}
-              />
-              {/* {formik.values.average_male_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                icon
-                type="button"
-                primary
-                onClick={() => {
-                  openUpdateSite(
-                    "Promedio de trabajadores masculinos",
-                    "average_male_workers"
-                  );
-                }}
-              >
-                <Icon name="comment outline" />
-              </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
-            </Table.Cell>
-          </Table.Row>
-
-          <Table.Row>
-            <Table.Cell>
-              <label className="label">% de trabajadoras femeninas</label>
-            </Table.Cell>
-            <Table.Cell>
-              <Form.Input
-                type="number"
-                name="percentage_female_workers.value"
-                onChange={formik.handleChange}
-                value={formik.values.percentage_female_workers.value}
-                error={formik.errors.percentage_female_workers}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_female_workers.isApproved}
-                label={
-                  formik.values.percentage_female_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_female_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1497,12 +565,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_female_workers.isApproved", data.value)
+                  formik.setFieldValue(`fuels.steam_cost.isApproved`, data.value)
                 }
-                value={formik.values.percentage_female_workers.isApproved}
-                error={formik.errors.percentage_female_workers}
+                value={formik.values.fuels.steam_cost.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.percentage_female_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.steam_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1510,10 +578,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "% de trabajadoras femeninas",
-                    "percentage_female_workers"
-                  );
+                  openUpdateSite("Costo del vapor", `fuels.steam_cost}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1521,44 +586,34 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Costo del vapor ", "fuels.steam_cost");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
-
+          
           <Table.Row>
             <Table.Cell>
-              <label className="label">% de trabajadores masculinos</label>
+              <label className="label">Gas Natural</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="percentage_female_workers.value"
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
                 onChange={formik.handleChange}
-                value={formik.values.percentage_male_workers.value}
-                error={formik.errors.percentage_male_workers}
+                name="electricity.natural_gas.value"
+                value={formik.values.fuels.natural_gas.value}
+                error={formik.errors.fuels}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_male_workers.isApproved}
-                label={
-                  formik.values.percentage_male_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_male_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
-               <Form.Dropdown
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -1569,12 +624,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_male_workers.isApproved", data.value)
+                  formik.setFieldValue(`fuels.natural_gas.isApproved`, data.value)
                 }
-                value={formik.values.percentage_male_workers.isApproved}
-                error={formik.errors.percentage_male_workers}
+                value={formik.values.fuels.natural_gas.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.percentage_male_workers.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.natural_gas.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1582,10 +637,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "% de trabajadores masculinos",
-                    "percentage_male_workers"
-                  );
+                  openUpdateSite("Gas Natural", `fuels.natural_gas}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1593,44 +645,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Gas Natural", "fuels.natural_gas");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
-
+      
           <Table.Row>
             <Table.Cell>
-              <label className="label">% de mujeres totales</label>
+              <label className="label">Costo Gas Natural</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="percentage_total_female.value"
-                onChange={formik.handleChange}
-                value={formik.values.percentage_total_female.value}
-                error={formik.errors.percentage_total_female}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_total_female.isApproved}
-                label={
-                  formik.values.percentage_total_female.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_total_female.isApproved",
-                    checked
-                  );
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
                 }}
-              /> */}
-               <Form.Dropdown
+                onChange={formik.handleChange}
+                name="fuels.natural_gas_cost.value"
+                value={formik.values.fuels.natural_gas_cost.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -1641,12 +682,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_total_female.isApproved", data.value)
+                  formik.setFieldValue(`fuels.natural_gas_cost.isApproved`, data.value)
                 }
-                value={formik.values.percentage_total_female.isApproved}
-                error={formik.errors.percentage_total_female}
+                value={formik.values.fuels.natural_gas_cost.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.percentage_total_female.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.natural_gas_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1654,10 +695,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "% de mujeres totales",
-                    "percentage_total_female"
-                  );
+                  openUpdateSite("Costo Gas Natural", `fuels.natural_gas_cost}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1665,44 +703,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Costo Gas Natural", "fuels.natural_gas_cost");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">% de hombres totales</label>
+              <label className="label">GLP (gas licuado de petróleo)</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="percentage_total_male.value"
-                onChange={formik.handleChange}
-                value={formik.values.percentage_total_male.value}
-                error={formik.errors.percentage_total_male}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_total_male.isApproved}
-                label={
-                  formik.values.percentage_total_male.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_total_male.isApproved",
-                    checked
-                  );
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
                 }}
-              /> */}
-                    <Form.Dropdown
+                onChange={formik.handleChange}
+                name="fuels.glp.value"
+                value={formik.values.fuels.glp.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -1713,12 +740,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_total_male.isApproved", data.value)
+                  formik.setFieldValue(`fuels.glp.isApproved`, data.value)
                 }
-                value={formik.values.percentage_total_male.isApproved}
-                error={formik.errors.percentage_total_male}
+                value={formik.values.fuels.glp.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.percentage_total_male.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.glp.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1726,10 +753,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "% de hombres totales",
-                    "percentage_total_male"
-                  );
+                  openUpdateSite("GLP (gas licuado de petróleo)", `fuels.glp}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1737,52 +761,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("GLP (gas licuado de petróleo)", "fuels.glp");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">
-                % de femeninas en posicion de liderazgo
-              </label>
+              <label className="label">Costo del GLP</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="percentage_female_leadership_positions.value"
-                onChange={formik.handleChange}
-                value={
-                  formik.values.percentage_female_leadership_positions.value
-                }
-                error={formik.errors.percentage_female_leadership_positions}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.percentage_female_leadership_positions
-                    .isApproved
-                }
-                label={
-                  formik.values.percentage_female_leadership_positions
-                    .isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_female_leadership_positions.isApproved",
-                    checked
-                  );
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
                 }}
-              /> */}
-                         <Form.Dropdown
+                onChange={formik.handleChange}
+                name="fuels.glp_cost.value"
+                value={formik.values.fuels.glp_cost.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -1793,12 +798,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_female_leadership_positions.isApproved", data.value)
+                  formik.setFieldValue(`fuels.glp_cost.isApproved`, data.value)
                 }
-                value={formik.values.percentage_female_leadership_positions.isApproved}
-                error={formik.errors.percentage_female_leadership_positions}
+                value={formik.values.fuels.glp_cost.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.percentage_female_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.electricity.glp_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1806,10 +811,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "% de femeninas en posicion de liderazgo",
-                    "percentage_female_leadership_positions"
-                  );
+                  openUpdateSite("Costo del GLP", `fuels.glp_cost}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1817,48 +819,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Costo del GLP", "fuels.glp_cost");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">
-                % de masculinos en posicion de liderazgo
-              </label>
+              <label className="label">Heavy Fuel Oil (aceite combustible pesado)</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="percentage_male_leadership_positions.value"
-                onChange={formik.handleChange}
-                value={formik.values.percentage_male_leadership_positions.value}
-                error={formik.errors.percentage_male_leadership_positions}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.percentage_male_leadership_positions.isApproved
-                }
-                label={
-                  formik.values.percentage_male_leadership_positions.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_male_leadership_positions.isApproved",
-                    checked
-                  );
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
                 }}
-              /> */}
-                             <Form.Dropdown
+                onChange={formik.handleChange}
+                name="fuels.heavy_fuel_oil.value"
+                value={formik.values.fuels.heavy_fuel_oil.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -1869,12 +856,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_male_leadership_positions.isApproved", data.value)
+                  formik.setFieldValue(`fuels.heavy_fuel_oil.isApproved`, data.value)
                 }
-                value={formik.values.percentage_male_leadership_positions.isApproved}
-                error={formik.errors.percentage_male_leadership_positions}
+                value={formik.values.fuels.heavy_fuel_oil.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.percentage_male_leadership_positions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.glp_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1882,10 +869,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "% de masculinos en posicion de liderazgo",
-                    "percentage_male_leadership_positions"
-                  );
+                  openUpdateSite("Costo del GLP", `fuels.heavy_fuel_oil}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1893,46 +877,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Costo del GLP", "fuels.heavy_fuel_oil");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">
-                Accidentes de trabajo con dias de baja (+ de uno)
-              </label>
+              <label className="label">Costo del Heavy fuel Oil (aceite combustible pesado)</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="work_accidents_with_sick_days.value"
-                onChange={formik.handleChange}
-                value={formik.values.work_accidents_with_sick_days.value}
-                error={formik.errors.work_accidents_with_sick_days}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.work_accidents_with_sick_days.isApproved}
-                label={
-                  formik.values.work_accidents_with_sick_days.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "work_accidents_with_sick_days.isApproved",
-                    checked
-                  );
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
                 }}
-              /> */}
-                            <Form.Dropdown
+                onChange={formik.handleChange}
+                name="fuels.cost_of_heavy_fuel_oil.value"
+                value={formik.values.fuels.cost_of_heavy_fuel_oil.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -1943,12 +914,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("work_accidents_with_sick_days.isApproved", data.value)
+                  formik.setFieldValue(`fuels.cost_of_heavy_fuel_oil.isApproved`, data.value)
                 }
-                value={formik.values.work_accidents_with_sick_days.isApproved}
-                error={formik.errors.work_accidents_with_sick_days}
+                value={formik.values.fuels.cost_of_heavy_fuel_oil.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.work_accidents_with_sick_days.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.glp_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -1956,10 +927,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "Accidentes de trabajo con dias de baja (+ de uno)",
-                    "work_accidents_with_sick_days"
-                  );
+                  openUpdateSite("Costo del Heavy fuel Oil (aceite combustible pesado)", `fuels.cost_of_heavy_fuel_oil}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -1967,46 +935,33 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Costo del Heavy fuel Oil (aceite combustible pesado)", "fuels.cost_of_heavy_fuel_oil");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">
-                Primeros auxilios sin dias de baja (continua trabajando)
-              </label>
+              <label className="label">Light fuel oil (aceite combustible)</label>
             </Table.Cell>
             <Table.Cell>
-              <Form.Input
-                type="number"
-                name="first_aid_without_sick_days.value"
-                onChange={formik.handleChange}
-                value={formik.values.first_aid_without_sick_days.value}
-                error={formik.errors.first_aid_without_sick_days}
-              />
-            </Table.Cell>
-            <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.first_aid_without_sick_days.isApproved}
-                label={
-                  formik.values.first_aid_without_sick_days.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "first_aid_without_sick_days.isApproved",
-                    checked
-                  );
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
                 }}
-              /> */}
-                        <Form.Dropdown
+                onChange={formik.handleChange}
+                name="fuels.light_fuel_oil.value"
+                value={formik.values.fuels.light_fuel_oil.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
                   return {
@@ -2017,12 +972,12 @@ export function EnergyForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("first_aid_without_sick_days.isApproved", data.value)
+                  formik.setFieldValue(`fuels.light_fuel_oil.isApproved`, data.value)
                 }
-                value={formik.values.first_aid_without_sick_days.isApproved}
-                error={formik.errors.first_aid_without_sick_days}
+                value={formik.values.fuels.light_fuel_oil.isApproved}
+                error={formik.errors.fuels}
               />
-              {/* {formik.values.first_aid_without_sick_days.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+              {/* {formik.values.fuels.glp_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -2030,10 +985,7 @@ export function EnergyForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(
-                    "Primeros auxilios sin dias de baja (continua trabajando)",
-                    "first_aid_without_sick_days"
-                  );
+                  openUpdateSite("Costo del Heavy fuel Oil (aceite combustible pesado)", `fuels.light_fuel_oil}`);
                 }}
               >
                 <Icon name="comment outline" />
@@ -2041,12 +993,477 @@ export function EnergyForm(props) {
               <Button
                 icon
                 onClick={() => {
-                  openUpdateSite("Categoria de productos");
+                  // openUpdateSite("Costo del Heavy fuel Oil (aceite combustible pesado)", "fuels.light_fuel_oil");
                 }}
               >
                 <Icon name="paperclip" />
               </Button>
             </Table.Cell>
+         
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Carbón</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.coal.value"
+                value={formik.values.fuels.coal.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.coal.isApproved`, data.value)
+                }
+                value={formik.values.fuels.coal.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.glp_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Carbón", `fuels.coal}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Carbón", "fuels.coal");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo del Carbón</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.coal_cost.value"
+                value={formik.values.fuels.coal_cost.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.coal_cost.isApproved`, data.value)
+                }
+                value={formik.values.fuels.coal_cost.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.coal_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo del Carbón", `fuels.coal_cost}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Costo del Carbón", "fuels.coal_cost");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+          
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Diesel</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.diesel.value"
+                value={formik.values.fuels.diesel.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.diesel.isApproved`, data.value)
+                }
+                value={formik.values.fuels.diesel.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.coal_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Diesel", `fuels.diesel}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Diesel", "fuels.diesel");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+          
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo del Diesel</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.diesel_cost.value"
+                value={formik.values.fuels.diesel_cost.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.diesel_cost.isApproved`, data.value)
+                }
+                value={formik.values.fuels.diesel_cost.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.diesel_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo del Diesel", `fuels.diesel_cost}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Costo del Diesel", "fuels.diesel_cost");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Gasolina para los vehículos internos (autoelevadores)</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.gasoline_for_internal_vehicles.value"
+                value={formik.values.fuels.gasoline_for_internal_vehicles.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.gasoline_for_internal_vehicles.isApproved`, data.value)
+                }
+                value={formik.values.fuels.gasoline_for_internal_vehicles.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.gasoline_for_internal_vehicles.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Gasolina para los vehículos internos (autoelevadores)", `fuels.gasoline_for_internal_vehicles}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Gasolina para los vehículos internos (autoelevadores)", "fuels.gasoline_for_internal_vehicles");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo de Gasolina de los vehículos internos</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.gasoline_cost_of_internal_vehicles.value"
+                value={formik.values.fuels.gasoline_cost_of_internal_vehicles.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.gasoline_cost_of_internal_vehicles.isApproved`, data.value)
+                }
+                value={formik.values.fuels.gasoline_cost_of_internal_vehicles.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.gasoline_cost_of_internal_vehicles.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de Gasolina de los vehículos internos", `fuels.gasoline_cost_of_internal_vehicles}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Costo de Gasolina de los vehículos internos", "fuels.gasoline_cost_of_internal_vehicles");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Biomasa</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.biomass.value"
+                value={formik.values.fuels.biomass.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.biomass.isApproved`, data.value)
+                }
+                value={formik.values.fuels.biomass.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.biomass.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Biomasa", `fuels.biomass}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Biomasa", "fuels.biomass");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
+          </Table.Row>
+
+          <Table.Row>
+            <Table.Cell>
+              <label className="label">Costo de Biomasa</label>
+            </Table.Cell>
+            <Table.Cell>
+            <Form.Input
+                onKeyPress={(event) => {
+                  if (!/[0-9]/.test(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onChange={formik.handleChange}
+                name="fuels.biomass_cost.value"
+                value={formik.values.fuels.biomass_cost.value}
+                error={formik.errors.fuels}/>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Dropdown
+                placeholder="Seleccione"
+                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue(`fuels.biomass_cost.isApproved`, data.value)
+                }
+                value={formik.values.fuels.biomass_cost.isApproved}
+                error={formik.errors.fuels}
+              />
+              {/* {formik.values.fuels.biomass_cost.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
+            </Table.Cell>
+            <Table.Cell>
+              <Button
+                icon
+                type="button"
+                primary
+                onClick={() => {
+                  openUpdateSite("Costo de Biomasa", `fuels.biomass_cost}`);
+                }}
+              >
+                <Icon name="comment outline" />
+              </Button>
+              <Button
+                icon
+                onClick={() => {
+                  // openUpdateSite("Costo de Biomasa", "fuels.biomass_cost");
+                }}
+              >
+                <Icon name="paperclip" />
+              </Button>
+            </Table.Cell>
+         
           </Table.Row>
         </Table.Body>
 

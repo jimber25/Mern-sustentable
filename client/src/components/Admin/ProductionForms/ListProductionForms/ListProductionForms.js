@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Loader, Pagination, Table, Grid, GridColumn, Input, Divider } from "semantic-ui-react";
+import { Loader, Pagination, Table, Grid, GridColumn, Input, Divider, Confirm, Dropdown } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Productionform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
@@ -10,14 +10,20 @@ import {
   isMaster,
 } from "../../../../utils/checkPermission";
 import "./ListProductionForms.scss";
+import { formatDateView } from "../../../../utils/formatDate";
+import { convertPeriodsEngToEsp, convertProductionFieldsEngToEsp } from "../../../../utils/converts";
+import { ProductionForm } from "../ProductionForm";
+import { PERIODS } from "../../../../utils";
+import { BasicModal } from "../../../Shared";
+import { productionCodes } from "../../../../utils/codes";
 const _ = require("lodash");
 
 
 const productionFormController = new Productionform();
 
 export function ListProductionForms(props) {
-  const { reload, onReload , siteSelected} = props;
-  const [productionforms, setProductionForms] = useState([]);
+  const { reload, onReload , siteSelected, yearSelected} = props;
+  const [forms, setForms] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState();
     // const [Role, setRole] = useState(null);
@@ -27,87 +33,44 @@ export function ListProductionForms(props) {
     } = useAuth();
   
 
-  useEffect(() => {
-    (async () => {
-      try {
-        let limit=50;
-        let options={ page, limit };
-        if(site){
-          options.site=site?._id;
-        }else if(siteSelected){
-          options.site=siteSelected;
+    useEffect(() => {
+      (async () => {
+        if(yearSelected!=="" && siteSelected!==undefined)
+        try {
+          const response = await productionFormController.getProductionFormsBySiteAndYear(
+            accessToken,
+            siteSelected,
+            yearSelected
+          );
+          console.log(response.productionForms)
+          if (response.code ===200 && response.productionForms) {
+            setForms(response.productionForms);
+          } else {
+            setForms([]);
+          }
+  
+        } catch (error) {
+          console.error(error);
+          setForms([]);
         }
-        const response = await productionFormController.getProductionForms(accessToken,options);
-        if(response.docs){
-          setProductionForms(response.docs);
-        }else{
-          setProductionForms([]);
-        }
-        
-        // setSites(response.docs);
-        setPagination({
-          limit: response.limit,
-          page: response.current,
-          pages: response.pages,
-          total: response.total,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [page, reload]);
+      })();
+    }, [yearSelected,siteSelected, reload]);
 
   const changePage = (_, data) => {
     setPage(data.activePage);
   };
 
-  if (!productionforms) return <Loader active inline="centered" />;
-  if (size(productionforms) === 0) return "No hay ningun formulario de produccón";
+  if (!forms) return <Loader active inline="centered" />;
+  // if (size(productionforms) === 0) return "No hay ningun formulario de produccón";
 
   return (
     <div className="list-production-forms">
-      {/* {map(siteforms, (siteForm) => (
-        <SiteFormItem key={siteForm._id} siteForm={siteForm} onReload={onReload} />
-      ))} */}
-
-      <div className="list-production-forms__pagination">
-          {/* <SearchStandardPermission
-            dataOrigin={siteforms}
-            // data={permissionsFilter}
-            // setData={setPermissionsFilter}
-          /> */}
-        </div>
-        <Divider clearing/>
-
-      <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Estado</Table.HeaderCell>
-                <Table.HeaderCell >Fecha</Table.HeaderCell>
-                <Table.HeaderCell>Usuario Creador</Table.HeaderCell>
-                <Table.HeaderCell>Acciones</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-            {map(productionforms, (productionForm) => (
-              //TODO:DESCOMENTAR CUANDO ESTE TODO COMPLETO
-             <ProductionFormItem key={productionForm._id} productionForm={productionForm} onReload={onReload} />
-              ))
-      }
-           </Table.Body>
-           </Table>
-        {/* <Pagination
-          totalPages={pagination.pages}
-          defaultActivePage={pagination.page}
-          ellipsisItem={null}
-          firstItem={null}
-          lastItem={null}--
-          onPageChange={changePage}
-        /> */}
-        <Pagination
-        activePage={pagination.page}
-        totalPages={pagination.pages}
-        onPageChange={changePage}
+      <TablePeriods
+        data={forms}
+        onReload={onReload}
+        accessToken={accessToken}
+        year={yearSelected}
+        site={siteSelected}
       />
       </div>
   );
@@ -161,3 +124,235 @@ function SearchStandardPermission(props) {
     </Grid>
   );
 }
+
+function TablePeriods(props) {
+
+  const { data, onReload, accessToken , year, site} = props;
+
+  const [showModal, setShowModal] = useState(false);
+  const [titleModal, setTitleModal] = useState("");
+  const [modalContent, setModalContent] = useState("");
+  const [confirmContent, setConfirmContent] = useState("");
+  const [dataDeleted, setDataDelete] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleConfirm = (e) => setDataDelete(e)
+
+ console.log(data, "nuevodatos")
+  // Estado para controlar el modal
+  const [selectedPeriod, setSelectedPeriod] = useState(null);
+
+  const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
+  const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
+
+  // Función para abrir el modal con datos del período seleccionado
+  const handleOpenModal = (period) => {
+    setSelectedPeriod(data.find((item) => item.period === period));
+    //setModalOpen(true);
+    onOpenCloseModal();
+  };
+
+  // Función para cerrar el modal
+  const handleDeleteModal = (period) => {
+    const form = data.find((item) => item.period === period);
+    setConfirmContent(
+      `Eliminar el formulario de efluentes con fecha ${formatDateView(
+        form.date
+      )}`
+    );
+    setDataDelete(form)
+    onOpenCloseConfirm();
+  };
+
+  const openUpdateEffluentForm = (period) => {
+    //setFieldName(name);
+    const form = data.find((item) => item.period === period);
+    setTitleModal(
+      `Actualizar formulario efluente: ${convertPeriodsEngToEsp(form.period)}-${
+        form.year
+      }`
+    );
+    setModalContent(
+      <ProductionForm
+        onClose={onOpenCloseModal}
+        onReload={onReload}
+        productionForm={form}
+      />
+    );
+    setShowModal(true);
+  };
+
+  const openNewEffluentForm = (period) => {
+    setTitleModal(`Nuevo formulario efluente`);
+    setModalContent(
+      <ProductionForm onClose={onOpenCloseModal} onReload={onReload} period={period} year={year} siteSelected={site}/>
+    );
+    setShowModal(true);
+  };
+
+  const onDelete = async () => {
+    try {
+      //TODO: modificar por controlador correspondiente
+      await productionFormController.deleteProductionForm(accessToken, dataDeleted._id);
+      setDataDelete("");
+      onReload();
+      onOpenCloseConfirm();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Obtén los nombres de los períodos para las columnas
+  const periods = PERIODS;
+
+  // Determinar los campos únicos y si tienen código
+  const determineFields = () => {
+    const fields = new Set();
+
+    Object.keys(productionCodes).forEach((key) => {
+      fields.add(key);
+    });
+
+    return Array.from(fields);
+  };
+
+  // Retorna el código
+  const hasCode = (field) => {
+    return productionCodes[field];
+  };
+
+  const hasDataPeriod = (period) => {
+    console.log(data)
+    if(data){
+      const existsPeriod = data.some((entry) => entry.period === period);
+      return existsPeriod;
+    }
+    return false;
+  };
+
+  // Obtener todos los campos únicos
+  const uniqueFields = determineFields();
+
+  const calculateTotalAndAverage = (field) => {
+    const values = data.map((item) => item[field]?.value || 0);
+    const total = values.reduce((acc, val) => acc + val, 0);
+    const average = values.length ? total / values.length : 0;
+    return { total, average };
+  };
+
+  return (
+    <>
+      <Table celled structured>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Codigo</Table.HeaderCell>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Item</Table.HeaderCell>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Unidades</Table.HeaderCell>
+            <Table.HeaderCell colSpan='14' textAlign="center">PERIODO DE REPORTE {year}</Table.HeaderCell>
+      </Table.Row>
+      <Table.Row>
+            {periods.map((period, index) => (
+              <Table.HeaderCell key={index}>
+
+                {convertPeriodsEngToEsp(period)}
+                {hasDataPeriod(period) ? (
+                  <>
+                    <Dropdown
+                      inline
+                      size="tiny"
+                      icon="ellipsis vertical"
+                      floating
+                      className="icon"
+    
+                    >
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          text="Editar"
+                          icon="edit"
+                          onClick={() => openUpdateEffluentForm(period)}
+                        />
+                        <Dropdown.Item
+                          text="Eliminar"
+                          icon="trash"
+                          onClick={() => handleDeleteModal(period)}
+                        />
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </>
+                ) : (
+                  <>
+                    <Dropdown
+                      link
+                      icon="ellipsis vertical"
+                      floating
+                      size="tiny"
+                      className="icon"
+                      // style={{ marginLeft: "10px" }}
+                    >
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          text="Cargar datos"
+                          icon="plus"
+                          onClick={() => openNewEffluentForm(period)}
+                        />
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </>
+                )}
+              </Table.HeaderCell>
+            ))}
+            <Table.HeaderCell>Total</Table.HeaderCell>
+            <Table.HeaderCell>Promedio</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {uniqueFields.map((field) => (
+            <React.Fragment key={field}>
+              <Table.Row>
+                <Table.Cell>{productionCodes[field]}</Table.Cell>
+                <Table.Cell>{convertProductionFieldsEngToEsp(field)}</Table.Cell>
+                <Table.Cell>{"-"}</Table.Cell>
+                {periods.map((period) => {
+                  const item = data.find((d) => d.period === period);
+                  return (
+                    <Table.Cell key={`${field}-${period}`}>
+                      {item && item[field] ? item[field].value : "-"}
+                    </Table.Cell>
+                  );
+                })}
+                <Table.Cell>{calculateTotalAndAverage(field).total}</Table.Cell>
+                <Table.Cell>
+                  {calculateTotalAndAverage(field).average.toFixed(2)}
+                </Table.Cell>
+              </Table.Row>
+            </React.Fragment>
+          ))}
+        </Table.Body>
+
+      </Table>
+      {/* Modal para mostrar detalles del período seleccionado */}
+      {showModal ? (
+        <>
+          <BasicModal
+            show={showModal}
+            close={onOpenCloseModal}
+            title={titleModal}
+            size={"fullscreen"}
+          >
+            {modalContent}
+          </BasicModal>
+        </>
+      ) : null}
+      <Confirm
+        open={showConfirm}
+        onCancel={onOpenCloseConfirm}
+        onConfirm={onDelete}
+        content={confirmContent}
+        size="tiny"
+        cancelButton="Cancelar"
+        confirmButton="Aceptar"
+      />
+    </>
+  );
+}
+

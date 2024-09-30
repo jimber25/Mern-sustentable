@@ -174,6 +174,7 @@ export class Effluentform {
       throw error;
     }
   }
+  
   async getEffluentFormsBySiteAndYear(accessToken, siteId, year) {
     try {
       const url = `${this.baseApi}/effluents-site-year/${siteId}/${year}`;

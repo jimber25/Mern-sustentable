@@ -83,10 +83,81 @@ async function deleteSiteForm(req, res) {
   });
 }
 
+async function existsSiteFormBySiteAndPeriodAndYear(req, res) {
+  const { period, year, site } = req.params;
+
+  SiteForm.find(
+    { period: period, year: year, site: site },
+    {},
+    (error, sites) => {
+      if (error) {
+        res
+          .status(400)
+          .send({ msg: "Error al obtener los formularios de sitio" });
+      } else {
+        if (sites && sites.length > 0) {
+          res.status(200).send({ code: 200, exist: true });
+        } else {
+          res.status(200).send({ code: 200, exist: false });
+        }
+      }
+    }
+  );
+}
+
+async function getPeriodSiteFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  SiteForm.find(
+    { year: year, site: site },
+    { _id: 0, period: 1 },
+    (error, periods) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de sitio de acuerdo al año",
+          });
+      } else {
+        const newData = periods.map((item) => item.period);
+        res.status(200).send({ code: 200, periods: newData });
+      }
+    }
+  );
+}
+
+async function getSiteFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  SiteForm.find(
+    {
+      $and: [
+        { year: { $exists: true, $eq: year } },
+        { site: { $exists: true, $eq: site } },
+      ],
+    },
+    {},
+    (error, siteForms) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios del sitio de acuerdo al año",
+          });
+      } else {
+        res.status(200).send({ code: 200, siteForms: siteForms });
+      }
+    }
+  );
+}
+
 module.exports = {
   getSiteForm,
   getSiteForms,
   createSiteForm,
   updateSiteForm,
   deleteSiteForm,
+  existsSiteFormBySiteAndPeriodAndYear,
+  getPeriodSiteFormsBySiteAndYear,
+  getSiteFormsBySiteAndYear
 };

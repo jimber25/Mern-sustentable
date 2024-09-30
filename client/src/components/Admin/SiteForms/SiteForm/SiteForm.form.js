@@ -1,10 +1,13 @@
 import * as Yup from "yup";
 
-export function initialValues(site) {
+export function initialValues(site,period, year) {
+  console.log(site)
   return {
     date: site?.date || "",
     creator_user: site?.creator_user || "",
     state: site?.state || "",
+    period:site?.period || period,
+    year:site?.year || year,
     installation_type: site?.installation_type || {
       value:"",
       reviews:[

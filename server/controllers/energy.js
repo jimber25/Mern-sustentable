@@ -64,10 +64,81 @@ async function deleteEnergy(req, res) {
   });
 }
 
+async function existsEnergyFormBySiteAndPeriodAndYear(req, res) {
+  const { period, year, site } = req.params;
+
+  Energy.find(
+    { period: period, year: year, site: site },
+    {},
+    (error, energies) => {
+      if (error) {
+        res
+          .status(400)
+          .send({ msg: "Error al obtener los formularios de energia" });
+      } else {
+        if (energies && energies.length > 0) {
+          res.status(200).send({ code: 200, exist: true });
+        } else {
+          res.status(200).send({ code: 200, exist: false });
+        }
+      }
+    }
+  );
+}
+
+async function getPeriodEnergyFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  Energy.find(
+    { year: year, site: site },
+    { _id: 0, period: 1 },
+    (error, periods) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de energia de acuerdo al año",
+          });
+      } else {
+        const newData = periods.map((item) => item.period);
+        res.status(200).send({ code: 200, periods: newData });
+      }
+    }
+  );
+}
+
+async function getEnergyFormsBySiteAndYear(req, res) {
+  const { year, site } = req.params;
+
+  Energy.find(
+    {
+      $and: [
+        { year: { $exists: true, $eq: year } },
+        { site: { $exists: true, $eq: site } },
+      ],
+    },
+    {},
+    (error, energyForms) => {
+      if (error) {
+        res
+          .status(400)
+          .send({
+            msg: "Error al obtener los formularios de energia de acuerdo al año",
+          });
+      } else {
+        res.status(200).send({ code: 200, energyForms: energyForms });
+      }
+    }
+  );
+}
+
 module.exports = {
   getEnergy,
   getEnergies,
   createEnergy,
   updateEnergy,
-  deleteEnergy
+  deleteEnergy,
+  existsEnergyFormBySiteAndPeriodAndYear,
+  getPeriodEnergyFormsBySiteAndYear,
+  getEnergyFormsBySiteAndYear
 };

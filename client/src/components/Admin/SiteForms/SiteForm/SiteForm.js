@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState,useEffect } from "react";
 import {
   Form,
   Image,
@@ -8,13 +8,9 @@ import {
   Button,
   Comment,
   CommentGroup,
-  CommentContent,
   CommentMetadata,
-  CommentText,
-  CommentAuthor,
-  TableFooter,
-  TableHeaderCell,
-  TableRow,
+  GridRow,
+  GridColumn,
   Segment,
   Divider,
   Header,
@@ -23,7 +19,7 @@ import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
 import { Siteform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
-import { ENV } from "../../../../utils";
+import { ENV, PERIODS } from "../../../../utils";
 import {
   formatDateView,
   formatDateHourCompleted,
@@ -34,20 +30,22 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import "./SiteForm.scss";
+import { convertPeriodsEngToEsp } from "../../../../utils/converts";
 
 const siteFormController = new Siteform();
 
 export function SiteForm(props) {
-  const { onClose, onReload, siteForm, site } = props;
+  const { onClose, onReload, siteForm, siteSelected ,period, year} = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [fieldName, setFieldName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [listPeriods, setListPeriods] = useState([]);
   const { user } = useAuth();
 
   const location = useLocation();
-  const { siteSelected } = location.state || {};
+  //const { siteSelected } = location.state || {};
 
   if (!siteSelected) {
     // // Manejo de caso donde no hay datos en state (por ejemplo, acceso directo a la URL)
@@ -66,7 +64,7 @@ export function SiteForm(props) {
   };
 
   const formik = useFormik({
-    initialValues: initialValues(siteForm),
+    initialValues: initialValues(siteForm, period, year),
     validationSchema: validationSchema(),
     validateOnChange: false,
     onSubmit: async (formValue) => {
@@ -77,15 +75,16 @@ export function SiteForm(props) {
           if (user?.site) {
             formValue.site = user.site._id;
           } else {
-            if (site) {
-              formValue.site = site;
-            } else {
-              // Desencriptar los datos recibidos
-              if (!siteForm) {
-                const siteData = decrypt(siteSelected);
-                formValue.site = siteData;
-              }
+            if (siteSelected) {
+              formValue.site = siteSelected;
             }
+            // } else {
+            //   // Desencriptar los datos recibidos
+            //   if (!siteForm) {
+            //     const siteData = decrypt(siteSelected);
+            //     formValue.site = siteData;
+            //   }
+            // }
           }
           await siteFormController.createSiteForm(accessToken, formValue);
           //console.log(formValue);
@@ -115,6 +114,33 @@ export function SiteForm(props) {
     });
   };
 
+     // Generar una lista de años (por ejemplo, del 2000 al 2024)
+     const currentYear = new Date().getFullYear();
+     const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
+     useEffect(() => {
+      (async () => {
+        try {
+          const response =
+            await siteFormController.getPeriodsSiteFormsBySiteAndYear(
+              accessToken,
+              siteSelected,
+              formik.values.year
+            );
+            const periods = PERIODS.map((item) => item);
+            const availablePeriods = periods
+              .filter((period) => !response.periods.includes(period))
+              .map((period) => period);
+    
+            setListPeriods(availablePeriods);
+            console.log(availablePeriods)
+        } catch (error) {
+          console.error(error);
+          setListPeriods([]);
+        }
+      })();
+    }, [formik.values.year]);
+
   return (
     <Form className="site-form" onSubmit={formik.handleSubmit}>
       {siteForm ? (
@@ -131,6 +157,52 @@ export function SiteForm(props) {
               : null}{" "}
           </Header>
         </Segment>
+      ) : null}
+             {!siteForm ? (
+        <>
+          <Grid columns={2} divided>
+            <GridRow>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Año"
+                  placeholder="Seleccione"
+                  options={years.map((year) => {
+                    return {
+                      key: year,
+                      text: year,
+                      value: year,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("year", data.value)
+                  }
+                  value={formik.values.year}
+                  error={formik.errors.year}
+                />
+              </GridColumn>
+              <GridColumn>
+                <Form.Dropdown
+                  label="Periodo"
+                  placeholder="Seleccione"
+                  options={listPeriods.map((period) => {
+                    return {
+                      key: period,
+                      text: convertPeriodsEngToEsp(period),
+                      value: period,
+                    };
+                  })}
+                  selection
+                  onChange={(_, data) =>
+                    formik.setFieldValue("period", data.value)
+                  }
+                  value={formik.values.period}
+                  error={formik.errors.period}
+                />
+              </GridColumn>
+            </GridRow>
+          </Grid>
+        </>
       ) : null}
       <Table size="small" celled>
         <Table.Header>
@@ -149,7 +221,7 @@ export function SiteForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{ _id: "1", name: "tipo a" }].map((ds) => {
+                options={[{ _id: "tipo a", name: "tipo a" }].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
@@ -226,7 +298,7 @@ export function SiteForm(props) {
             <Table.Cell>
             <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{_id:"1",name:"categoria a"}, {_id:"2",name:"categoria b"}].map((ds) => {
+                options={[{_id:"categoria a",name:"categoria a"}, {_id:"categoria b",name:"categoria b"}].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
