@@ -155,7 +155,7 @@ function TablePeriods(props) {
   const handleDeleteModal = (period) => {
     const form = data.find((item) => item.period === period);
     setConfirmContent(
-      `Eliminar el formulario de efluentes con fecha ${formatDateView(
+      `Eliminar el formulario de Produccion con fecha ${formatDateView(
         form.date
       )}`
     );
@@ -182,7 +182,7 @@ function TablePeriods(props) {
   };
 
   const openNewEffluentForm = (period) => {
-    setTitleModal(`Nuevo formulario efluente`);
+    setTitleModal(`Nuevo Formulario Produccion`);
     setModalContent(
       <ProductionForm onClose={onOpenCloseModal} onReload={onReload} period={period} year={year} siteSelected={site}/>
     );
@@ -245,7 +245,7 @@ function TablePeriods(props) {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell rowSpan='2'  textAlign="center">Codigo</Table.HeaderCell>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Item</Table.HeaderCell>
+            <Table.HeaderCell rowSpan='2'  textAlign="center">Concepto</Table.HeaderCell>
             <Table.HeaderCell rowSpan='2'  textAlign="center">Unidades</Table.HeaderCell>
             <Table.HeaderCell colSpan='14' textAlign="center">PERIODO DE REPORTE {year}</Table.HeaderCell>
       </Table.Row>

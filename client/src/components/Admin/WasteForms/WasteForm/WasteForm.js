@@ -28,7 +28,7 @@ import { initialValues, validationSchema } from "./WasteForm.form";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
-import { convertPeriodsEngToEsp } from "../../../../utils/converts";
+import { convertPeriodsEngToEsp, convertWasteFieldsEngToEsp } from "../../../../utils/converts";
 import "./WasteForm.scss";
 
 const wasteFormController = new Wasteform();
@@ -209,7 +209,8 @@ export function WasteForm(props) {
       ) : null}
       <Table size="small" celled>
         <Table.Header>
-          <Table.Row>
+        <Table.Row>
+            <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="2">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
@@ -220,7 +221,12 @@ export function WasteForm(props) {
         <Table.Body>
           <Table.Row>
             <Table.Cell>
-              <label className="label">Papel y cartón enviado a reciclar o reutilizar</label>
+              <label className="label">
+                {formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.code}{" "}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("paper_and_cardboard_sent_to_recycling_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
                 <Form.Input
@@ -294,8 +300,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.plastic_sent_to_recycle_or_reuse.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Plastico enviado a reciclar o reutilizar</label>
+              <label className="label">{convertWasteFieldsEngToEsp("plastic_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -366,9 +377,16 @@ export function WasteForm(props) {
               </Button>
             </Table.Cell>
           </Table.Row>
+
+
           <Table.Row>
+             <Table.Cell>
+              <label className="label">
+                {formik.values.fabric_sent_to_recycle_or_reuse.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Tela enviada a reciclar o reutilizar</label>
+              <label className="label">{convertWasteFieldsEngToEsp("fabric_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -471,8 +489,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.metal_sent_to_recycle_or_reuse.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Metal enviado a reciclar o reutilizar</label>
+              <label className="label">{convertWasteFieldsEngToEsp("metal_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -546,8 +569,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.wood_sent_to_recycle_or_reuse.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Madera enviada a reciclar o reutilizar</label>
+              <label className="label">{convertWasteFieldsEngToEsp("wood_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -621,8 +649,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.other_general_waste_sent_to_recycle_or_reuse.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Otros residuos generales enviados a reutilizar o reciclar</label>
+              <label className="label">{convertWasteFieldsEngToEsp("other_general_waste_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -699,10 +732,13 @@ export function WasteForm(props) {
         
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Cueros enviados a reutilizar o reciclar
+                {formik.values.leathers_sent_to_recycle_or_reuse.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("leathers_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -779,10 +815,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Goma/caucho (rubber) enviados a reutilizar o reciclar
+                {formik.values.rubber_sent_to_recycle_or_reuse.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("rubber_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -859,10 +898,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Restos de comida enviados a reutilizar o reciclar (compost)
+                {formik.values.food_scraps_sent_to_recycle_or_reuse.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("food_scraps_sent_to_recycle_or_reuse")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -939,10 +981,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Papel y cartón enviado a incineración
+                {formik.values.paper_and_cardboard_sent_to_incineration.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("paper_and_cardboard_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1019,10 +1064,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Plastico enviado a incineración
+                {formik.values.plastic_sent_to_incineration.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("plastic_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1099,10 +1147,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Tela enviada a incineración
+                {formik.values.fabric_sent_to_incineration.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("fabric_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1179,10 +1230,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Metal enviado a incineración
+                {formik.values.metal_sent_to_incineration.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("metal_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1259,15 +1313,18 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Madera enviada a incineración
+                {formik.values.wood_sent_to_incineration.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("wood_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="female_workers_leadership_position.value"
+                name="wood_sent_to_incineration.value"
                 onChange={formik.handleChange}
                 value={formik.values.wood_sent_to_incineration.value}
                 error={formik.errors.wood_sent_to_incineration}
@@ -1339,10 +1396,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Otros residuos generales enviados a incineración
+                {formik.values.other_general_waste_sent_to_incineration.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("other_general_waste_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1419,10 +1479,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Otros residuos generales enviados a otro tipo de disposición
+                {formik.values.other_general_waste_sent_to_other_types_of_disposal.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("other_general_waste_sent_to_other_types_of_disposal")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1499,10 +1562,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Total enviado a relleno sanitario
+                {formik.values.total_sent_to_landfill.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("total_sent_to_landfill")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1579,10 +1645,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-                Promedio de trabajadores masculinos
+                {formik.values.total_sent_for_reuse_or_recycling.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWasteFieldsEngToEsp("total_sent_for_reuse_or_recycling")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1659,8 +1728,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.total_sent_to_incineration.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Total enviado a incineración</label>
+              <label className="label">{convertWasteFieldsEngToEsp("total_sent_to_incineration")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1737,8 +1811,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.total_general_waste_sent_to_other_types_of_disposal.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Total residuos generales enviados a otro tipo de disposición</label>
+              <label className="label">{convertWasteFieldsEngToEsp("total_general_waste_sent_to_other_types_of_disposal")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1813,8 +1892,13 @@ export function WasteForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.total_non_hazardous_waste_unit_produced.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Total residuos no peligrosos x unidad producida</label>
+              <label className="label">{convertWasteFieldsEngToEsp("total_non_hazardous_waste_unit_produced")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input

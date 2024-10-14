@@ -108,7 +108,7 @@ function TablePeriods(props) {
   const handleDeleteModal = (period) => {
     const form = data.find((item) => item.period === period);
     setConfirmContent(
-      `Eliminar el formulario de efluentes con fecha ${formatDateView(
+      `Eliminar el formulario de Energia con fecha ${formatDateView(
         form.date
       )}`
     );
@@ -135,7 +135,7 @@ function TablePeriods(props) {
   };
 
   const openNewEnergyForm = (period) => {
-    setTitleModal(`Nuevo formulario energia`);
+    setTitleModal(`Nuevo Formulario energia`);
     setModalContent(
       <EnergyForm onClose={onOpenCloseModal} onReload={onReload} period={period} year={year} siteSelected={site}/>
     );
@@ -233,7 +233,7 @@ function TablePeriods(props) {
               Codigo
             </Table.HeaderCell>
             <Table.HeaderCell rowSpan="2" textAlign="center">
-              Item
+            Concepto
             </Table.HeaderCell>
             <Table.HeaderCell rowSpan="2" textAlign="center">
               Unidades

@@ -209,7 +209,8 @@ export function EnergyForm(props) {
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
+          <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
+            <Table.HeaderCell width="5">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="2">Valor</Table.HeaderCell>
             <Table.HeaderCell width="1">Unidad</Table.HeaderCell>
             <Table.HeaderCell width="2">Estado</Table.HeaderCell>
@@ -231,10 +232,14 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
-              <label className="label">Electricidad standard en MHW</label>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.electricity.electricity_standard.code}{" "}
+              </label>
             </Table.Cell>
-           
+            <Table.Cell>
+              <label className="label">{convertEnergyFieldsEngToEsp("electricity_standard")}</label>
+            </Table.Cell>
             <Table.Cell>
             <Form.Input
                 onKeyPress={(event) => {
@@ -313,8 +318,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.electricity.electricity_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo electricidad</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("electricity_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -394,8 +404,13 @@ export function EnergyForm(props) {
           </Table.Row>
           
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.electricity.renewable_energies.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Energías Renovables (PPA o compra) en MHW</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("renewable_energies")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -472,8 +487,13 @@ export function EnergyForm(props) {
           </Table.Row>
       
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.electricity.renewable_energies_produced_and_consumed_on_site.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Energías renovables producidas y consumidas en el sitio en MHW</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("renewable_energies_produced_and_consumed_on_site")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -564,8 +584,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.steam.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Vapor</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("steam")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -644,8 +669,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.steam_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo del vapor</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("steam_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -723,8 +753,13 @@ export function EnergyForm(props) {
           </Table.Row>
           
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.natural_gas.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Gas Natural</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("natural_gas")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -803,8 +838,13 @@ export function EnergyForm(props) {
           </Table.Row>
       
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.natural_gas_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo Gas Natural</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("natural_gas_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -882,8 +922,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.glp.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">GLP (gas licuado de petróleo)</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("glp")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -960,8 +1005,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.glp_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo del GLP</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("glp_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1037,8 +1087,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.heavy_fuel_oil.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Heavy Fuel Oil (aceite combustible pesado)</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("heavy_fuel_oil")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1116,8 +1171,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.cost_of_heavy_fuel_oil.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo del Heavy fuel Oil (aceite combustible pesado)</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("cost_of_heavy_fuel_oil")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1193,8 +1253,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.light_fuel_oil.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Light fuel oil (aceite combustible)</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("light_fuel_oil")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1271,8 +1336,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.coal.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Carbón</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("coal")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1350,8 +1420,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.coal_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo del Carbón</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("coal_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1427,8 +1502,13 @@ export function EnergyForm(props) {
           </Table.Row>
           
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.diesel.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Diesel</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("diesel")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1506,8 +1586,13 @@ export function EnergyForm(props) {
           </Table.Row>
           
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.diesel_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo del Diesel</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("diesel_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1584,8 +1669,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.gasoline_for_internal_vehicles.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Gasolina para los vehículos internos (autoelevadores)</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("gasoline_for_internal_vehicles")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1663,8 +1753,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.gasoline_cost_of_internal_vehicles.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo de Gasolina de los vehículos internos</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("gasoline_cost_of_internal_vehicles")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1741,8 +1836,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.biomass.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Biomasa</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("biomass")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -1820,8 +1920,13 @@ export function EnergyForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.fuels.biomass_cost.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Costo de Biomasa</label>
+              <label className="label">{convertEnergyFieldsEngToEsp("biomass_cost")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
