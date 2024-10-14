@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { productionCodes } from "../../../../utils/codes";
 
 export function initialValues(production, period, year) {
   return {
@@ -9,12 +10,16 @@ export function initialValues(production, period, year) {
     period:production?.period || period,
     year:production?.year || year,
     production_volume: production?.production_volume|| {
+      code:productionCodes["production_volume"],
+      unit:"",
       value:"",
       reviews:[
       ],
       isApproved:false
     },
     annual_average: production?.annual_average || {
+      code:productionCodes["annual_average"],
+      unit:"",
       value:"",
       reviews:[
       ],

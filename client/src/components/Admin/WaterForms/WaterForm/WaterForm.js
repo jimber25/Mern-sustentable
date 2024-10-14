@@ -28,7 +28,7 @@ import { initialValues, validationSchema } from "./WaterForm.form";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
-import { convertPeriodsEngToEsp } from "../../../../utils/converts";
+import { convertPeriodsEngToEsp, convertWaterFieldsEngToEsp } from "../../../../utils/converts";
 import "./WaterForm.scss";
 
 const waterFormController = new Waterform();
@@ -207,7 +207,8 @@ export function WaterForm(props) {
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
+          <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
+            <Table.HeaderCell width="5">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="3">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
             <Table.HeaderCell width="2">Estado</Table.HeaderCell>
@@ -216,9 +217,13 @@ export function WaterForm(props) {
         </Table.Header>
         <Table.Body>
           <Table.Row>
-            <Table.Cell>
-              <label className="label">Agua de la red municipal
+          <Table.Cell>
+              <label className="label">
+                {formik.values.municipal_network_water.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("municipal_network_water")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -289,9 +294,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
-              <label className="label">Costo del agua de la red municipal
+          <Table.Cell>
+              <label className="label">
+                {formik.values.cost_of_water_from_the_municipal_network.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("cost_of_water_from_the_municipal_network")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -364,8 +373,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.rainwater_harvesting.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Recolección de agua de lluvia</label>
+              <label className="label">{convertWaterFieldsEngToEsp("rainwater_harvesting")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -437,9 +451,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
-              <label className="label">Agua de subterránea 
+          <Table.Cell>
+              <label className="label">
+                {formik.values.groundwater.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("groundwater")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -511,9 +529,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
-              <label className="label">Agua superficial 
+          <Table.Cell>
+              <label className="label">
+                {formik.values.surface_water.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("surface_water")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -585,9 +607,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
-              <label className="label">% agua de red 
+          <Table.Cell>
+              <label className="label">
+                {formik.values.percentage_network_water.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("percentage_network_water")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -659,10 +685,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              % agua superficial
+                {formik.values.percentage_surface_water.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("percentage_surface_water")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -737,10 +766,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              % agua subterránea
+                {formik.values.percentage_groundwater.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("percentage_groundwater")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -816,10 +848,13 @@ export function WaterForm(props) {
           </Table.Row>
 
           <Table.Row>
-            <Table.Cell>
+          <Table.Cell>
               <label className="label">
-              Agua total consumida por unidad producida
+                {formik.values.total_water_consumed_per_unit_produced.code}{" "}
               </label>
+            </Table.Cell>
+            <Table.Cell>
+              <label className="label">{convertWaterFieldsEngToEsp("total_water_consumed_per_unit_produced")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input

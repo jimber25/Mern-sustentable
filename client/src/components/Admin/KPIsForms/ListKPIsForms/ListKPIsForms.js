@@ -133,7 +133,7 @@ function TablePeriods(props) {
   };
 
   const openNewKPIsForm = (period) => {
-    setTitleModal(`Nuevo formulario KPIs`);
+    setTitleModal(`Nuevo Formulario KPIs`);
     setModalContent(
       <KPIsForm
         onClose={onOpenCloseModal}
@@ -238,7 +238,7 @@ function TablePeriods(props) {
               Codigo
             </Table.HeaderCell>
             <Table.HeaderCell rowSpan="2" textAlign="center">
-              Item
+            Concepto
             </Table.HeaderCell>
             <Table.HeaderCell rowSpan="2" textAlign="center">
               Unidades

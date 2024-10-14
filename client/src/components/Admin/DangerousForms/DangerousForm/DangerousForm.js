@@ -219,8 +219,8 @@ export function DangerousForm(props) {
           <Table.Row>
             <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
-            <Table.HeaderCell width="2">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="2">Valor</Table.HeaderCell>
+            <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
             <Table.HeaderCell width="2">Estado</Table.HeaderCell>
             <Table.HeaderCell>Acciones</Table.HeaderCell>
           </Table.Row>

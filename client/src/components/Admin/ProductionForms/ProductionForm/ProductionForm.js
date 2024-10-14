@@ -244,12 +244,11 @@ export function ProductionForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("average_annual.isApproved", data.value)
+                  formik.setFieldValue("production_volume.unit", data.value)
                 }
-                value={formik.values.average_annual.isApproved}
+                value={formik.values.production_volume.unit}
                 error={formik.errors.average_annual}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
 
               <Table.Cell>
@@ -269,7 +268,6 @@ export function ProductionForm(props) {
                 value={formik.values.production_volume.isApproved}
                 error={formik.errors.production_volume}
               />
-              {/* {formik.values.installation_type.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -307,10 +305,10 @@ export function ProductionForm(props) {
               /> */}
                     <Form.Input
                 type="number"
-                name="average_annual.value"
+                name="annual_average.value"
                 onChange={formik.handleChange}
-                value={formik.values.average_annual.value}
-                error={formik.errors.average_annual}
+                value={formik.values.annual_average.value}
+                error={formik.errors.annual_average}
               />
             </Table.Cell>
             <Table.Cell>
@@ -325,8 +323,8 @@ export function ProductionForm(props) {
                 type="number"
                 name="average_annual.value"
                 onChange={formik.handleChange}
-                value={formik.values.average_annual.value}
-                error={formik.errors.average_annual}
+                value={formik.values.annual_average.value}
+                error={formik.errors.annual_average}
               />
             </Table.Cell>
             <Table.Cell>
@@ -341,14 +339,12 @@ export function ProductionForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("average_annual.isApproved", data.value)
+                  formik.setFieldValue("annual_average.isApproved", data.value)
                 }
-                value={formik.values.average_annual.isApproved}
-                error={formik.errors.average_annual}
+                value={formik.values.annual_average.isApproved}
+                error={formik.errors.annual_average}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            
-            
+              
             </Table.Cell>
 
 
