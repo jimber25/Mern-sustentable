@@ -20,6 +20,8 @@ const WasteSchema = mongoose.Schema({
     ref: 'Site'
   },
   paper_and_cardboard_sent_to_recycling_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -32,6 +34,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   plastic_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -44,6 +48,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   fabric_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -56,6 +62,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   metal_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -68,6 +76,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   wood_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -80,6 +90,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   other_general_waste_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -92,6 +104,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
  leathers_sent_to_recycle_or_reuse:{
+  code:String,
+  unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -104,6 +118,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   rubber_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -116,6 +132,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   food_scraps_sent_to_recycle_or_reuse:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -128,6 +146,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   paper_and_cardboard_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -140,6 +160,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   plastic_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -152,6 +174,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   fabric_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -164,6 +188,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   metal_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -176,6 +202,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   wood_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -188,6 +216,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   other_general_waste_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -200,6 +230,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   other_general_waste_sent_to_other_types_of_disposal:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -212,6 +244,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_sent_to_landfill:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -224,6 +258,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_sent_for_reuse_or_recycling:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -236,6 +272,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -248,6 +286,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_general_waste_sent_to_other_types_of_disposal:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -260,6 +300,8 @@ const WasteSchema = mongoose.Schema({
     isApproved:Boolean
   },
   total_non_hazardous_waste_unit_produced:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,

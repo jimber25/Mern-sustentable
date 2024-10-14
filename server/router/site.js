@@ -10,6 +10,7 @@ api.get("/sites", [md_auth.asureAuth], SiteController.getSites);
 api.post("/add-site", [md_auth.asureAuth], SiteController.createSite);
 api.put("/update-site/:id",[md_auth.asureAuth], SiteController.updateSite);
 api.delete("/delete-site/:id", [md_auth.asureAuth], SiteController.deleteSite);
+api.get("/sites-company/:company", [md_auth.asureAuth], SiteController.getSitesByCompany);
 
 
 module.exports = api;

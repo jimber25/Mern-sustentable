@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button, Table, Divider, Icon } from "semantic-ui-react";
-import { BasicModal } from "../../../components/Shared";
 import {
-  ListKPIsForms,
-  KPIsForm,
-} from "../../../components/Admin/KPIsForms";
+  Tab,
+  Button,
+  Table,
+  Divider,
+  Icon,
+  Segment,
+  Header,
+} from "semantic-ui-react";
+import { BasicModal } from "../../../components/Shared";
+import { ListKPIsForms, KPIsForm } from "../../../components/Admin/KPIsForms";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../hooks";
 import { Site } from "../../../api";
@@ -85,9 +90,9 @@ export function KPIsForms() {
               yearSelected={yearSelected}
             />
           ) : (
-            <ListKPIsForms 
-              reload={reload} 
-              onReload={onReload} 
+            <ListKPIsForms
+              reload={reload}
+              onReload={onReload}
               siteSelected={site?._id || null}
               yearSelected={yearSelected}
             />
@@ -100,6 +105,10 @@ export function KPIsForms() {
   return (
     <>
       <div className="kpis-forms-page">
+        <Segment textAlign="center">
+          {" "}
+          <Header as="h">KPIs</Header>
+        </Segment>
         <div className="kpis-forms-page__add">
           {siteSelected !== null || site ? (
             //      <Link to={"/admin/kpisforms/newkpisform"} state= {{siteSelected: encrypt(siteSelected) }}
@@ -120,9 +129,9 @@ export function KPIsForms() {
         title="Formulario Energia"
         size={"fullscreen"}
       >
-        <KPIsForm 
-          onClose={onOpenCloseModal} 
-          onReload={onReload} 
+        <KPIsForm
+          onClose={onOpenCloseModal}
+          onReload={onReload}
           year={yearSelected}
           siteSelected={siteSelected}
         />
@@ -172,7 +181,7 @@ function SelectedListSites(props) {
                         handleSelected(site);
                       }}
                     >
-                      <Icon name="eye" />
+                      <Icon name="angle double right" />
                     </Button>
                     // ) : null
                   }

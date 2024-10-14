@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button, Table, Divider, Icon } from "semantic-ui-react";
+import { Tab, Button, Table, Divider, Icon, Segment, Header } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import {
   ListEnergyForms,
@@ -100,6 +100,10 @@ export function EnergyForms() {
   return (
     <>
       <div className="energy-forms-page">
+      <Segment textAlign="center">
+          {" "}
+          <Header as="h">ENERGIA</Header>
+        </Segment>
         <div className="energy-forms-page__add">
           {siteSelected !== null || site ? (
             //      <Link to={"/admin/energyforms/newenergyform"} state= {{siteSelected: encrypt(siteSelected) }}
@@ -172,7 +176,7 @@ function SelectedListSites(props) {
                         handleSelected(site);
                       }}
                     >
-                      <Icon name="eye" />
+               <Icon name="angle double right" />
                     </Button>
                     // ) : null
                   }

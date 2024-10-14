@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Loader, Pagination, Table, Grid, GridColumn, Input, Divider, Confirm, Dropdown } from "semantic-ui-react";
+import { Loader, Pagination, Table, Grid, GridColumn, Input, Divider, Confirm, Dropdown, Label } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { Energyform } from "../../../../api";
 import { useAuth } from "../../../../hooks";
@@ -178,13 +178,47 @@ function TablePeriods(props) {
     return existsPeriod;
   };
 
-  console.log(hasDataPeriod("April"));
+  const fieldsFinal = () => {
+    const field = {
+      electricity: [
+        "electricity_standard",
+        "electricity_cost",
+        "renewable_energies",
+        "renewable_energies_produced_and_consumed_on_site",
+      ],
+      fuels: [
+        "steam",
+        "steam_cost",
+        "total_scope_3",
+        "natural_gas",
+        "natural_gas_cost",
+        "glp",
+        "glp_cost",
+        "heavy_fuel_oil",
+        "cost_of_heavy_fuel_oil",
+        "light_fuel_oil",
+        "cost_of_light_fuel_oil",
+        "coal",
+        "coal_cost",
+        "diesel",
+        "diesel_cost",
+        "gasoline_for_internal_vehicles",
+        "gasoline_cost_of_internal_vehicles",
+        "biomass",
+        "biomass_cost"
 
-  // Obtener todos los campos únicos
-  const uniqueFields = determineFields();
+      ],
+    };
+    return field;
+  };
 
-  const calculateTotalAndAverage = (field) => {
-    const values = data.map((item) => item[field]?.value || 0);
+    // Obtener todos los campos únicos
+    const uniqueFields = fieldsFinal();
+
+  const mainFields = ["electricity", "fuels"];
+
+  const calculateTotalAndAverage = (mainField, field) => {
+    const values = data.map((item) => item[mainField][field]?.value || 0);
     const total = values.reduce((acc, val) => acc + val, 0);
     const average = values.length ? total / values.length : 0;
     return { total, average };
@@ -195,15 +229,22 @@ function TablePeriods(props) {
       <Table celled structured>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Codigo</Table.HeaderCell>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Item</Table.HeaderCell>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Unidades</Table.HeaderCell>
-            <Table.HeaderCell colSpan='14' textAlign="center">PERIODO DE REPORTE {year}</Table.HeaderCell>
-      </Table.Row>
-      <Table.Row>
+            <Table.HeaderCell rowSpan="2" textAlign="center">
+              Codigo
+            </Table.HeaderCell>
+            <Table.HeaderCell rowSpan="2" textAlign="center">
+              Item
+            </Table.HeaderCell>
+            <Table.HeaderCell rowSpan="2" textAlign="center">
+              Unidades
+            </Table.HeaderCell>
+            <Table.HeaderCell colSpan="14" textAlign="center">
+              PERIODO DE REPORTE {year}
+            </Table.HeaderCell>
+          </Table.Row>
+          <Table.Row>
             {periods.map((period, index) => (
               <Table.HeaderCell key={index}>
-
                 {convertPeriodsEngToEsp(period)}
                 {hasDataPeriod(period) ? (
                   <>
@@ -213,7 +254,6 @@ function TablePeriods(props) {
                       icon="ellipsis vertical"
                       floating
                       className="icon"
-    
                     >
                       <Dropdown.Menu>
                         <Dropdown.Item
@@ -256,26 +296,24 @@ function TablePeriods(props) {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {uniqueFields.map((field) => (
-            <React.Fragment key={field}>
-              <Table.Row>
-                <Table.Cell>{energyCodes[field]}</Table.Cell>
-                <Table.Cell>{convertEnergyFieldsEngToEsp(field)}</Table.Cell>
-                <Table.Cell>{"-"}</Table.Cell>
-                {periods.map((period) => {
-                  const item = data.find((d) => d.period === period);
-                  return (
-                    <Table.Cell key={`${field}-${period}`}>
-                      {item && item[field] ? item[field].value : "-"}
-                    </Table.Cell>
-                  );
-                })}
-                <Table.Cell>{calculateTotalAndAverage(field).total}</Table.Cell>
-                <Table.Cell>
-                  {calculateTotalAndAverage(field).average.toFixed(2)}
-                </Table.Cell>
-              </Table.Row>
-            </React.Fragment>
+          {mainFields.map((f) => (
+            <>
+              <React.Fragment key={f}>
+                <Table.Row>
+                  <Table.Cell collapsing width={18}>
+                    {" "}
+                    <Label ribbon>{convertEnergyFieldsEngToEsp(f)}</Label>
+                  </Table.Cell>
+                </Table.Row>
+              </React.Fragment>
+              <SubFields
+                f={f}
+                listFields={uniqueFields}
+                data={data}
+                calculateTotalAndAverage={calculateTotalAndAverage}
+                periods={periods}
+              />
+            </>
           ))}
         </Table.Body>
 
@@ -326,3 +364,32 @@ function TablePeriods(props) {
   );
 }
 
+function SubFields(props) {
+  const { f, listFields, periods, data, calculateTotalAndAverage } = props;
+  console.log(data)
+
+  return listFields[f].map((field) => {
+    return (
+      <React.Fragment key={field}>
+        <Table.Row>
+          <Table.Cell>{energyCodes[field]}</Table.Cell>
+          <Table.Cell>{convertEnergyFieldsEngToEsp(field)}</Table.Cell>
+          <Table.Cell>{"-"}</Table.Cell>
+          {periods.map((period) => {
+            const item = data.find((d) => d.period === period);
+            return (
+              <Table.Cell key={`${field}-${period}`}>
+                {item && item[f][field] ? item[f][field].value : "-"}
+                {console.log(    item && item[f][field] ? item[f][field].value : "-")}
+              </Table.Cell>
+            );
+          })}
+          <Table.Cell>{calculateTotalAndAverage(f, field).total}</Table.Cell>
+          <Table.Cell>
+            {calculateTotalAndAverage(f, field).average.toFixed(2)}
+          </Table.Cell>
+        </Table.Row>
+      </React.Fragment>
+    );
+  });
+}

@@ -62,10 +62,25 @@ async function deleteSite(req, res) {
   });
 }
 
+async function getSitesByCompany(req, res) {
+  const { active } = req.query;
+  const { company } = req.params;
+  let response = null;
+
+  if (active === "undefined" ||active === undefined ) {
+    response = await Site.find({company:company});
+  } else {
+    response = await Site.find({ company:company, active });
+  }
+
+  res.status(200).send(response);
+}
+
 module.exports = {
   getSite,
   getSites,
   createSite,
   updateSite,
-  deleteSite
+  deleteSite,
+  getSitesByCompany
 };

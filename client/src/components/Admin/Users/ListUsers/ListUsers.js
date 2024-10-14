@@ -35,7 +35,7 @@ export function ListUsers(props) {
 
   const {
     accessToken,
-    user: { role },
+    user: { role, site, company },
   } = useAuth();
 
   const [permissionByRole, setPermissionsByRole] = useState([]);
@@ -70,13 +70,36 @@ export function ListUsers(props) {
       try {
         setUsers(null);
         setUsersFilter([]);
-        const response = await userController.getUsers(
-          accessToken,
-          usersActive
-        );
-        let result = response.map((s) => ({ ...s, key: s._id }));
-        setUsers(result);
-        setUsersFilter(result);
+        if(company && !site ){
+          const response = await userController.getUsersByCompany(
+            accessToken,
+            company._id,
+            usersActive
+          );
+          let result = response.map((s) => ({ ...s, key: s._id }));
+          setUsers(result);
+          setUsersFilter(result);
+        }else if(site && company){
+          const response = await userController.getUsersBySite(
+            accessToken,
+            site._id,
+            usersActive
+          );
+          let result = response.map((s) => ({ ...s, key: s._id }));
+          setUsers(result);
+          setUsersFilter(result);
+        }else{
+          if(isMaster(role)){
+            const response = await userController.getUsers(
+              accessToken,
+              usersActive
+            );
+            let result = response.map((s) => ({ ...s, key: s._id }));
+            setUsers(result);
+            setUsersFilter(result);
+          }
+        }
+       
       } catch (error) {
         console.error(error);
       }

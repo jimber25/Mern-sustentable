@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tab, Button } from "semantic-ui-react";
+import { Tab, Segment, Header } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { ListPost, PostForm } from "../../../components/Admin/Post";
 import { ViewReports } from "../../../components/Admin/Reports/ViewReports/ViewReports";
@@ -24,6 +24,10 @@ export function Reports() {
 
   return (
     <>
+       <Segment textAlign="center">
+          {" "}
+          <Header as="h">REPORTES</Header>
+        </Segment>
     <ViewReports/>
       {/* <div className="blog-page">
         <div className="blog-page__add">

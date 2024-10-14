@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button, Table, Divider, Icon , Dropdown} from "semantic-ui-react";
+import { Tab, Button, Table, Divider, Icon , Dropdown, Segment, Header} from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import {
   ListWaterForms,
@@ -101,6 +101,11 @@ export function WaterForms() {
   return (
     <>
       <div className="water-forms-page">
+
+      <Segment textAlign="center">
+          {" "}
+          <Header as="h">AGUA</Header>
+        </Segment>
         <div className="water-forms-page__add">
           {siteSelected !== null || site ? (
             //      <Link to={"/admin/waterforms/newwaterform"} state= {{siteSelected: encrypt(siteSelected) }}
@@ -185,26 +190,11 @@ function SelectedListSites(props) {
                         handleSelected(site);
                       }}
                     >
-                      <Icon name="eye" />
+                    <Icon name="angle double right" />
                     </Button>
                     // ) : null
                   }
-                  {/* {isMaster(role) || isAdmin(role) ||
-                    hasPermission(permissionsByRole, role._id, "sites", "edit") ? (
-                      <Button
-                        icon
-                        color={site.active ? "orange" : "teal"}
-                        onClick={openDesactivateActivateConfim}
-                      >
-                        <Icon name={site.active ? "ban" : "check"} />
-                      </Button>
-                    ) : null} */}
-                  {/* {isMaster(role) || isAdmin(role) ||
-                    hasPermission(permissionsByRole, role._id, "sites", "delete") ? (
-                      <Button icon color="red" onClick={openDeleteConfirm}>
-                        <Icon name="trash" />
-                      </Button>
-                    ) : null} */}
+
                 </Table.Cell>
               </Table.Row>
             ))}

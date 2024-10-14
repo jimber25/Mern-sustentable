@@ -74,6 +74,27 @@ export class Site {
     }
   }
 
+  async getSitesByCompany(accessToken, companyId, active = undefined) {
+    try {
+      // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
+      const url = `${this.baseApi}/sites-company/:${companyId}?active=${active}`;
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateSite(accessToken, idSite, siteData) {
     try {
       const data = siteData;

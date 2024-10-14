@@ -20,6 +20,8 @@ const DangerousSchema = mongoose.Schema({
     ref: 'Site'
   },
   chemicals_sent_to_reuse_or_recycle:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -32,6 +34,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   lubricants_sent_to_reuse_or_recycle:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -44,6 +48,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   oils_sent_to_reuse_or_recycle:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -56,6 +62,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   machines_and_equipment_sent_to_reuse_or_recycle:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -68,6 +76,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   electronic_waste_sent_to_reuse_or_recycle:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -80,6 +90,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   other_dangerous_wastes_sent_to_reuse_or_recycle:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -92,6 +104,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   chemicals_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -104,6 +118,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   lubricants_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -116,6 +132,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   oils_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -128,6 +146,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   machines_and_equipment_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -140,6 +160,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   electronic_waste_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -152,6 +174,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   other_dangerous_wastes_sent_to_incineration:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -164,6 +188,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   chemicals_sent_to_landfill:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,
@@ -176,6 +202,8 @@ const DangerousSchema = mongoose.Schema({
     isApproved:Boolean
   },
   lubricants_sent_to_landfill:{
+    code:String,
+    unit: String,
     value:Number,
     reviews:[{
       date:Date,

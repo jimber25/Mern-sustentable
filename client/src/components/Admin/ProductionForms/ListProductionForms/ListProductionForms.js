@@ -42,7 +42,7 @@ export function ListProductionForms(props) {
             siteSelected,
             yearSelected
           );
-          console.log(response.productionForms)
+
           if (response.code ===200 && response.productionForms) {
             setForms(response.productionForms);
           } else {
@@ -138,7 +138,6 @@ function TablePeriods(props) {
 
   const handleConfirm = (e) => setDataDelete(e)
 
- console.log(data, "nuevodatos")
   // Estado para controlar el modal
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 

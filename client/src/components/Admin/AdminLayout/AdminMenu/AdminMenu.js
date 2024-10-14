@@ -70,7 +70,7 @@ export function AdminMenu() {
             <Dropdown trigger={<span style={{marginRight:"40%"}}><Icon name='upload'/>Datos</span>} floating labeled item>
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "siteform", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/siteforms"
@@ -81,7 +81,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                     {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "productionform", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/productionforms"
@@ -92,7 +92,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                     {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "energyform", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/energyforms"
@@ -103,7 +103,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                     {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "waterform", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/waterforms"
@@ -114,7 +114,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                       {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "effluentform", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/effluentforms"
@@ -125,7 +125,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                       {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "wasteforms", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/wasteforms"
@@ -136,7 +136,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                        {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "dangerousforms", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/dangerousforms"
@@ -147,7 +147,7 @@ export function AdminMenu() {
                   </DropdownItem>
                 ) : null} 
                          {isMaster(role)|| isAdmin(role) ||
-                hasPermission(permissionActive, role._id, "kpisforms", "menu") ? (
+                hasPermission(permissionActive, role._id, "data", "menu") ? (
                   <DropdownItem
                     as={Link}
                     to="/admin/data/kpisforms"
@@ -235,6 +235,18 @@ export function AdminMenu() {
             </Menu.Item>
           ) : null}
 
+{isMaster(role) || isAdmin(role) ||
+          hasPermission(permissionActive, role._id, "reports", "menu") ? (
+            <Menu.Item
+            as={Link}
+            to="/admin/reports"
+            active={isCurrentPath("/admin/reports")}
+          >
+            <Icon name="file outline" />
+            Reportes
+          </Menu.Item>
+          ) : null}
+
           {/* <Menu.Item
             as={Link}
             to="/admin/menu"
@@ -243,14 +255,6 @@ export function AdminMenu() {
             <Icon name="bars" />
             Menu
           </Menu.Item> */}
-          <Menu.Item
-            as={Link}
-            to="/admin/reports"
-            active={isCurrentPath("/admin/reports")}
-          >
-            <Icon name="file outline" />
-            Reportes
-          </Menu.Item>
           {isMaster(role) || 
           hasPermission(permissionActive, role._id, "users", "menu") ? (
           <Menu.Item
@@ -263,7 +267,9 @@ export function AdminMenu() {
           </Menu.Item>
           ): null}
 
-          <Menu.Item
+{isMaster(role) || 
+          hasPermission(permissionActive, role._id, "sites", "menu") ? (
+            <Menu.Item
             as={Link}
             to="/admin/sites"
             active={isCurrentPath("/admin/sites")}
@@ -271,6 +277,9 @@ export function AdminMenu() {
             <Icon name="building" />
             Sitios
           </Menu.Item>
+          ): null}
+
+        
 
           {/* <Menu.Item
             as={Link}

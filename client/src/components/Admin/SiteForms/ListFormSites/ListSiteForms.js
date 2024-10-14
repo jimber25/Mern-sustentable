@@ -44,7 +44,6 @@ export function ListSiteForms(props) {
             siteSelected,
             yearSelected
           );
-          console.log(response, "por año y sitio")
           if (response.code ===200 && response.siteForms) {
             setSiteForms(response.siteForms);
           } else {
@@ -80,42 +79,8 @@ export function ListSiteForms(props) {
       />
 
       <div className="list-sites__pagination">
-          {/* <SearchStandardPermission
-            dataOrigin={siteforms}
-            // data={permissionsFilter}
-            // setData={setPermissionsFilter}
-          /> */}
         </div>
         <Divider clearing/>
-
-      {/* <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Estado</Table.HeaderCell>
-                <Table.HeaderCell >Fecha</Table.HeaderCell>
-                <Table.HeaderCell>Usuario Creador</Table.HeaderCell>
-                <Table.HeaderCell>Acciones</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-            {map(siteforms, (siteForm) => (
-        <SiteFormItem key={siteForm._id} siteForm={siteForm} onReload={onReload} />
-      ))}
-           </Table.Body>
-           </Table> */}
-        {/* <Pagination
-          totalPages={pagination.pages}
-          defaultActivePage={pagination.page}
-          ellipsisItem={null}
-          firstItem={null}
-          lastItem={null}--
-          onPageChange={changePage}
-        /> */}
-        {/* <Pagination
-        activePage={pagination.page}
-        totalPages={pagination.pages}
-        onPageChange={changePage}
-      /> */}
       </div>
   );
 }
@@ -271,13 +236,12 @@ function TablePeriods(props) {
     return existsPeriod;
   };
 
-  console.log(hasDataPeriod("April"));
 
   // Obtener todos los campos únicos
   const uniqueFields = determineFields();
 
   const calculateTotalAndAverage = (field) => {
-    const values = data.map((item) => item[field]?.value || 0);
+    const values = data.map((item) => item[field]? item[field].value && Number.isFinite(item[field].value)? item[field].value : 0 : 0);
     const total = values.reduce((acc, val) => acc + val, 0);
     const average = values.length ? total / values.length : 0;
     return { total, average };
