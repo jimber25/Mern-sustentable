@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Button, Table, Divider, Icon , Dropdown} from "semantic-ui-react";
+import { Tab, Button, Table, Divider, Icon , Dropdown, Segment, Header} from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import {
   ListWasteForms,
@@ -101,6 +101,10 @@ export function WasteForms() {
   return (
     <>
       <div className="waste-forms-page">
+      <Segment textAlign="center">
+          {" "}
+          <Header as="h">RESIDUOS</Header>
+        </Segment>
         <div className="waste-forms-page__add">
           {siteSelected !== null || site ? (
             //      <Link to={"/admin/wasteforms/newwasteform"} state= {{siteSelected: encrypt(siteSelected) }}
@@ -134,7 +138,7 @@ export function WasteForms() {
       <BasicModal
         show={showModal}
         close={onOpenCloseModal}
-        title="Formulario Agua"
+        title="Formulario Residuos"
         size={"fullscreen"}
       >
         <WasteForm onClose={onOpenCloseModal} onReload={onReload} year={yearSelected}
@@ -185,7 +189,7 @@ function SelectedListSites(props) {
                         handleSelected(site);
                       }}
                     >
-                      <Icon name="eye" />
+           <Icon name="angle double right" />
                     </Button>
                     // ) : null
                   }

@@ -6,6 +6,10 @@ const SiteSchema = mongoose.Schema({
   address: String,
   phone: String,
   email: String,
+  company:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  },
   active: Boolean,
 });
 

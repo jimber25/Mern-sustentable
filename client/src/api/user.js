@@ -229,4 +229,47 @@ export class User {
         return err;
       });
   }
+
+  async getUsersByCompany(accessToken, companyId,active = undefined) {
+    try {
+      // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
+      const url = `${this.baseApi}/users-company/${companyId}?active=${active}`;
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUsersBySite(accessToken, siteId,active = undefined) {
+    try {
+      // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
+      const url = `${this.baseApi}/users-site/${siteId}?active=${active}`;
+      const params = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const response = await fetch(url, params);
+      const result = await response.json();
+
+      if (response.status !== 200) throw result;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }

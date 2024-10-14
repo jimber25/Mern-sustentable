@@ -31,12 +31,27 @@ export const MODULES = [
   "users",
   "sites",
   "companies",
-  "siteforms",
-  "productionforms",
-  "energyforms",
-  "effluentforms",
-  "waterforms"
+  // "siteform",
+  // "productionform",
+  // "energyform",
+  // "effluentform",
+  // "waterform",
+  // "wasteform",
+  // "kpisform",
+  "data"
 ];
+
+export const FORMS=[
+  "siteform",
+  "productionform",
+  "energyform",
+  "effluentform",
+  "waterform",
+  "wasteform",
+  "kpisform",
+  "dangerousform"
+];
+
 
 export const ACTIONS = [
   "delete",

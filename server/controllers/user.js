@@ -258,6 +258,38 @@ async function updatePasswordByToken(req, res) {
   });
 }
 
+async function getUsersBySite(req, res) {
+  const { active } = req.query;
+  const params=req.params;
+  let response = null;
+
+  let role= await Role.find({"name":"Master"});
+
+  if (active === undefined) {
+    response = await User.find({"role":{$ne: role[0]._id }, site:params.site}).populate("role");
+  } else {
+    response = await User.find({ active , "role":{$ne:role[0]._id }, site:params.site}).populate("role");
+  }
+
+  res.status(200).send(response);
+}
+
+async function getUsersByCompany(req, res) {
+  const { active } = req.query;
+  const params=req.params;
+  let response = null;
+
+  let role= await Role.find({"name":"Master"});
+
+  if (active === undefined) {
+    response = await User.find({"role":{$ne: role[0]._id }, company:params.company}).populate("role");
+  } else {
+    response = await User.find({ active , "role":{$ne:role[0]._id },  company:params.company}).populate("role");
+  }
+
+  res.status(200).send(response);
+}
+
 module.exports = {
   getUser,
   getUsers,
@@ -266,5 +298,7 @@ module.exports = {
   deleteUser,
   sendEmail,
   updatePasswordByToken,
-  verifyEmail
+  verifyEmail,
+  getUsersBySite,
+  getUsersByCompany
 };

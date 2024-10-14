@@ -40,7 +40,7 @@ const ProductionSchema = mongoose.Schema({
     }],
     isApproved:Boolean
   },
-  anual_average:{
+  annual_average:{
     value:Number,
     reviews:[{
       date:Date,

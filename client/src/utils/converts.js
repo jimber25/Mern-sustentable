@@ -43,6 +43,38 @@ export function convertModulesEngToEsp(a) {
       return "Formulario de Efluentes";
     case "waterform":
       return "Formulario de Agua";
+    case "wasteform":
+      return "Formulario de Residuos";
+    case "kpisforms":
+      return "Formulario de KPIs";
+    case "dangerousform":
+      return "Formulario de Peligrosos";
+    case "data":
+      return "Datos";
+    default:
+      return null;
+  }
+}
+
+
+export function convertFormsEngToEsp(a) {
+  switch (a) {
+    case "siteform":
+      return "Sitio";
+    case "energyform":
+      return "Energia";
+    case "productionform":
+      return "Producción";
+    case "effluentform":
+      return "Efluentes";
+    case "waterform":
+      return "Agua";
+    case "wasteform":
+      return "Residuos";
+    case "kpisform":
+      return "KPIs";
+    case "dangerousform":
+      return "Peligrosos";
     default:
       return null;
   }
@@ -127,7 +159,7 @@ export function convertProductionFieldsEngToEsp(a) {
   switch (a) {
     case "production_volume":
       return "Volumen de producción";
-    case "anual_average":
+    case "annual_average":
       return "Promedio anual o basado en los meses reportados";
     default:
       return null;

@@ -18,5 +18,7 @@ api.delete("/delete-user/:id", [md_auth.asureAuth], UserController.deleteUser);
 api.post("/verify-email", UserController.verifyEmail); //para recuperar contraseña
 api.post("/send-email", UserController.sendEmail); //para recuperar contraseña
 api.put("/update-password-by-token/:resetPasswordToken", UserController.updatePasswordByToken); //para recuperar contraseña
+api.get("/users-site/:site", [md_auth.asureAuth], UserController.getUsersBySite);
+api.get("/users-company/:company", [md_auth.asureAuth], UserController.getUsersByCompany);
 
 module.exports = api;

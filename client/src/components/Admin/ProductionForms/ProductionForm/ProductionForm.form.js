@@ -14,7 +14,7 @@ export function initialValues(production, period, year) {
       ],
       isApproved:false
     },
-    average_annual: production?.average_annual || {
+    annual_average: production?.annual_average || {
       value:"",
       reviews:[
       ],

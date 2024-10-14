@@ -21,7 +21,7 @@ export const waterCodes = {
 
 export const productionCodes = {
   production_volume: "PF1",
-  anual_average: "PF2",
+  annual_average: "PF2",
 };
 
 export const siteCodes = {
@@ -90,9 +90,9 @@ export const dangerousCodes = {
     other_dangerous_wastes_sent_to_incineration: "PF2",
     chemicals_sent_to_landfill: "PF1",
     lubricants_sent_to_landfill: "PF2",
-  };
+};
 
-  export const energyCodes = {
+export const energyCodes = {
     electricity_standard: "PF1",
     electricity_cost: "PF2",
     renewable_energies: "PF1",
@@ -115,9 +115,9 @@ export const dangerousCodes = {
     gasoline_cost_of_internal_vehicles:"En",
     biomass:"En",
     biomass_cost:"En"
-  };
+};
 
-  export const kpisCodes = {
+export const kpisCodes = {
     total_fuel_energy_consumption: "PF1",
     total_electrical_energy_consumption: "PF2",
     total_energy_consumption: "PF1",
@@ -134,4 +134,14 @@ export const dangerousCodes = {
     scope_percentage_1:"En",
     scope_percentage_2:"En",
     scope_percentage_3:"En",
-  };
+};
+
+export const energyFieldMain=[
+  "electricity",
+  "fuels"
+]
+
+export const kpisFieldMain=[
+  "energy_indicators",
+  "greenhouse_gas_indicators"
+]

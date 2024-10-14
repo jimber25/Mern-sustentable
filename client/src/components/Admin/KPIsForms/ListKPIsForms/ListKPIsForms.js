@@ -5,7 +5,7 @@ import {
   Divider,
   Dropdown,
   Confirm,
-  Segment
+  Label,
 } from "semantic-ui-react";
 import { size, map } from "lodash";
 import { KPIsform } from "../../../../api";
@@ -30,12 +30,12 @@ const _ = require("lodash");
 const kpisFormController = new KPIsform();
 
 export function ListKPIsForms(props) {
-  const { reload, onReload, siteSelected , yearSelected} = props;
+  const { reload, onReload, siteSelected, yearSelected } = props;
   const [kpisForms, setKPIsForms] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState();
   // const [Role, setRole] = useState(null);
-  console.log("aca")
+  console.log("aca");
   const {
     user: { role, site },
     accessToken,
@@ -43,24 +43,23 @@ export function ListKPIsForms(props) {
 
   useEffect(() => {
     (async () => {
-      if(yearSelected!=="" && siteSelected!==undefined)
-      try {
-        const response = await kpisFormController.getKPIsFormsBySiteAndYear(
-          accessToken,
-          siteSelected,
-          yearSelected
-        );
-        if (response.code ===200) {
-          setKPIsForms(response.kpisForms);
-        } else {
-          setKPIsForms([]);
+      if (yearSelected !== "" && siteSelected !== undefined)
+        try {
+          const response = await kpisFormController.getKPIsFormsBySiteAndYear(
+            accessToken,
+            siteSelected,
+            yearSelected
+          );
+          if (response.code === 200) {
+            setKPIsForms(response.kpisForms);
+          } else {
+            setKPIsForms([]);
+          }
+        } catch (error) {
+          console.error(error);
         }
-
-      } catch (error) {
-        console.error(error);
-      }
     })();
-  }, [yearSelected,siteSelected, reload]);
+  }, [yearSelected, siteSelected, reload]);
 
   if (!kpisForms) return <Loader active inline="centered" />;
   //if (size(kpisForms) === 0) return "No hay ningun formulario de efluentes";
@@ -79,10 +78,8 @@ export function ListKPIsForms(props) {
   );
 }
 
-
 function TablePeriods(props) {
-
-  const { data, onReload, accessToken , year, site} = props;
+  const { data, onReload, accessToken, year, site } = props;
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -91,9 +88,9 @@ function TablePeriods(props) {
   const [dataDeleted, setDataDelete] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleConfirm = (e) => setDataDelete(e)
+  const handleConfirm = (e) => setDataDelete(e);
 
-console.log("kkkkk")
+  console.log("kkkkk");
   // Estado para controlar el modal
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 
@@ -111,11 +108,9 @@ console.log("kkkkk")
   const handleDeleteModal = (period) => {
     const form = data.find((item) => item.period === period);
     setConfirmContent(
-      `Eliminar el formulario de KPIs con fecha ${formatDateView(
-        form.date
-      )}`
+      `Eliminar el formulario de KPIs con fecha ${formatDateView(form.date)}`
     );
-    setDataDelete(form)
+    setDataDelete(form);
     onOpenCloseConfirm();
   };
 
@@ -140,7 +135,13 @@ console.log("kkkkk")
   const openNewKPIsForm = (period) => {
     setTitleModal(`Nuevo formulario KPIs`);
     setModalContent(
-      <KPIsForm onClose={onOpenCloseModal} onReload={onReload} period={period} year={year} siteSelected={site}/>
+      <KPIsForm
+        onClose={onOpenCloseModal}
+        onReload={onReload}
+        period={period}
+        year={year}
+        siteSelected={site}
+      />
     );
     setShowModal(true);
   };
@@ -172,37 +173,37 @@ console.log("kkkkk")
   };
 
   const determineMainFields = () => {
-    const fields = ["energy_indicators","greenhouse_gas_indicators" ];
+    const fields = ["energy_indicators", "greenhouse_gas_indicators"];
 
     return fields;
   };
 
-   const fieldsFinal=()=> {
-    const field={
-      "energy_indicators":
-        [
-      "total_fuel_energy_consumption",
-      "total_electrical_energy_consumption",
-  "total_energy_consumption",
-  "total_renewable_energy",
-  "percentage_of_renewable_energy",
-"% de energías renovables",
-"percentage_energy_from_fossil_fuels",
-"total_energy_consumed_per_productive_unit",
-      "total_cost_of_energy_consumed"],
-      "greenhouse_gas_indicators":[
-       "total_scope_1",
-       "total_scope_2",
-       "total_scope_3",
-       "total_emissions_per_unit_produced",
-       "total_emissions",
-       "scope_percentage_1",
-       "scope_percentage_2",
-       "scope_percentage_3",
-      ]
-  }
-  return field;
-}
+  const fieldsFinal = () => {
+    const field = {
+      energy_indicators: [
+        "total_fuel_energy_consumption",
+        "total_electrical_energy_consumption",
+        "total_energy_consumption",
+        "total_renewable_energy",
+        "percentage_of_renewable_energy",
+        "% de energías renovables",
+        "percentage_energy_from_fossil_fuels",
+        "total_energy_consumed_per_productive_unit",
+        "total_cost_of_energy_consumed",
+      ],
+      greenhouse_gas_indicators: [
+        "total_scope_1",
+        "total_scope_2",
+        "total_scope_3",
+        "total_emissions_per_unit_produced",
+        "total_emissions",
+        "scope_percentage_1",
+        "scope_percentage_2",
+        "scope_percentage_3",
+      ],
+    };
+    return field;
+  };
 
   // Retorna el código
   const hasCode = (field) => {
@@ -218,31 +219,37 @@ console.log("kkkkk")
 
   // Obtener todos los campos únicos
   const uniqueFields = fieldsFinal();
-    // Obtener todos los campos únicos
-  const mainFields = ["energy_indicators","greenhouse_gas_indicators" ];
+  // Obtener todos los campos únicos
+  const mainFields = ["energy_indicators", "greenhouse_gas_indicators"];
 
-  const calculateTotalAndAverage = (field) => {
-    const values = data.map((item) => item[field]?.value || 0);
+  const calculateTotalAndAverage = (mainField, field) => {
+    const values = data.map((item) => item[mainField][field]?.value || 0);
     const total = values.reduce((acc, val) => acc + val, 0);
     const average = values.length ? total / values.length : 0;
     return { total, average };
   };
 
-  console.log("vvvv")
   return (
     <>
       <Table celled structured>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Codigo</Table.HeaderCell>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Item</Table.HeaderCell>
-            <Table.HeaderCell rowSpan='2'  textAlign="center">Unidades</Table.HeaderCell>
-            <Table.HeaderCell colSpan='14' textAlign="center">PERIODO DE REPORTE {year}</Table.HeaderCell>
-      </Table.Row>
-      <Table.Row>
+            <Table.HeaderCell rowSpan="2" textAlign="center">
+              Codigo
+            </Table.HeaderCell>
+            <Table.HeaderCell rowSpan="2" textAlign="center">
+              Item
+            </Table.HeaderCell>
+            <Table.HeaderCell rowSpan="2" textAlign="center">
+              Unidades
+            </Table.HeaderCell>
+            <Table.HeaderCell colSpan="14" textAlign="center">
+              PERIODO DE REPORTE {year}
+            </Table.HeaderCell>
+          </Table.Row>
+          <Table.Row>
             {periods.map((period, index) => (
               <Table.HeaderCell key={index}>
-
                 {convertPeriodsEngToEsp(period)}
                 {hasDataPeriod(period) ? (
                   <>
@@ -252,7 +259,6 @@ console.log("kkkkk")
                       icon="ellipsis vertical"
                       floating
                       className="icon"
-    
                     >
                       <Dropdown.Menu>
                         <Dropdown.Item
@@ -297,15 +303,23 @@ console.log("kkkkk")
         <Table.Body>
           {mainFields.map((f) => (
             <>
-            <React.Fragment key={f}>
-            <Table.Row>
-              <Table.Cell>{convertKPIsFieldsEngToEsp(f)}</Table.Cell>
-            </Table.Row>
-          </React.Fragment>
-          <SubFields f={f} listFields={uniqueFields} data={data} calculateTotalAndAverage={calculateTotalAndAverage} periods={periods}/>
-          </>
-
-        ))}
+              <React.Fragment key={f}>
+                <Table.Row>
+                  <Table.Cell collapsing width={18}>
+                    {" "}
+                    <Label ribbon>{convertKPIsFieldsEngToEsp(f)}</Label>
+                  </Table.Cell>
+                </Table.Row>
+              </React.Fragment>
+              <SubFields
+                f={f}
+                listFields={uniqueFields}
+                data={data}
+                calculateTotalAndAverage={calculateTotalAndAverage}
+                periods={periods}
+              />
+            </>
+          ))}
         </Table.Body>
 
         {/* <Table.Body>
@@ -355,32 +369,30 @@ console.log("kkkkk")
   );
 }
 
-function SubFields(props){
-  const {f, listFields, periods, data, calculateTotalAndAverage}=props;
+function SubFields(props) {
+  const { f, listFields, periods, data, calculateTotalAndAverage } = props;
 
-
-  return (
-    listFields[f].map((field)=>{
-      return(
+  return listFields[f].map((field) => {
+    return (
       <React.Fragment key={field}>
-      <Table.Row>
-        <Table.Cell>{kpisCodes[field]}</Table.Cell>
-        <Table.Cell>{convertKPIsFieldsEngToEsp(field)}</Table.Cell>
-        <Table.Cell>{"-"}</Table.Cell>
-        {periods.map((period) => {
-          const item = data.find((d) => d.period === period);
-          return (
-            <Table.Cell key={`${field}-${period}`}>
-              {item && item[f][field] ? item[f][field].value : "-"}
-            </Table.Cell>
-          );
-        })}
-        <Table.Cell>{calculateTotalAndAverage(field).total}</Table.Cell>
-        <Table.Cell>
-          {calculateTotalAndAverage(field).average.toFixed(2)}
-        </Table.Cell>
-      </Table.Row>
-    </React.Fragment>)
-    })
-  )
+        <Table.Row>
+          <Table.Cell>{kpisCodes[field]}</Table.Cell>
+          <Table.Cell>{convertKPIsFieldsEngToEsp(field)}</Table.Cell>
+          <Table.Cell>{"-"}</Table.Cell>
+          {periods.map((period) => {
+            const item = data.find((d) => d.period === period);
+            return (
+              <Table.Cell key={`${field}-${period}`}>
+                {item && item[f][field] ? item[f][field].value : "-"}
+              </Table.Cell>
+            );
+          })}
+          <Table.Cell>{calculateTotalAndAverage(f, field).total}</Table.Cell>
+          <Table.Cell>
+            {calculateTotalAndAverage(f, field).average.toFixed(2)}
+          </Table.Cell>
+        </Table.Row>
+      </React.Fragment>
+    );
+  });
 }
