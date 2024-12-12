@@ -19,6 +19,7 @@ import { Permission } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import "./Dashboard.scss";
 import { hasPermission, isAdmin } from "../../../../utils/checkPermission";
+import { LanguageProvider, useLanguage } from "../../../../contexts/LanguageContext";
 
 const permissionController = new Permission();
 
@@ -28,6 +29,10 @@ export function DashBoard() {
     user: { role },
     accessToken,
   } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key; // Función para obtener la traducción
 
   const [permissionActive, setPermissionsActive] = useState([]);
 
@@ -284,7 +289,7 @@ export function DashBoard() {
     <>
       <Segment textAlign="center">
         {" "}
-        <Header as="h">BIENVENIDO {useAuth().user.email}</Header>
+        <Header as="h1"> {t("WELCOME")} {useAuth().user.email}</Header>
       </Segment>
       <Tab
         //  menu={{ pointing: true }}

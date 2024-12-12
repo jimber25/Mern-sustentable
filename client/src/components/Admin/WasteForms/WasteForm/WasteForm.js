@@ -13,7 +13,11 @@ import {
   Divider,
   Header,
   GridColumn,
-  GridRow
+  GridRow,
+  Modal,
+  ModalActions,
+  ModalContent,
+  ModalHeader
 } from "semantic-ui-react";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
 import { Wasteform } from "../../../../api";
@@ -210,7 +214,7 @@ export function WasteForm(props) {
       <Table size="small" celled>
         <Table.Header>
         <Table.Row>
-            <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
+            <Table.HeaderCell width="12">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="2">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
@@ -249,9 +253,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("paper_and_cardboard_sent_to_recycling_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("paper_and_cardboard_sent_to_recycling_or_reuse.unit", data.value)
                 }
-                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.isApproved}
+                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.unit}
                 error={formik.errors.paper_and_cardboard_sent_to_recycling_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -283,19 +287,12 @@ export function WasteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Papel y cartón enviado a reciclar o reutilizar", "paper_and_cardboard_sent_to_recycling_or_reuse");
+                  openUpdateSite(convertWasteFieldsEngToEsp("paper_and_cardboard_sent_to_recycling_or_reuse"), "paper_and_cardboard_sent_to_recycling_or_reuse");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite("Papel y cartón enviado a reciclar o reutilizar", "paper_and_cardboard_sent_to_recycling_or_reuse");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"paper_and_cardboard_sent_to_recycling_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -329,9 +326,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("plastic_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("plastic_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.plastic_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.plastic_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.plastic_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -362,19 +359,12 @@ export function WasteForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("Plastico enviado a reciclar o reutilizar", "plastic_sent_to_recycle_or_reuse");
+                  openUpdateSite(convertWasteFieldsEngToEsp("plastic_sent_to_recycle_or_reuse"), "plastic_sent_to_recycle_or_reuse");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Plastico enviado a reciclar o reutilizar", "plastic_sent_to_recycle_or_reuse");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"plastic_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -411,9 +401,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("fabric_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("fabric_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.fabric_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.fabric_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.fabric_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -472,19 +462,12 @@ export function WasteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Tela enviada a reciclar o reutilizar", "fabric_sent_to_recycle_or_reuse");
+                  openUpdateSite(convertWasteFieldsEngToEsp("fabric_sent_to_recycle_or_reuse"), "fabric_sent_to_recycle_or_reuse");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Tela enviada a reciclar o reutilizar");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"fabric_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -518,9 +501,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("metal_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("metal_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.metal_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.metal_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.metal_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -552,19 +535,12 @@ export function WasteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Metal enviado a reciclar o reutilizar", "metal_sent_to_recycle_or_reuse");
+                  openUpdateSite(convertWasteFieldsEngToEsp("metal_sent_to_recycle_or_reuse"), "metal_sent_to_recycle_or_reuse");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"metal_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -598,9 +574,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("wood_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("wood_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.wood_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.wood_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.wood_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -632,19 +608,12 @@ export function WasteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Madera enviada a reciclar o reutilizar", "wood_sent_to_recycle_or_reuse");
+                  openUpdateSite(convertWasteFieldsEngToEsp("wood_sent_to_recycle_or_reuse"), "wood_sent_to_recycle_or_reuse");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Madera enviada a reciclar o reutilizar");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"wood_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -678,9 +647,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("other_general_waste_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("other_general_waste_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.other_general_waste_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.other_general_waste_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.other_general_waste_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -712,19 +681,12 @@ export function WasteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Otros residuos generales enviados a reutilizar o reciclar", "other_general_waste_sent_to_recycle_or_reuse");
+                  openUpdateSite(convertWasteFieldsEngToEsp("other_general_waste_sent_to_recycle_or_reuse"), "other_general_waste_sent_to_recycle_or_reuse");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Otros residuos generales enviados a reutilizar o reciclar");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"other_general_waste_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
          
@@ -761,9 +723,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("leathers_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("leathers_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.leathers_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.leathers_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.leathers_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -796,21 +758,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cueros enviados a reutilizar o reciclar",
+                    convertWasteFieldsEngToEsp("leathers_sent_to_recycle_or_reuse"),
                     "leathers_sent_to_recycle_or_reuse"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Cueros enviados a reutilizar o reciclar");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"leathers_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -844,9 +799,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("rubber_sent_to_recycle_or_reuse", data.value)
+                  formik.setFieldValue("rubber_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.rubber_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.rubber_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.rubber_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -879,21 +834,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Goma/caucho (rubber) enviados a reutilizar o reciclar",
+                    convertWasteFieldsEngToEsp("rubber_sent_to_recycle_or_reuse"),
                     "rubber_sent_to_recycle_or_reuse"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Goma/caucho (rubber) enviados a reutilizar o reciclar");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"rubber_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -927,9 +875,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("food_scraps_sent_to_recycle_or_reuse.isApproved", data.value)
+                  formik.setFieldValue("food_scraps_sent_to_recycle_or_reuse.unit", data.value)
                 }
-                value={formik.values.food_scraps_sent_to_recycle_or_reuse.isApproved}
+                value={formik.values.food_scraps_sent_to_recycle_or_reuse.unit}
                 error={formik.errors.food_scraps_sent_to_recycle_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -962,21 +910,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Restos de comida enviados a reutilizar o reciclar (compost)",
+                    convertWasteFieldsEngToEsp("food_scraps_sent_to_recycle_or_reuse"),
                     "food_scraps_sent_to_recycle_or_reuse"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Restos de comida enviados a reutilizar o reciclar (compost)");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"food_scraps_sent_to_recycle_or_reuse"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1010,9 +951,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("paper_and_cardboard_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("paper_and_cardboard_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.paper_and_cardboard_sent_to_incineration.isApproved}
+                value={formik.values.paper_and_cardboard_sent_to_incineration.unit}
                 error={formik.errors.paper_and_cardboard_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1045,21 +986,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Papel y cartón enviado a incineración",
+                    convertWasteFieldsEngToEsp("paper_and_cardboard_sent_to_incineration"),
                     "paper_and_cardboard_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Papel y cartón enviado a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"paper_and_cardboard_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1093,9 +1027,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("plastic_sent_to_incineration", data.value)
+                  formik.setFieldValue("plastic_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.plastic_sent_to_incineration.isApproved}
+                value={formik.values.plastic_sent_to_incineration.unit}
                 error={formik.errors.plastic_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1128,21 +1062,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Plastico enviado a incineración",
+                    convertWasteFieldsEngToEsp("plastic_sent_to_incineration"),
                     "plastic_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Plastico enviado a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"plastic_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1176,9 +1103,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("fabric_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("fabric_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.fabric_sent_to_incineration.isApproved}
+                value={formik.values.fabric_sent_to_incineration.unit}
                 error={formik.errors.fabric_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1211,21 +1138,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Tela enviada a incineración",
+                    convertWasteFieldsEngToEsp("fabric_sent_to_incineration"),
                     "fabric_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Tela enviada a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"fabric_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1259,9 +1179,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("metal_sent_to_incineration", data.value)
+                  formik.setFieldValue("metal_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.metal_sent_to_incineration.isApproved}
+                value={formik.values.metal_sent_to_incineration.unit}
                 error={formik.errors.metal_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1294,21 +1214,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Metal enviado a incineración",
+                    convertWasteFieldsEngToEsp("metal_sent_to_incineration"),
                     "metal_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Metal enviado a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"metal_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1342,9 +1255,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("wood_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("wood_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.wood_sent_to_incineration.isApproved}
+                value={formik.values.wood_sent_to_incineration.unit}
                 error={formik.errors.wood_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1377,21 +1290,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Madera enviada a incineración",
+                    convertWasteFieldsEngToEsp("wood_sent_to_incineration"),
                     "wood_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Madera enviada a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"wood_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1425,9 +1331,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("other_general_waste_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("other_general_waste_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.other_general_waste_sent_to_incineration.isApproved}
+                value={formik.values.other_general_waste_sent_to_incineration.unit}
                 error={formik.errors.other_general_waste_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1460,21 +1366,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Otros residuos generales enviados a incineración",
+                    convertWasteFieldsEngToEsp("other_general_waste_sent_to_incineration"),
                     "other_general_waste_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Otros residuos generales enviados a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"other_general_waste_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1508,9 +1407,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("other_general_waste_sent_to_other_types_of_disposal.isApproved", data.value)
+                  formik.setFieldValue("other_general_waste_sent_to_other_types_of_disposal.unit", data.value)
                 }
-                value={formik.values.other_general_waste_sent_to_other_types_of_disposal.isApproved}
+                value={formik.values.other_general_waste_sent_to_other_types_of_disposal.unit}
                 error={formik.errors.other_general_waste_sent_to_other_types_of_disposal}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1543,21 +1442,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Otros residuos generales enviados a otro tipo de disposición",
+                    convertWasteFieldsEngToEsp("other_general_waste_sent_to_other_types_of_disposal"),
                     "other_general_waste_sent_to_other_types_of_disposal"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Otros residuos generales enviados a otro tipo de disposición");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"other_general_waste_sent_to_other_types_of_disposal"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1591,9 +1483,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_sent_to_landfill.isApproved", data.value)
+                  formik.setFieldValue("total_sent_to_landfill.unit", data.value)
                 }
-                value={formik.values.total_sent_to_landfill.isApproved}
+                value={formik.values.total_sent_to_landfill.unit}
                 error={formik.errors.total_sent_to_landfill}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1626,21 +1518,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Total enviado a relleno sanitario",
+                    convertWasteFieldsEngToEsp("total_sent_to_landfill"),
                     "total_sent_to_landfill"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Total enviado a relleno sanitario");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"total_sent_to_landfill"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1674,9 +1559,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_sent_for_reuse_or_recycling.isApproved", data.value)
+                  formik.setFieldValue("total_sent_for_reuse_or_recycling.unit", data.value)
                 }
-                value={formik.values.total_sent_for_reuse_or_recycling.isApproved}
+                value={formik.values.total_sent_for_reuse_or_recycling.unit}
                 error={formik.errors.total_sent_for_reuse_or_recycling}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1709,21 +1594,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Total enviado a reutilización o reciclaje",
+                    convertWasteFieldsEngToEsp("total_sent_for_reuse_or_recycling"),
                     "total_sent_for_reuse_or_recycling"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Total enviado a reutilización o reciclaje");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"total_sent_for_reuse_or_recycling"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1757,9 +1635,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("total_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.isApproved}
+                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.unit}
                 error={formik.errors.paper_and_cardboard_sent_to_recycling_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1792,21 +1670,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Total enviado a incineración",
+                    convertWasteFieldsEngToEsp("total_sent_to_incineration"),
                     "total_sent_to_incineration"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Total enviado a incineración");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"total_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1840,9 +1711,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_general_waste_sent_to_other_types_of_disposal.isApproved", data.value)
+                  formik.setFieldValue("total_general_waste_sent_to_other_types_of_disposal.unit", data.value)
                 }
-                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.isApproved}
+                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.unit}
                 error={formik.errors.paper_and_cardboard_sent_to_recycling_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1873,21 +1744,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Total residuos generales enviados a otro tipo de disposición",
+                    convertWasteFieldsEngToEsp("total_general_waste_sent_to_other_types_of_disposal"),
                     "total_general_waste_sent_to_other_types_of_disposal"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Total residuos generales enviados a otro tipo de disposición");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"total_general_waste_sent_to_other_types_of_disposal"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1921,9 +1785,9 @@ export function WasteForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_non_hazardous_waste_unit_produced.isApproved", data.value)
+                  formik.setFieldValue("total_non_hazardous_waste_unit_produced.unit", data.value)
                 }
-                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.isApproved}
+                value={formik.values.paper_and_cardboard_sent_to_recycling_or_reuse.unit}
                 error={formik.errors.paper_and_cardboard_sent_to_recycling_or_reuse}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1954,21 +1818,14 @@ export function WasteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Total residuos no peligrosos x unidad producida",
+                    convertWasteFieldsEngToEsp("total_non_hazardous_waste_unit_produced"),
                     "total_non_hazardous_waste_unit_produced"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Total residuos no peligrosos x unidad producida");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"total_non_hazardous_waste_unit_produced"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -2185,3 +2042,150 @@ const EditableComment = ({ id, author, date, content, onSave, active }) => {
 //     </Modal>
 //   )
 // }
+
+function FileUpload (props) {
+  const {accessToken, data, field}=props;
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf',  
+    //'application/vnd.ms-excel', // .xls
+    //'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+    ];
+
+  useEffect(() => {
+    if (data.values[field] && data.values[field].file!==null) {
+     setFileName(data.values[field].file);
+    }
+  }, [field]);
+
+   const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        console.log('Tipo de archivo no permitido. Debe ser JPG, PNG o PDF.');
+      } else {
+      setMessage(`Archivo seleccionado: ${file.name}`);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await wasteFormController.uploadFileApi(accessToken,formData);
+        setMessage(response.msg);
+        if(response.status && response.status===200){
+          setFile(file);
+          setFileName(file.name);
+          data.setFieldValue(`${field}.file`, file.name)
+        }
+      } catch (error) {
+        setMessage('Error al subir el archivo');
+      }
+    }
+    }
+  };
+
+  const handleButtonClick = (event) => {
+    event.preventDefault(); // Evita que el formulario se envíe
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = handleFileChange;
+    input.click();
+  };
+
+  const handleRemoveFile = async () => {
+    setFile(null); // Elimina el archivo
+    setFileName(null);
+    try {
+      const response = await wasteFormController.deleteFileApi(accessToken,fileName);
+      setMessage(response.message);
+      removeFile();
+    } catch (error) {
+      setMessage('Error al elimianr el archivo');
+    }
+  };
+
+  const removeFile = async () => {
+    data.setFieldValue(`${field}.file`, null)
+  };
+
+  return (
+    <>
+     
+      {fileName? (
+        <>
+          {/* <p>{file.name}</p> */}
+          <FileViewer fileName={fileName} handleRemove={handleRemoveFile}/>
+        </>
+      ):  <Button icon onClick={handleButtonClick}>
+                   <Icon name="paperclip" />
+    </Button>}
+    </>
+  );
+
+};
+
+function FileViewer (props){
+  const {fileName, handleRemove}=props;
+  const [fileUrl, setFileUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (fileName) {
+      setFileUrl(fileName); // Construye la URL del archivo
+      (async () => {
+        try {
+          const response = await wasteFormController.getFileApi(fileName);
+          setFileUrl(response); // Construye la URL del archivo
+          //setMessage(response.message);
+        } catch (error) {
+          //setMessage('Error al elimianr el archivo');
+        }
+          })();
+    
+    }
+  }, [fileName]);
+
+  const handleOpenPreview = (event) => {
+    event.preventDefault(); 
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = (event) => {
+    event.preventDefault(); // Previene el comportamiento predeterminado
+    setPreviewOpen(false);
+  };
+
+  return (
+    <>
+      {/* //<Button onClick={handleOpenPreview}> {fileName}</Button> */}
+       
+    <Modal
+      onClose={ handleClosePreview}
+      onOpen={handleOpenPreview}
+      open={previewOpen}
+      trigger={<Button primary icon><Icon name="file alternate"/></Button>}
+    >
+      <ModalHeader>{fileName}</ModalHeader>
+      <ModalContent>
+        {fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg'))  && (
+            <Image src={fileUrl} alt="Vista previa" style={{ maxWidth: '100%' }} />
+          )}
+          {fileName && fileName.endsWith('.pdf') && (
+            <iframe src={fileUrl} title="Vista previa" style={{ width: '100%', height: '500px' }} />
+          )}
+      </ModalContent>
+      <ModalActions>
+      <Button color="red" onClick={handleRemove}>
+          <Icon disabled name='trash alternate' /> Eliminar
+          </Button>
+        <Button color='black' onClick={handleClosePreview}>
+        <Icon disabled name='close' />Cerrar
+        </Button>
+      </ModalActions>
+    </Modal>
+    </>
+  );
+};

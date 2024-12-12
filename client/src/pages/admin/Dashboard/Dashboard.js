@@ -8,7 +8,10 @@ import { isAdmin, hasPermission } from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../Error";
 import { DashBoard } from "../../../components/Admin/Dashboard/Dashboard/DashBoard";
 
+
+
 export function Dashboard() {
+  
 
   const panes = [
     {

@@ -113,7 +113,7 @@ export function EffluentForms() {
       <div className="effluent-forms-page">
         <Segment textAlign="center">
           {" "}
-          <Header as="h">EFLUENTES</Header>
+          <Header as="h1">EFLUENTES</Header>
         </Segment>
         <div className="effluent-forms-page__add">
           {siteSelected !== null || site ? (

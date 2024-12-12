@@ -17,6 +17,7 @@ import { RoleItem } from "../RoleItem";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
 import { convertActionsEngToEsp, convertModulesEngToEsp } from "../../../../utils/converts";
+import { useLanguage } from "../../../../contexts";
 const _ = require("lodash");
 
 const permissionController = new Permission();
@@ -31,6 +32,10 @@ export function ListPermissions(props) {
     user: { role },
     accessToken,
   } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key; // Función para obtener la traducción
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
 
@@ -116,6 +121,7 @@ export function ListPermissions(props) {
             dataOrigin={listRoles}
             data={listRolesFilter}
             setData={setListRolesFilter}
+            t={t}
           />
         </div>
         <Divider clearing/>
@@ -140,6 +146,7 @@ export function ListPermissions(props) {
             dataOrigin={permissions}
             data={permissionsFilter}
             setData={setPermissionsFilter}
+            t={t}
           />
         </div>
         <Divider clearing/>
@@ -159,6 +166,7 @@ export function ListPermissions(props) {
               key={permission._id}
               permission={permission}
               onReload={onReload}
+              t={t}
             />
           ))}
            </Table.Body>
@@ -171,7 +179,7 @@ export function ListPermissions(props) {
 }
 
 function SearchStandardRole(props) {
-  const { dataOrigin, data, setData } = props;
+  const { dataOrigin, data, setData,t } = props;
   const [state, setState] = useState({
     isLoading: false,
     results: [],
@@ -218,7 +226,7 @@ function SearchStandardRole(props) {
 }
 
 function SearchStandardPermission(props) {
-  const { dataOrigin, data, setData } = props;
+  const { dataOrigin, data, setData,t } = props;
   const [state, setState] = useState({
     isLoading: false,
     results: [],
@@ -247,9 +255,9 @@ function SearchStandardPermission(props) {
       const filteredData = dataOrigin.filter(item =>
         Object.keys(item).some(k =>{
           if(k === "module"){
-            return convertModulesEngToEsp(item[k]).toString().toLowerCase().includes(value.toLowerCase())
+            return t(item[k]).toString().toLowerCase().includes(value.toLowerCase())
           }else if(k === "action"){
-            return convertActionsEngToEsp(item[k]).toString().toLowerCase().includes(value.toLowerCase())
+            return t(item[k]).toString().toLowerCase().includes(value.toLowerCase())
           }else if(k === "role"){
             return item[k]?.name.toString().toLowerCase().includes(value.toLowerCase()) || false
           }

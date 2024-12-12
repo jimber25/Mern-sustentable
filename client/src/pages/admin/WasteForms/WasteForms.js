@@ -103,7 +103,7 @@ export function WasteForms() {
       <div className="waste-forms-page">
       <Segment textAlign="center">
           {" "}
-          <Header as="h">RESIDUOS</Header>
+          <Header as="h1">RESIDUOS</Header>
         </Segment>
         <div className="waste-forms-page__add">
           {siteSelected !== null || site ? (

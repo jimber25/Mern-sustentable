@@ -98,7 +98,7 @@ export function SiteForms() {
       <div className="site-forms-page">
         <Segment textAlign="center">
           {" "}
-          <Header as="h">SITIO</Header>
+          <Header as="h1">SITIO</Header>
         </Segment>
         <div className="site-forms-page__add">
           {siteSelected !== null || site ? (

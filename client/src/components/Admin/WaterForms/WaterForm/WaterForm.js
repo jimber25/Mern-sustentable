@@ -13,7 +13,11 @@ import {
   Divider,
   Header,
   GridColumn,
-  GridRow
+  GridRow,
+  Modal,
+  ModalActions,
+  ModalContent,
+  ModalHeader
 } from "semantic-ui-react";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
 import { Waterform } from "../../../../api";
@@ -207,7 +211,7 @@ export function WaterForm(props) {
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
-          <Table.HeaderCell width="2">Codigo</Table.HeaderCell>
+          <Table.HeaderCell width="1">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="5">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="3">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
@@ -246,9 +250,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("municipal_network_water.isApproved", data.value)
+                  formik.setFieldValue("municipal_network_water.unit", data.value)
                 }
-                value={formik.values.municipal_network_water.isApproved}
+                value={formik.values.municipal_network_water.unit}
                 error={formik.errors.municipal_network_water}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -278,18 +282,12 @@ export function WaterForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateWater("Agua de la red municipal", "municipal_network_water");
+                  openUpdateWater(convertWaterFieldsEngToEsp("municipal_network_water"), "municipal_network_water");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"municipal_network_water"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -323,9 +321,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("cost_of_water_from_the_municipal_network", data.value)
+                  formik.setFieldValue("cost_of_water_from_the_municipal_network.unit", data.value)
                 }
-                value={formik.values.cost_of_water_from_the_municipal_network.value}
+                value={formik.values.cost_of_water_from_the_municipal_network.unit}
                 error={formik.errors.cost_of_water_from_the_municipal_network}
               />           
                      
@@ -356,19 +354,12 @@ export function WaterForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateWater("Costo del agua de la red municipal", "cost_of_water_from_the_municipal_network");
+                  openUpdateWater(convertWaterFieldsEngToEsp("cost_of_water_from_the_municipal_network"), "cost_of_water_from_the_municipal_network");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("Costo del agua de la red municipal", "cost_of_water_from_the_municipal_network");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"cost_of_water_from_the_municipal_network"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -402,9 +393,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("rainwater_harvesting.isApproved", data.value)
+                  formik.setFieldValue("rainwater_harvesting.unit", data.value)
                 }
-                value={formik.values.rainwater_harvesting.isApproved}
+                value={formik.values.rainwater_harvesting.unit}
                 error={formik.errors.rainwater_harvesting}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -434,19 +425,12 @@ export function WaterForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateWater("Recolección de agua de lluvia", "rainwater_harvesting");
+                  openUpdateWater(convertWaterFieldsEngToEsp("rainwater_harvesting"), "rainwater_harvesting");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("Recolección de agua de lluvia");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"rainwater_harvesting"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -480,9 +464,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("groundwater.isApproved", data.value)
+                  formik.setFieldValue("groundwater.unit", data.value)
                 }
-                value={formik.values.groundwater.isApproved}
+                value={formik.values.groundwater.unit}
                 error={formik.errors.groundwater}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -512,19 +496,12 @@ export function WaterForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateWater("Agua de subterránea", "groundwater");
+                  openUpdateWater(convertWaterFieldsEngToEsp("groundwater"), "groundwater");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("Agua de subterránea ");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"groundwater"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -558,9 +535,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("surface_water.isApproved", data.value)
+                  formik.setFieldValue("surface_water.unit", data.value)
                 }
-                value={formik.values.surface_water.isApproved}
+                value={formik.values.surface_water.unit}
                 error={formik.errors.surface_water}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -590,19 +567,12 @@ export function WaterForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateWater("Agua superficial", "surface_water");
+                  openUpdateWater(convertWaterFieldsEngToEsp("surface_water"), "surface_water");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("Agua superficial");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"surface_water"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -636,9 +606,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_network_water.isApproved", data.value)
+                  formik.setFieldValue("percentage_network_water.unit", data.value)
                 }
-                value={formik.values.percentage_network_water.isApproved}
+                value={formik.values.percentage_network_water.unit}
                 error={formik.errors.percentage_network_water}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -668,19 +638,12 @@ export function WaterForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateWater("% agua de red ", "percentage_network_water");
+                  openUpdateWater(convertWaterFieldsEngToEsp("percentage_network_water"), "percentage_network_water");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("% agua de red ");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_network_water"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -714,9 +677,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_surface_water.isApproved", data.value)
+                  formik.setFieldValue("percentage_surface_water.unit", data.value)
                 }
-                value={formik.values.percentage_surface_water.isApproved}
+                value={formik.values.percentage_surface_water.unit}
                 error={formik.errors.percentage_surface_water}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -747,21 +710,14 @@ export function WaterForm(props) {
                 primary
                 onClick={() => {
                   openUpdateWater(
-                    "% agua superficial",
+                    convertWaterFieldsEngToEsp("percentage_surface_water"),
                     "percentage_surface_water"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("% agua superficial");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_surface_water"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -795,9 +751,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("percentage_groundwater.isApproved", data.value)
+                  formik.setFieldValue("percentage_groundwater.unit", data.value)
                 }
-                value={formik.values.percentage_groundwater.isApproved}
+                value={formik.values.percentage_groundwater.unit}
                 error={formik.errors.percentage_groundwater}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -829,21 +785,14 @@ export function WaterForm(props) {
                 primary
                 onClick={() => {
                   openUpdateWater(
-                    "% agua subterránea",
+                    convertWaterFieldsEngToEsp("percentage_groundwater"),
                     "percentage_groundwater"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("% agua subterránea");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_groundwater"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -877,9 +826,9 @@ export function WaterForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("total_water_consumed_per_unit_produced.isApproved", data.value)
+                  formik.setFieldValue("total_water_consumed_per_unit_produced.unit", data.value)
                 }
-                value={formik.values.total_water_consumed_per_unit_produced.isApproved}
+                value={formik.values.total_water_consumed_per_unit_produced.unit}
                 error={formik.errors.total_water_consumed_per_unit_produced}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -910,21 +859,14 @@ export function WaterForm(props) {
                 primary
                 onClick={() => {
                   openUpdateWater(
-                    "% agua subterránea",
+                    convertWaterFieldsEngToEsp("total_water_consumed_per_unit_produced"),
                     "total_water_consumed_per_unit_produced"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateWater("% agua subterránea");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"total_water_consumed_per_unit_produced"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1095,36 +1037,149 @@ const EditableComment = ({ id, author, date, content, onSave, active }) => {
   );
 };
 
-// function ModalComments() {
-//   const [open, setOpen] = React.useState(false)
+function FileUpload (props) {
+  const {accessToken, data, field}=props;
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [message, setMessage] = useState('');
 
-//   return (
-//     <Modal
-//       basic
-//       onClose={() => setOpen(false)}
-//       onOpen={() => setOpen(true)}
-//       open={open}
-//       size='small'
-//       trigger={<Button>Basic Modal</Button>}
-//     >
-//       <Header icon>
-//         <Icon name='archive' />
-//         Archive Old Messages
-//       </Header>
-//       <ModalContent>
-//         <p>
-//           Your inbox is getting full, would you like us to enable automatic
-//           archiving of old messages?
-//         </p>
-//       </ModalContent>
-//       <ModalActions>
-//         <Button basic color='red' inverted onClick={() => setOpen(false)}>
-//           <Icon name='remove' /> No
-//         </Button>
-//         <Button color='green' inverted onClick={() => setOpen(false)}>
-//           <Icon name='checkmark' /> Yes
-//         </Button>
-//       </ModalActions>
-//     </Modal>
-//   )
-// }
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf',  
+    //'application/vnd.ms-excel', // .xls
+    //'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+    ];
+
+  useEffect(() => {
+    if (data.values[field] && data.values[field].file!==null) {
+     setFileName(data.values[field].file);
+    }
+  }, [field]);
+
+   const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        console.log('Tipo de archivo no permitido. Debe ser JPG, PNG o PDF.');
+      } else {
+      setMessage(`Archivo seleccionado: ${file.name}`);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await waterFormController.uploadFileApi(accessToken,formData);
+        setMessage(response.msg);
+        if(response.status && response.status===200){
+          setFile(file);
+          setFileName(file.name);
+          data.setFieldValue(`${field}.file`, file.name)
+        }
+      } catch (error) {
+        setMessage('Error al subir el archivo');
+      }
+    }
+    }
+  };
+
+  const handleButtonClick = (event) => {
+    event.preventDefault(); // Evita que el formulario se envíe
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = handleFileChange;
+    input.click();
+  };
+
+  const handleRemoveFile = async () => {
+    setFile(null); // Elimina el archivo
+    setFileName(null);
+    try {
+      const response = await waterFormController.deleteFileApi(accessToken,fileName);
+      setMessage(response.message);
+      removeFile();
+    } catch (error) {
+      setMessage('Error al elimianr el archivo');
+    }
+  };
+
+  const removeFile = async () => {
+    data.setFieldValue(`${field}.file`, null)
+  };
+
+  return (
+    <>
+     
+      {fileName? (
+        <>
+          {/* <p>{file.name}</p> */}
+          <FileViewer fileName={fileName} handleRemove={handleRemoveFile}/>
+        </>
+      ):  <Button icon onClick={handleButtonClick}>
+                   <Icon name="paperclip" />
+    </Button>}
+    </>
+  );
+
+};
+
+function FileViewer (props){
+  const {fileName, handleRemove}=props;
+  const [fileUrl, setFileUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (fileName) {
+      setFileUrl(fileName); // Construye la URL del archivo
+      (async () => {
+        try {
+          const response = await waterFormController.getFileApi(fileName);
+          setFileUrl(response); // Construye la URL del archivo
+          //setMessage(response.message);
+        } catch (error) {
+          //setMessage('Error al elimianr el archivo');
+        }
+          })();
+    
+    }
+  }, [fileName]);
+
+  const handleOpenPreview = (event) => {
+    event.preventDefault(); 
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = (event) => {
+    event.preventDefault(); // Previene el comportamiento predeterminado
+    setPreviewOpen(false);
+  };
+
+  return (
+    <>
+      {/* //<Button onClick={handleOpenPreview}> {fileName}</Button> */}
+       
+    <Modal
+      onClose={ handleClosePreview}
+      onOpen={handleOpenPreview}
+      open={previewOpen}
+      trigger={<Button primary icon><Icon name="file alternate"/></Button>}
+    >
+      <ModalHeader>{fileName}</ModalHeader>
+      <ModalContent>
+        {fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg'))  && (
+            <Image src={fileUrl} alt="Vista previa" style={{ maxWidth: '100%' }} />
+          )}
+          {fileName && fileName.endsWith('.pdf') && (
+            <iframe src={fileUrl} title="Vista previa" style={{ width: '100%', height: '500px' }} />
+          )}
+      </ModalContent>
+      <ModalActions>
+      <Button color="red" onClick={handleRemove}>
+          <Icon disabled name='trash alternate' /> Eliminar
+          </Button>
+        <Button color='black' onClick={handleClosePreview}>
+        <Icon disabled name='close' />Cerrar
+        </Button>
+      </ModalActions>
+    </Modal>
+    </>
+  );
+};

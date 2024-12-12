@@ -104,7 +104,7 @@ export function WaterForms() {
 
       <Segment textAlign="center">
           {" "}
-          <Header as="h">AGUA</Header>
+          <Header as="h1">AGUA</Header>
         </Segment>
         <div className="water-forms-page__add">
           {siteSelected !== null || site ? (

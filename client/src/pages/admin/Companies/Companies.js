@@ -7,6 +7,7 @@ import { useAuth } from "../../../hooks";
 import { isAdmin, hasPermission, isMaster } from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../Error";
 import { Permission } from "../../../api";
+import { useLanguage } from "../../../contexts";
 
 const permissionController = new Permission();
 
@@ -17,6 +18,10 @@ export function Companies() {
     accessToken,
     user: { role },
   } = useAuth();
+  
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
@@ -43,7 +48,7 @@ export function Companies() {
 
   const panes = [
     {
-      menuItem: "Empresas activas",
+      menuItem: t("active_companies"),
       render: () => (
         <Tab.Pane attached={false}>
           <ListCompanies companiesActive={true} reload={reload} onReload={onReload} />
@@ -51,7 +56,7 @@ export function Companies() {
       ),
     },
     {
-      menuItem: "Empresas inactivas",
+      menuItem: t("inactive_companies"),
       render: () => (
         <Tab.Pane attached={false}>
           <ListCompanies companiesActive={false} reload={reload} onReload={onReload} />
@@ -74,7 +79,7 @@ export function Companies() {
               primary
               onClick={onOpenCloseModal}
             >
-              <Icon name='plus' /> Nueva Empresa
+              <Icon name='plus' /> {t("new_company")}
             </Button>
           ) : null}
           <Tab menu={{ secondary: true }} panes={panes} />
@@ -83,7 +88,7 @@ export function Companies() {
         <BasicModal
           show={showModal}
           close={onOpenCloseModal}
-          title="Crear nueva empresa"
+          title={t("create")}
         >
           <CompanyForm close={onOpenCloseModal} onReload={onReload} />
         </BasicModal>

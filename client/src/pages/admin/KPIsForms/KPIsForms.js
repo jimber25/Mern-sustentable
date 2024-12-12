@@ -7,6 +7,11 @@ import {
   Icon,
   Segment,
   Header,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHeaderCell,
+  TableRow
 } from "semantic-ui-react";
 import { BasicModal } from "../../../components/Shared";
 import { ListKPIsForms, KPIsForm } from "../../../components/Admin/KPIsForms";
@@ -107,7 +112,7 @@ export function KPIsForms() {
       <div className="kpis-forms-page">
         <Segment textAlign="center">
           {" "}
-          <Header as="h">KPIs</Header>
+          <Header as="h1">KPIs</Header>
         </Segment>
         <div className="kpis-forms-page__add">
           {siteSelected !== null || site ? (
@@ -157,20 +162,22 @@ function SelectedListSites(props) {
         </div>
         <Divider clearing />
 
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Razon Social</Table.HeaderCell>
-              <Table.HeaderCell>Email</Table.HeaderCell>
-              <Table.HeaderCell>Acciones</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>Razon Social</TableHeaderCell>
+              <TableHeaderCell>Email</TableHeaderCell>
+              <TableHeaderCell>Acciones</TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {sitesFilter.map((site) => (
-              <Table.Row key={site._id}>
-                <Table.Cell>{site.name ? site.name : ""}</Table.Cell>
-                <Table.Cell>{site.email}</Table.Cell>
-                <Table.Cell>
+              <TableRow 
+              key={site._id}
+              >
+                <TableCell>{site.name ? site.name : ""}</TableCell>
+                <TableCell>{site.email}</TableCell>
+                <TableCell>
                   {
                     // isMaster(role) || isAdmin(role) ||
                     // hasPermission(permissionsByRole, role._id, "sites", "edit") ? (
@@ -201,10 +208,10 @@ function SelectedListSites(props) {
                         <Icon name="trash" />
                       </Button>
                     ) : null} */}
-                </Table.Cell>
-              </Table.Row>
+                </TableCell>
+              </TableRow>
             ))}
-          </Table.Body>
+          </TableBody>
         </Table>
       </div>
       {/* ) : (

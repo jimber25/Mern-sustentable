@@ -19,17 +19,10 @@ const ProductionSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Site'
   },
-  // reviews:[{
-  //   date:Date,
-  //   reviewer_user: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: 'User'
-  //   },
-  //   comments:String,
-  //   state:String,
-  // }],
   production_volume:{
+    code:String,
     value:Number,
+    unit:String,
     reviews:[{
       date:Date,
       reviewer_user: {
@@ -38,10 +31,13 @@ const ProductionSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String,
   },
   annual_average:{
+    code:String,
     value:Number,
+    unit:String,
     reviews:[{
       date:Date,
       reviewer_user: {
@@ -50,7 +46,8 @@ const ProductionSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String,
   },
   active:Boolean
 });

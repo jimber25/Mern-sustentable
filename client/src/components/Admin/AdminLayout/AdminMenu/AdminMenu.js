@@ -12,6 +12,7 @@ import { Permission } from "../../../../api";
 import { useAuth } from "../../../../hooks";
 import "./AdminMenu.scss";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
+import { useLanguage } from "../../../../contexts";
 
 const permissionController = new Permission();
 
@@ -21,6 +22,10 @@ export function AdminMenu() {
     user: { role },
     accessToken,
   } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [permissionActive, setPermissionsActive] = useState([]);
 
@@ -62,12 +67,12 @@ export function AdminMenu() {
             active={isCurrentPath("/admin/dashboard")}
           >
             <Icon name="table" />
-            Dashboard
+            {t("dashboard")}
           </Menu.Item>):null}
 
           {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "data", "menu") ? (
-            <Dropdown trigger={<span style={{marginRight:"40%"}}><Icon name='upload'/>Datos</span>} floating labeled item>
+            <Dropdown trigger={<span style={{marginRight:"10%"}}><Icon name='upload'/>{t("data")}</span>} floating labeled item>
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "data", "menu") ? (
@@ -77,7 +82,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/siteforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Sitio"}
+                    {t("site")}
                   </DropdownItem>
                 ) : null} 
                     {isMaster(role)|| isAdmin(role) ||
@@ -88,7 +93,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/productionforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Producción"}
+                    {t("production")}
                   </DropdownItem>
                 ) : null} 
                     {isMaster(role)|| isAdmin(role) ||
@@ -99,7 +104,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/energyforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Energia"}
+                    {t("energy")}
                   </DropdownItem>
                 ) : null} 
                     {isMaster(role)|| isAdmin(role) ||
@@ -110,7 +115,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/waterforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Agua"}
+                    {t("water")}
                   </DropdownItem>
                 ) : null} 
                       {isMaster(role)|| isAdmin(role) ||
@@ -121,7 +126,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/effluentforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Efluentes"}
+                    {t("effluent")}
                   </DropdownItem>
                 ) : null} 
                       {isMaster(role)|| isAdmin(role) ||
@@ -132,7 +137,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/data/wasteforms")}
                   >
                     <Icon name="file alternate" /> 
-                    {"Residuos"}
+                    {t("waste")}
                   </DropdownItem>
                 ) : null} 
                        {isMaster(role)|| isAdmin(role) ||
@@ -231,7 +236,7 @@ export function AdminMenu() {
               active={isCurrentPath("/admin/users")}
             >
               <Icon name="users" />
-              Usuarios
+              {t("users")}
             </Menu.Item>
           ) : null}
 
@@ -243,7 +248,7 @@ export function AdminMenu() {
             active={isCurrentPath("/admin/reports")}
           >
             <Icon name="file outline" />
-            Reportes
+           {t("reports")}
           </Menu.Item>
           ) : null}
 
@@ -263,7 +268,7 @@ export function AdminMenu() {
             active={isCurrentPath("/admin/companies")}
           >
             <Icon name="building" />
-            Empresas
+            {t("companies")}
           </Menu.Item>
           ): null}
 
@@ -275,7 +280,7 @@ export function AdminMenu() {
             active={isCurrentPath("/admin/sites")}
           >
             <Icon name="building" />
-            Sitios
+          {t("sites")}
           </Menu.Item>
           ): null}
 
@@ -300,7 +305,7 @@ export function AdminMenu() {
           </Menu.Item> */}
           {isMaster(role) || isAdmin(role) ||
           hasPermission(permissionActive, role._id, "configure", "menu") ? (
-            <Dropdown  item trigger={<span style={{marginRight:"10%"}}><Icon name='configure'/>Configuracion</span>} >
+            <Dropdown  item trigger={<span style={{marginRight:"10%"}}><Icon name='configure'/>{t("configure")}</span>} >
               <DropdownMenu>
                 {isMaster(role)|| isAdmin(role) ||
                 hasPermission(permissionActive, role._id, "roles", "menu") ? (
@@ -310,7 +315,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/config/roles")}
                   >
                     {" "}
-                    <Icon name="users" /> Roles
+                    <Icon name="users" />  {t("roles")}
                   </DropdownItem>
                 ) : null}
                 {isMaster(role) || isAdmin(role) ||
@@ -326,7 +331,7 @@ export function AdminMenu() {
                     active={isCurrentPath("/admin/config/permissions")}
                   >
                     {" "}
-                    <Icon name="clipboard list" /> Permisos
+                    <Icon name="clipboard list" /> {t("permissions")}
                   </DropdownItem>
                 ) : null}
               </DropdownMenu>

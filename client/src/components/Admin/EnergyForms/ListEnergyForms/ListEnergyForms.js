@@ -129,6 +129,7 @@ function TablePeriods(props) {
         onClose={onOpenCloseModal}
         onReload={onReload}
         energyForm={form}
+        siteSelected={site}
       />
     );
     setShowModal(true);

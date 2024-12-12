@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import {
   Loader,
   Table,
+  TableBody,
+  TableCell,
+  TableHeaderCell,
+  TableRow,
+  TableHeader,
   Divider,
   Dropdown,
   Confirm,
@@ -35,7 +40,6 @@ export function ListKPIsForms(props) {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState();
   // const [Role, setRole] = useState(null);
-  console.log("aca");
   const {
     user: { role, site },
     accessToken,
@@ -90,7 +94,6 @@ function TablePeriods(props) {
 
   const handleConfirm = (e) => setDataDelete(e);
 
-  console.log("kkkkk");
   // Estado para controlar el modal
   const [selectedPeriod, setSelectedPeriod] = useState(null);
 
@@ -215,8 +218,6 @@ function TablePeriods(props) {
     return existsPeriod;
   };
 
-  console.log(hasDataPeriod("April"));
-
   // Obtener todos los campos únicos
   const uniqueFields = fieldsFinal();
   // Obtener todos los campos únicos
@@ -231,25 +232,25 @@ function TablePeriods(props) {
 
   return (
     <>
-      <Table celled structured>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell rowSpan="2" textAlign="center">
+      <Table celled={true} structured={true}>
+        <TableHeader>
+          <TableRow>
+            <TableHeaderCell rowSpan="2" textAlign="center">
               Codigo
-            </Table.HeaderCell>
-            <Table.HeaderCell rowSpan="2" textAlign="center">
+            </TableHeaderCell>
+            <TableHeaderCell rowSpan="2" textAlign="center">
             Concepto
-            </Table.HeaderCell>
-            <Table.HeaderCell rowSpan="2" textAlign="center">
+            </TableHeaderCell>
+            <TableHeaderCell rowSpan="2" textAlign="center">
               Unidades
-            </Table.HeaderCell>
-            <Table.HeaderCell colSpan="14" textAlign="center">
+            </TableHeaderCell>
+            <TableHeaderCell colSpan="14" textAlign="center">
               PERIODO DE REPORTE {year}
-            </Table.HeaderCell>
-          </Table.Row>
-          <Table.Row>
+            </TableHeaderCell>
+          </TableRow>
+          <TableRow>
             {periods.map((period, index) => (
-              <Table.HeaderCell key={index}>
+              <TableHeaderCell key={index}>
                 {convertPeriodsEngToEsp(period)}
                 {hasDataPeriod(period) ? (
                   <>
@@ -294,22 +295,22 @@ function TablePeriods(props) {
                     </Dropdown>
                   </>
                 )}
-              </Table.HeaderCell>
+              </TableHeaderCell>
             ))}
-            <Table.HeaderCell>Total</Table.HeaderCell>
-            <Table.HeaderCell>Promedio</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+            <TableHeaderCell>Total</TableHeaderCell>
+            <TableHeaderCell>Promedio</TableHeaderCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {mainFields.map((f) => (
             <>
               <React.Fragment key={f}>
-                <Table.Row>
-                  <Table.Cell collapsing width={18}>
+                <TableRow key={f}>
+                  <TableCell collapsing width={18}>
                     {" "}
                     <Label ribbon>{convertKPIsFieldsEngToEsp(f)}</Label>
-                  </Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                </TableRow>
               </React.Fragment>
               <SubFields
                 f={f}
@@ -320,28 +321,8 @@ function TablePeriods(props) {
               />
             </>
           ))}
-        </Table.Body>
+        </TableBody>
 
-        {/* <Table.Body>
-      <Table.Row>
-      <Table.Cell>      {codes.electricityCode}</Table.Cell>
-        <Table.Cell>Electricidad</Table.Cell>
-        {electricityValues.map((value, index) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
-        ))}
-                <Table.Cell>{totalElectricity}</Table.Cell>
-                <Table.Cell>{averageElectricity.toFixed(2)}</Table.Cell>
-      </Table.Row>
-      <Table.Row>
-      <Table.Cell>      {codes.waterCode}</Table.Cell>
-        <Table.Cell>Agua</Table.Cell>
-        {waterValues.map((value, index) => (
-          <Table.Cell key={index}>{value}</Table.Cell>
-        ))}
-          <Table.Cell>{totalWater}</Table.Cell>
-          <Table.Cell>{averageWater.toFixed(2)}</Table.Cell>
-      </Table.Row>
-    </Table.Body> */}
       </Table>
       {/* Modal para mostrar detalles del período seleccionado */}
       {showModal ? (
@@ -375,23 +356,23 @@ function SubFields(props) {
   return listFields[f].map((field) => {
     return (
       <React.Fragment key={field}>
-        <Table.Row>
-          <Table.Cell>{kpisCodes[field]}</Table.Cell>
-          <Table.Cell>{convertKPIsFieldsEngToEsp(field)}</Table.Cell>
-          <Table.Cell>{"-"}</Table.Cell>
+        <TableRow key={field}>
+          <TableCell>{kpisCodes[field]}</TableCell>
+          <TableCell>{convertKPIsFieldsEngToEsp(field)}</TableCell>
+          <TableCell>{"-"}</TableCell>
           {periods.map((period) => {
             const item = data.find((d) => d.period === period);
             return (
-              <Table.Cell key={`${field}-${period}`}>
+              <TableCell key={`${field}-${period}`}>
                 {item && item[f][field] ? item[f][field].value : "-"}
-              </Table.Cell>
+              </TableCell>
             );
           })}
-          <Table.Cell>{calculateTotalAndAverage(f, field).total}</Table.Cell>
-          <Table.Cell>
+          <TableCell>{calculateTotalAndAverage(f, field).total}</TableCell>
+          <TableCell>
             {calculateTotalAndAverage(f, field).average.toFixed(2)}
-          </Table.Cell>
-        </Table.Row>
+          </TableCell>
+        </TableRow>
       </React.Fragment>
     );
   });
