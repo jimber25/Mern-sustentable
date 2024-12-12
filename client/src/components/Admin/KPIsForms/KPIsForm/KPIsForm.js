@@ -12,9 +12,10 @@ import {
   CommentMetadata,
   GridRow,
   Label,
-  TableFooter,
-  TableHeaderCell,
-  TableRow,
+  Modal,
+  ModalActions,
+  ModalContent,
+  ModalHeader,
   Segment,
   Divider,
   Header,
@@ -34,13 +35,17 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import { PERIODS } from "../../../../utils";
-import { convertKPIsFieldsEngToEsp, convertPeriodsEngToEsp } from "../../../../utils/converts";
+import {
+  convertKPIsFieldsEngToEsp,
+  convertPeriodsEngToEsp,
+} from "../../../../utils/converts";
 import "./KPIsForm.scss";
+import { kpisCodes } from "../../../../utils/codes";
 
 const kpisFormController = new KPIsform();
 
 export function KPIsForm(props) {
-  const { onClose, onReload, kpisForm, siteSelected , year, period} = props;
+  const { onClose, onReload, kpisForm, siteSelected, year, period } = props;
   const { accessToken } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -82,7 +87,7 @@ export function KPIsForm(props) {
           } else {
             if (siteSelected) {
               formValue.site = siteSelected;
-            } 
+            }
             // else {
             //   // Desencriptar los datos recibidos
             //   if (!kpisForm) {
@@ -92,10 +97,7 @@ export function KPIsForm(props) {
             //   }
             // }
           }
-          await kpisFormController.createKPIsForm(
-            accessToken,
-            formValue
-          );
+          await kpisFormController.createKPIsForm(accessToken, formValue);
           //console.log(formValue);
         } else {
           await kpisFormController.updateKPIsForm(
@@ -122,7 +124,7 @@ export function KPIsForm(props) {
       state: { siteSelected: siteSelected },
     });
   };
-  
+
   // Generar una lista de años (por ejemplo, del 2000 al 2024)
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
@@ -136,20 +138,19 @@ export function KPIsForm(props) {
             siteSelected,
             formik.values.year
           );
-          const periods = PERIODS.map((item) => item);
-          const availablePeriods = periods
-            .filter((period) => !response.periods.includes(period))
-            .map((period) => period);
-  
-          setListPeriods(availablePeriods);
-          console.log(availablePeriods)
+        const periods = PERIODS.map((item) => item);
+        const availablePeriods = periods
+          .filter((period) => !response.periods.includes(period))
+          .map((period) => period);
+
+        setListPeriods(availablePeriods);
+        console.log(availablePeriods);
       } catch (error) {
         console.error(error);
         setListPeriods([]);
       }
     })();
   }, [formik.values.year]);
-
 
   return (
     <Form className="kpis-form" onSubmit={formik.handleSubmit}>
@@ -217,7 +218,7 @@ export function KPIsForm(props) {
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
-          
+            <Table.HeaderCell width="1">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="2">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
@@ -227,24 +228,33 @@ export function KPIsForm(props) {
         </Table.Header>
         <Table.Body>
           {/* Electricidad */}
-        <Table.Row>
+          <Table.Row>
             <Table.Cell>
-            <Label ribbon>{convertKPIsFieldsEngToEsp("energy_indicators")}</Label>
+              <Label ribbon>
+                {convertKPIsFieldsEngToEsp("energy_indicators")}
+              </Label>
             </Table.Cell>
-            <Table.Cell>
-            </Table.Cell>
-            <Table.Cell>
-            </Table.Cell>
-            <Table.Cell>
-            </Table.Cell>
+            <Table.Cell></Table.Cell>
+            <Table.Cell></Table.Cell>
+            <Table.Cell></Table.Cell>
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_fuel_energy_consumption")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.total_fuel_energy_consumption
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_fuel_energy_consumption")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -252,14 +262,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.total_fuel_energy_consumption.value"
-                value={formik.values.energy_indicators.total_fuel_energy_consumption.value}
+                value={
+                  formik.values.energy_indicators.total_fuel_energy_consumption
+                    .value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="MhW"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -268,19 +281,27 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.total_fuel_energy_consumption.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.total_fuel_energy_consumption.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_fuel_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators.total_fuel_energy_consumption
+                    .unit
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
 
-
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -289,44 +310,60 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_fuel_energy_consumption.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_fuel_energy_consumption.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_fuel_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators.total_fuel_energy_consumption
+                    .isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.total_fuel_energy_consumption.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
-        
-            
+
             <Table.Cell>
               <Button
                 icon
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_fuel_energy_consumption"), `energy_indicators.total_fuel_energy_consumption}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_fuel_energy_consumption"),
+                    `energy_indicators.total_fuel_energy_consumption}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_fuel_energy_consumption"), "energy_indicators.total_fuel_energy_consumption");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.total_fuel_energy_consumption"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_electrical_energy_consumption")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.total_electrical_energy_consumption
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp(
+                  "total_electrical_energy_consumption"
+                )}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -334,14 +371,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.total_electrical_energy_consumption.value"
-                value={formik.values.energy_indicators.total_electrical_energy_consumption.value}
+                value={
+                  formik.values.energy_indicators
+                    .total_electrical_energy_consumption.value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="MhW"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -350,17 +390,25 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.total_electrical_energy_consumption.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.total_electrical_energy_consumption.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_electrical_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators
+                    .total_electrical_energy_consumption.unit
+                }
                 error={formik.errors.energy_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -369,9 +417,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_electrical_energy_consumption.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_electrical_energy_consumption.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_electrical_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators
+                    .total_electrical_energy_consumption.isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.total_electrical_energy_consumption.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -382,29 +436,40 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_electrical_energy_consumption"), `energy_indicators.total_electrical_energy_consumption}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp(
+                      "total_electrical_energy_consumption"
+                    ),
+                    `energy_indicators.total_electrical_energy_consumption}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_electrical_energy_consumption"), "energy_indicators.total_electrical_energy_consumption");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.total_electrical_energy_consumption"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_energy_consumption")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.total_energy_consumption
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_energy_consumption")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -412,14 +477,16 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.total_energy_consumption.value"
-                value={formik.values.energy_indicators.total_energy_consumption.value}
+                value={
+                  formik.values.energy_indicators.total_energy_consumption.value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="MhW"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -428,17 +495,24 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.total_energy_consumption.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.total_energy_consumption.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators.total_energy_consumption.unit
+                }
                 error={formik.errors.energy_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -447,12 +521,17 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_energy_consumption.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_energy_consumption.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators.total_energy_consumption
+                    .isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
-              {/* {formik.values.energy_indicators.total_energy_consumption.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Button
@@ -460,29 +539,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_energy_consumption"), `energy_indicators.total_energy_consumption}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_energy_consumption"),
+                    `energy_indicators.total_energy_consumption}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_energy_consumption"), "energy_indicators.total_energy_consumption");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.total_energy_consumption"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_renewable_energy")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.total_renewable_energy
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_renewable_energy")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -490,14 +578,16 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.total_renewable_energy.value"
-                value={formik.values.energy_indicators.total_renewable_energy.value}
+                value={
+                  formik.values.energy_indicators.total_renewable_energy.value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="MhW"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -506,17 +596,24 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.total_energy_consumption.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.total_energy_consumption.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators.total_energy_consumption.unit
+                }
                 error={formik.errors.energy_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -525,9 +622,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_renewable_energy.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_renewable_energy.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_renewable_energy.isApproved}
+                value={
+                  formik.values.energy_indicators.total_renewable_energy
+                    .isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.total_renewable_energy.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -538,29 +641,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_renewable_energy"), `energy_indicators.total_renewable_energy}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_renewable_energy"),
+                    `energy_indicators.total_renewable_energy}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_renewable_energy"), "energy_indicators.total_renewable_energy");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.total_renewable_energy"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("percentage_of_renewable_energy")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.percentage_of_renewable_energy
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("percentage_of_renewable_energy")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -568,14 +680,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.percentage_of_renewable_energy.value"
-                value={formik.values.energy_indicators.percentage_of_renewable_energy.value}
+                value={
+                  formik.values.energy_indicators.percentage_of_renewable_energy
+                    .value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="%"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -584,18 +699,26 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.percentage_of_renewable_energy.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.percentage_of_renewable_energy.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.percentage_of_renewable_energy.isApproved}
+                value={
+                  formik.values.energy_indicators.percentage_of_renewable_energy
+                    .unit
+                }
                 error={formik.errors.energy_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
-            
+
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -604,9 +727,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.percentage_of_renewable_energy.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.percentage_of_renewable_energy.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.percentage_of_renewable_energy.isApproved}
+                value={
+                  formik.values.energy_indicators.percentage_of_renewable_energy
+                    .isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.percentage_of_renewable_energy.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -617,29 +746,40 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("percentage_of_renewable_energy"), `energy_indicators.percentage_of_renewable_energy}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("percentage_of_renewable_energy"),
+                    `energy_indicators.percentage_of_renewable_energy}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("percentage_of_renewable_energy"), "energy_indicators.percentage_of_renewable_energy");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.percentage_of_renewable_energy"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("percentage_energy_from_fossil_fuels")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.percentage_energy_from_fossil_fuels
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp(
+                  "percentage_energy_from_fossil_fuels"
+                )}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -647,14 +787,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.percentage_energy_from_fossil_fuels.value"
-                value={formik.values.energy_indicators.percentage_energy_from_fossil_fuels.value}
+                value={
+                  formik.values.energy_indicators
+                    .percentage_energy_from_fossil_fuels.value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="mhw/un"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -663,17 +806,25 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.percentage_energy_from_fossil_fuels.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.percentage_energy_from_fossil_fuels.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.percentage_energy_from_fossil_fuels.isApproved}
+                value={
+                  formik.values.energy_indicators
+                    .percentage_energy_from_fossil_fuels.unit
+                }
                 error={formik.errors.energy_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -682,14 +833,19 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.percentage_energy_from_fossil_fuels.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.percentage_energy_from_fossil_fuels.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.percentage_energy_from_fossil_fuels.isApproved}
+                value={
+                  formik.values.energy_indicators
+                    .percentage_energy_from_fossil_fuels.isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.percentage_energy_from_fossil_fuels.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
-             
 
             <Table.Cell>
               <Button
@@ -697,29 +853,42 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("percentage_energy_from_fossil_fuels"), `energy_indicators.percentage_energy_from_fossil_fuels}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp(
+                      "percentage_energy_from_fossil_fuels"
+                    ),
+                    `energy_indicators.percentage_energy_from_fossil_fuels`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("percentage_energy_from_fossil_fuels"), "energy_indicators.percentage_energy_from_fossil_fuels");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.percentage_energy_from_fossil_fuels"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_energy_consumed_per_productive_unit")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.total_energy_consumed_per_productive_unit
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp(
+                  "total_energy_consumed_per_productive_unit"
+                )}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -727,14 +896,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.total_energy_consumed_per_productive_unit.value"
-                value={formik.values.energy_indicators.total_energy_consumed_per_productive_unit.value}
+                value={
+                  formik.values.energy_indicators
+                    .total_energy_consumed_per_productive_unit.value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder=""
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -743,9 +915,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.total_fuel_energy_consumption.isApproved", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.total_energy_consumed_per_productive_unit.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_fuel_energy_consumption.isApproved}
+                value={
+                  formik.values.energy_indicators.total_fuel_energy_consumption
+                    .unit
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -753,7 +931,10 @@ export function KPIsForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -762,14 +943,19 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_energy_consumed_per_productive_unit.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_energy_consumed_per_productive_unit.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_energy_consumed_per_productive_unit.isApproved}
+                value={
+                  formik.values.energy_indicators
+                    .total_energy_consumed_per_productive_unit.isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.total_energy_consumed_per_productive_unit.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
-            </Table.Cell> 
-           
+            </Table.Cell>
 
             <Table.Cell>
               <Button
@@ -777,30 +963,42 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_energy_consumed_per_productive_unit"), `energy_indicators.total_energy_consumed_per_productive_unit}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp(
+                      "total_energy_consumed_per_productive_unit"
+                    ),
+                    `energy_indicators.total_energy_consumed_per_productive_unit`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_energy_consumed_per_productive_unit"), "energy_indicators.total_energy_consumed_per_productive_unit");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={
+                  "energy_indicators.total_energy_consumed_per_productive_unit"
+                }
+              />
             </Table.Cell>
-         
           </Table.Row>
 
-          
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_cost_of_energy_consumed")}</label>
+              <label className="label">
+                {
+                  formik.values.energy_indicators.total_cost_of_energy_consumed
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_cost_of_energy_consumed")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -808,15 +1006,23 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="energy_indicators.total_cost_of_energy_consumed.value"
-                value={formik.values.energy_indicators.total_cost_of_energy_consumed.value}
+                value={
+                  formik.values.energy_indicators.total_cost_of_energy_consumed
+                    .value
+                }
                 error={formik.errors.energy_indicators}
               />
             </Table.Cell>
-           
-           <Table.Cell>
-            <Form.Dropdown
+
+            <Table.Cell>
+              <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{_id:"$ Arg",name:" $ Arg"}, {_id:"US$",name:"US$"},{_id:"R$",name:"R$"},{_id:"$ Mxn",name:"$ Mxn"}].map((ds) => {
+                options={[
+                  { _id: "$ Arg", name: " $ Arg" },
+                  { _id: "US$", name: "US$" },
+                  { _id: "R$", name: "R$" },
+                  { _id: "$ Mxn", name: "$ Mxn" },
+                ].map((ds) => {
                   return {
                     key: ds._id,
                     text: ds.name,
@@ -825,18 +1031,26 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("energy_indicators.total_cost_of_energy_consumed", data.value)
+                  formik.setFieldValue(
+                    "energy_indicators.total_cost_of_energy_consumed.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_cost_of_energy_consumed.value}
+                value={
+                  formik.values.energy_indicators.total_cost_of_energy_consumed
+                    .unit
+                }
                 error={formik.errors.energy_indicators}
-              />           
-                     
-              </Table.Cell>
+              />
+            </Table.Cell>
 
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -845,44 +1059,59 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_cost_of_energy_consumed.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_cost_of_energy_consumed.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_cost_of_energy_consumed.isApproved}
+                value={
+                  formik.values.energy_indicators.total_cost_of_energy_consumed
+                    .isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.total_cost_of_energy_consumed.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
-           
+
             <Table.Cell>
               <Button
                 icon
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_cost_of_energy_consumed"), `energy_indicators.total_energy_consumed_per_productive_unit}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_cost_of_energy_consumed"),
+                    `energy_indicators.total_cost_of_energy_consumed`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_cost_of_energy_consumed"), "energy_indicators.total_cost_of_energy_consumed");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"energy_indicators.total_cost_of_energy_consumed"}
+              />
             </Table.Cell>
-         
           </Table.Row>
-{/* INDICADOR DE GASES DE EFECTO INVERNADERO GEI */}
-         
+          {/* INDICADOR DE GASES DE EFECTO INVERNADERO GEI */}
+
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_scope_1")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.total_scope_1
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_scope_1")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -890,14 +1119,16 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.total_scope_1.value"
-                value={formik.values.greenhouse_gas_indicators.total_scope_1.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_1.value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder=" GEI "
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -906,17 +1137,24 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.total_scope_1.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.total_scope_1.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_scope_1.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_1.unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -925,46 +1163,58 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`energy_indicators.total_cost_of_energy_consumed.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `energy_indicators.total_cost_of_energy_consumed.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.energy_indicators.total_cost_of_energy_consumed.isApproved}
+                value={
+                  formik.values.energy_indicators.total_cost_of_energy_consumed
+                    .isApproved
+                }
                 error={formik.errors.energy_indicators}
               />
               {/* {formik.values.energy_indicators.total_cost_of_energy_consumed.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
-           
-           
-            
-          
+
             <Table.Cell>
               <Button
                 icon
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_scope_1"), `greenhouse_gas_indicators.total_scope_1}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_scope_1"),
+                    `greenhouse_gas_indicators.total_scope_1}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_scope_1"), "greenhouse_gas_indicators.total_scope_1");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.total_scope_1"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_scope_2")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.total_scope_2
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_scope_2")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -972,14 +1222,16 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.total_scope_2.value"
-                value={formik.values.greenhouse_gas_indicators.total_scope_2.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_2.value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="GEI"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -988,17 +1240,24 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.total_scope_2.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.total_scope_2.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_scope_2.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_2.unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1007,9 +1266,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.total_scope_2.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.total_scope_2.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_scope_2.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_2
+                    .isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.total_scope_1.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1020,29 +1285,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_scope_2"), `greenhouse_gas_indicators.total_scope_2}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_scope_2"),
+                    `greenhouse_gas_indicators.total_scope_2}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_scope_2"), "greenhouse_gas_indicators.total_scope_2");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.total_scope_2"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_scope_3")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.total_scope_3
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_scope_3")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -1050,14 +1324,16 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.total_scope_3.value"
-                value={formik.values.greenhouse_gas_indicators.total_scope_3.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_3.value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="GEI"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1066,17 +1342,24 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.total_scope_3.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.total_scope_3.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_scope_3.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_3.unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1085,9 +1368,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.total_scope_3.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.total_scope_3.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_scope_3.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_scope_3
+                    .isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.total_scope_3.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1098,29 +1387,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_scope_3"), `greenhouse_gas_indicators.total_scope_3}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_scope_3"),
+                    `greenhouse_gas_indicators.total_scope_3}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_scope_3"), "greenhouse_gas_indicators.total_scope_3");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.total_scope_3"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_emissions_per_unit_produced")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.total_emissions_per_unit_produced
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_emissions_per_unit_produced")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -1128,14 +1426,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.total_emissions_per_unit_produced.value"
-                value={formik.values.greenhouse_gas_indicators.total_emissions_per_unit_produced.value}
+                value={
+                  formik.values.greenhouse_gas_indicators
+                    .total_emissions_per_unit_produced.value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="GEI"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1144,17 +1445,25 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.total_emissions_per_unit_produced.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.total_emissions_per_unit_produced.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_emissions_per_unit_produced.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators
+                    .total_emissions_per_unit_produced.unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1163,9 +1472,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.total_emissions_per_unit_produced.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.total_emissions_per_unit_produced.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_emissions_per_unit_produced.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators
+                    .total_emissions_per_unit_produced.isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.total_scope_3.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1176,29 +1491,42 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_emissions_per_unit_produced"), `greenhouse_gas_indicators.total_emissions_per_unit_produced}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp(
+                      "total_emissions_per_unit_produced"
+                    ),
+                    `greenhouse_gas_indicators.total_emissions_per_unit_produced}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_emissions_per_unit_produced"), "greenhouse_gas_indicators.total_emissions_per_unit_produced");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={
+                  "greenhouse_gas_indicators.total_emissions_per_unit_produced"
+                }
+              />
             </Table.Cell>
-         
           </Table.Row>
-          
+
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("total_emissions")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.total_emissions
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("total_emissions")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -1206,14 +1534,16 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.total_emissions.value"
-                value={formik.values.greenhouse_gas_indicators.total_emissions.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_emissions.value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="GEI"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1222,9 +1552,14 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.total_emissions.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.total_emissions.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_emissions.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_emissions.unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1232,7 +1567,10 @@ export function KPIsForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1241,9 +1579,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.total_emissions.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.total_emissions.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.total_emissions.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.total_emissions
+                    .isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.total_emissions.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1254,29 +1598,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("total_emissions"), `greenhouse_gas_indicators.total_emissions}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("total_emissions"),
+                    `greenhouse_gas_indicators.total_emissions}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("total_emissions"), "greenhouse_gas_indicators.total_emissions");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.total_emissions"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("scope_percentage_1")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.scope_percentage_1
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("scope_percentage_1")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -1284,14 +1637,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.scope_percentage_1.value"
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_1.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_1
+                    .value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder=" % "
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1300,9 +1656,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.scope_percentage_1.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.scope_percentage_1.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_1.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_1
+                    .unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1310,7 +1672,10 @@ export function KPIsForm(props) {
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1319,9 +1684,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.scope_percentage_1.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.scope_percentage_1.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_1.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_1
+                    .isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.scope_percentage_1.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1332,29 +1703,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("scope_percentage_1"), `greenhouse_gas_indicators.scope_percentage_1}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("scope_percentage_1"),
+                    `greenhouse_gas_indicators.scope_percentage_1}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("scope_percentage_1"), "greenhouse_gas_indicators.scope_percentage_1");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.scope_percentage_1"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("scope_percentage_2")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.scope_percentage_2
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("scope_percentage_2")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -1362,14 +1742,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.scope_percentage_2.value"
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_2.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_2
+                    .value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="%"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1378,19 +1761,27 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.scope_percentage_2.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.scope_percentage_2.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_2.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_2
+                    .unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
 
-
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1399,9 +1790,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.scope_percentage_2.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.scope_percentage_2.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_2.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_2
+                    .isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.scope_percentage_2.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1412,29 +1809,38 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("scope_percentage_2"), `greenhouse_gas_indicators.scope_percentage_2}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("scope_percentage_2"),
+                    `greenhouse_gas_indicators.scope_percentage_2}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("scope_percentage_2"), "greenhouse_gas_indicators.scope_percentage_2");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.scope_percentage_2"}
+              />
             </Table.Cell>
-         
           </Table.Row>
 
           <Table.Row>
             <Table.Cell>
-              <label className="label">{convertKPIsFieldsEngToEsp("scope_percentage_3")}</label>
+              <label className="label">
+                {
+                  formik.values.greenhouse_gas_indicators.scope_percentage_3
+                    .code
+                }
+              </label>
             </Table.Cell>
             <Table.Cell>
-            <Form.Input
+              <label className="label">
+                {convertKPIsFieldsEngToEsp("scope_percentage_3")}
+              </label>
+            </Table.Cell>
+            <Table.Cell>
+              <Form.Input
                 onKeyPress={(event) => {
                   if (!/[0-9]/.test(event.key)) {
                     event.preventDefault();
@@ -1442,14 +1848,17 @@ export function KPIsForm(props) {
                 }}
                 onChange={formik.handleChange}
                 name="greenhouse_gas_indicators.scope_percentage_3.value"
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_3.value}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_3
+                    .value
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
             </Table.Cell>
             <Table.Cell>
-            <Form.Dropdown
+              <Form.Dropdown
                 placeholder="%"
-                options={[{key:1, value:true,name:""}].map((ds) => {
+                options={[{ key: 1, value: true, name: "" }].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1458,17 +1867,25 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("greenhouse_gas_indicators.scope_percentage_3.isApproved", data.value)
+                  formik.setFieldValue(
+                    "greenhouse_gas_indicators.scope_percentage_3.unit",
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_3.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_3
+                    .unit
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
-              {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
                 placeholder="Seleccione"
-                options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
+                options={[
+                  { key: 1, value: true, name: "Aprobado" },
+                  { key: 2, value: false, name: "No aprobado" },
+                ].map((ds) => {
                   return {
                     key: ds.key,
                     text: ds.name,
@@ -1477,9 +1894,15 @@ export function KPIsForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue(`greenhouse_gas_indicators.scope_percentage_3.isApproved`, data.value)
+                  formik.setFieldValue(
+                    `greenhouse_gas_indicators.scope_percentage_3.isApproved`,
+                    data.value
+                  )
                 }
-                value={formik.values.greenhouse_gas_indicators.scope_percentage_3.isApproved}
+                value={
+                  formik.values.greenhouse_gas_indicators.scope_percentage_3
+                    .isApproved
+                }
                 error={formik.errors.greenhouse_gas_indicators}
               />
               {/* {formik.values.greenhouse_gas_indicators.scope_percentage_2.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1490,21 +1913,20 @@ export function KPIsForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite(convertKPIsFieldsEngToEsp("scope_percentage_3"), `greenhouse_gas_indicators.scope_percentage_3}`);
+                  openUpdateSite(
+                    convertKPIsFieldsEngToEsp("scope_percentage_3"),
+                    `greenhouse_gas_indicators.scope_percentage_3}`
+                  );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertKPIsFieldsEngToEsp("scope_percentage_3"), "greenhouse_gas_indicators.scope_percentage_3");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload
+                accessToken={accessToken}
+                data={formik}
+                field={"greenhouse_gas_indicators.scope_percentage_3"}
+              />
             </Table.Cell>
-         
           </Table.Row>
         </Table.Body>
 
@@ -1686,36 +2108,188 @@ const EditableComment = ({ id, author, date, content, onSave, active }) => {
   );
 };
 
-// function ModalComments() {
-//   const [open, setOpen] = React.useState(false)
+function FileUpload(props) {
+  const { accessToken, data, field } = props;
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [message, setMessage] = useState("");
 
-//   return (
-//     <Modal
-//       basic
-//       onClose={() => setOpen(false)}
-//       onOpen={() => setOpen(true)}
-//       open={open}
-//       size='small'
-//       trigger={<Button>Basic Modal</Button>}
-//     >
-//       <Header icon>
-//         <Icon name='archive' />
-//         Archive Old Messages
-//       </Header>
-//       <ModalContent>
-//         <p>
-//           Your inbox is getting full, would you like us to enable automatic
-//           archiving of old messages?
-//         </p>
-//       </ModalContent>
-//       <ModalActions>
-//         <Button basic color='red' inverted onClick={() => setOpen(false)}>
-//           <Icon name='remove' /> No
-//         </Button>
-//         <Button color='green' inverted onClick={() => setOpen(false)}>
-//           <Icon name='checkmark' /> Yes
-//         </Button>
-//       </ModalActions>
-//     </Modal>
-//   )
-// }
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+    //'application/vnd.ms-excel', // .xls
+    //'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+  ];
+
+  const getValueByKey = (json, key) => {
+    const keys = key.split("."); // Divide la cadena en partes
+    let value = json;
+
+    // Itera sobre las claves para acceder al valor final
+    for (const parte of keys) {
+      value = value[parte]; // Accede a la propiedad correspondiente
+      if (value === undefined) {
+        return undefined; // Si alguna clave no existe, retorna undefined
+      }
+    }
+    return value;
+  };
+
+  useEffect(() => {
+    const value = getValueByKey(data.values, field);
+    if (value && value.file !== null) {
+      setFileName(value.file);
+    }
+  }, [field]);
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        console.log("Tipo de archivo no permitido. Debe ser JPG, PNG o PDF.");
+      } else {
+        setMessage(`Archivo seleccionado: ${file.name}`);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          const response = await kpisFormController.uploadFileApi(
+            accessToken,
+            formData
+          );
+          setMessage(response.msg);
+          if (response.status && response.status === 200) {
+            setFile(file);
+            setFileName(file.name);
+            data.setFieldValue(`${field}.file`, file.name);
+          }
+        } catch (error) {
+          setMessage("Error al subir el archivo");
+        }
+      }
+    }
+  };
+
+  const handleButtonClick = (event) => {
+    event.preventDefault(); // Evita que el formulario se envíe
+    const input = document.createElement("input");
+    input.type = "file";
+    input.onchange = handleFileChange;
+    input.click();
+  };
+
+  const handleRemoveFile = async () => {
+    setFile(null); // Elimina el archivo
+    setFileName(null);
+    try {
+      const response = await kpisFormController.deleteFileApi(
+        accessToken,
+        fileName
+      );
+      setMessage(response.message);
+      removeFile();
+    } catch (error) {
+      setMessage("Error al elimianr el archivo");
+    }
+  };
+
+  const removeFile = async () => {
+    data.setFieldValue(`${field}.file`, null);
+  };
+
+  return (
+    <>
+      {fileName ? (
+        <>
+          {/* <p>{file.name}</p> */}
+          <FileViewer fileName={fileName} handleRemove={handleRemoveFile} />
+        </>
+      ) : (
+        <Button icon onClick={handleButtonClick}>
+          <Icon name="paperclip" />
+        </Button>
+      )}
+    </>
+  );
+}
+
+function FileViewer(props) {
+  const { fileName, handleRemove } = props;
+  const [fileUrl, setFileUrl] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (fileName) {
+      setFileUrl(fileName); // Construye la URL del archivo
+      (async () => {
+        try {
+          const response = await kpisFormController.getFileApi(fileName);
+          setFileUrl(response); // Construye la URL del archivo
+          //setMessage(response.message);
+        } catch (error) {
+          //setMessage('Error al elimianr el archivo');
+        }
+      })();
+    }
+  }, [fileName]);
+
+  const handleOpenPreview = (event) => {
+    event.preventDefault();
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = (event) => {
+    event.preventDefault(); // Previene el comportamiento predeterminado
+    setPreviewOpen(false);
+  };
+
+  return (
+    <>
+      {/* //<Button onClick={handleOpenPreview}> {fileName}</Button> */}
+
+      <Modal
+        onClose={handleClosePreview}
+        onOpen={handleOpenPreview}
+        open={previewOpen}
+        trigger={
+          <Button primary icon>
+            <Icon name="file alternate" />
+          </Button>
+        }
+      >
+        <ModalHeader>{fileName}</ModalHeader>
+        <ModalContent>
+          {fileName &&
+            (fileName.endsWith(".jpg") ||
+              fileName.endsWith(".png") ||
+              fileName.endsWith(".jpeg")) && (
+              <Image
+                src={fileUrl}
+                alt="Vista previa"
+                style={{ maxWidth: "100%" }}
+              />
+            )}
+          {fileName && fileName.endsWith(".pdf") && (
+            <iframe
+              src={fileUrl}
+              title="Vista previa"
+              style={{ width: "100%", height: "500px" }}
+            />
+          )}
+        </ModalContent>
+        <ModalActions>
+          <Button color="red" onClick={handleRemove}>
+            <Icon disabled name="trash alternate" /> Eliminar
+          </Button>
+          <Button color="black" onClick={handleClosePreview}>
+            <Icon disabled name="close" />
+            Cerrar
+          </Button>
+        </ModalActions>
+      </Modal>
+    </>
+  );
+}

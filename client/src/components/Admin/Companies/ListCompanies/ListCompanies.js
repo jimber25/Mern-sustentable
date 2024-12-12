@@ -17,6 +17,7 @@ import { useAuth } from "../../../../hooks";
 import { CompanyItem } from "../CompanyItem";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../../pages/admin/Error";
+import { useLanguage } from "../../../../contexts";
 const _ = require("lodash");
 
 const companyController = new Company();
@@ -31,6 +32,10 @@ export function ListCompanies(props) {
     accessToken,
     user: { role },
   } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [permissionByRole, setPermissionsByRole] = useState([]);
 
@@ -72,7 +77,7 @@ export function ListCompanies(props) {
   }, [companiesActive, reload, accessToken]);
 
   if (!companies) return <Loader active inline="centered" />;
-  if (size(companies) === 0) return "No hay ninguna empresa";
+  if (size(companies) === 0) return t("not_companies");
 
   return (
     <div>
@@ -90,9 +95,9 @@ export function ListCompanies(props) {
           <Table celled>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Razon Social</Table.HeaderCell>
-                <Table.HeaderCell>Email</Table.HeaderCell>
-                <Table.HeaderCell>Acciones</Table.HeaderCell>
+                <Table.HeaderCell>{t("company_name")}</Table.HeaderCell>
+                <Table.HeaderCell>{t("email")}</Table.HeaderCell>
+                <Table.HeaderCell>{t("actions")}</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>

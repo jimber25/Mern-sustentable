@@ -23,6 +23,7 @@ import { formatDateView } from "../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/es"; //importo el lenguaje en español
+import { useLanguage } from "../../contexts";
 //import "moment/locale/en";
 //import "moment/locale/fr";
 
@@ -153,11 +154,11 @@ export default SiteSelector;
 
 function LanguageSelector(props) {
   const [listLanguages, setListLanguages] = useState([]);
-  //const { language, changeLanguage } = useLanguage();//deberia mantener el estado del idioma crear otro contexto
-  const [language, setLanguage] = useState("Español");
+  const { language, changeLanguage } = useLanguage();//deberia mantener el estado del idioma crear otro contexto
+  //const [language, setLanguage] = useState("Español");
 
   const handleChange = (event, data) => {
-    setLanguage(data.value);
+    changeLanguage(data.value);
   };
   const { accessToken } = useAuth();
 
@@ -169,7 +170,7 @@ function LanguageSelector(props) {
       // } else {
       //   setListLanguages([]);
       // }
-      setListLanguages(["Español", "Inglés", "Francés"]);
+      setListLanguages([{key:"es", value:"Español"}, {key:"en", value:"Ingles"}, {key:"fr", value:"Frances"}]);
     })();
   }, []);
 
@@ -190,9 +191,9 @@ function LanguageSelector(props) {
         }}
         search
         options={listLanguages.map((option) => ({
-          key: option,
-          text: option,
-          value: option,
+          key: option.key,
+          text: option.value,
+          value: option.key,
         }))}
         onChange={handleChange}
         value={language}

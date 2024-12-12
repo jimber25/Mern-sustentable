@@ -196,4 +196,59 @@ export class Wasteform {
       throw error;
     }
   }
+
+  async uploadFileApi(accessToken, data) {
+    const url = `${this.baseApi}/upload-file-waste/`;
+
+    const params = {
+      method: "POST",
+      body: data,
+      headers: {
+        //'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    return fetch(url, params)
+      .then((response) => {
+        return response;
+      })
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  }
+
+  async getFileApi(fileName) {
+    const url = `${this.baseApi}/get-file-waste/${fileName}`;
+    return fetch(url)
+      .then((response) => {
+        //console.log(response)
+        return response.url;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  }
+
+  async deleteFileApi(accessToken, fileName) {
+    const url = `${this.baseApi}/delete-file-waste`;
+
+    const params = {
+      method: "DELETE",
+      body: JSON.stringify({ fileName }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    return fetch(url, params)
+      .then((response) => {
+        return response.url;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  }
 }

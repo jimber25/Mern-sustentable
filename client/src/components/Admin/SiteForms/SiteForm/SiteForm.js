@@ -14,6 +14,10 @@ import {
   Segment,
   Divider,
   Header,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions
 } from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
@@ -30,7 +34,8 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import "./SiteForm.scss";
-import { convertPeriodsEngToEsp } from "../../../../utils/converts";
+import { convertPeriodsEngToEsp, convertSiteFieldsEngToEsp } from "../../../../utils/converts";
+import { siteCodes } from "../../../../utils/codes";
 
 const siteFormController = new Siteform();
 
@@ -207,6 +212,7 @@ export function SiteForm(props) {
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
+            <Table.HeaderCell width="1">Codigo</Table.HeaderCell>
             <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="3">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Estado</Table.HeaderCell>
@@ -215,8 +221,11 @@ export function SiteForm(props) {
         </Table.Header>
         <Table.Body>
           <Table.Row>
+            <Table.Cell> <label className="label">
+                {formik.values.installation_type.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">Tipo de instalacion</label>
+              <label className="label">{convertSiteFieldsEngToEsp("installation_type")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Dropdown
@@ -237,20 +246,7 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Dropdown
-                placeholder="Seleccione"
-                options={[{value:true,name:"Aprobado"}, {value:false,name:"No aprobado"}].map((ds) => {
-                  return {
-                    key: ds.value,
-                    text: ds.name,
-                    value: ds.value,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("installation_type.isApproved", data.value)
-                }
-              /> */}
+
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -275,25 +271,21 @@ export function SiteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("tipo de instalacion", "installation_type");
+                  openUpdateSite(convertSiteFieldsEngToEsp("installation_type"), "installation_type");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite("tipo de instalacion", "installation_type");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"installation_type"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.product_category.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">Categoria de productos</label>
+              <label className="label">{convertSiteFieldsEngToEsp("product_category")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Dropdown
@@ -314,18 +306,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.product_category.isApproved}
-                label={
-                  formik.values.product_category.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("product_category.isApproved", checked);
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -350,24 +330,21 @@ export function SiteForm(props) {
                 primary
                 type="button"
                 onClick={() => {
-                  openUpdateSite("Categoria de productos", "product_category");
+                  openUpdateSite(convertSiteFieldsEngToEsp("product_category"), "product_category");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos", "product_category");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"product_category"}/>
             </Table.Cell>
           </Table.Row>
+
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.days_month.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">Dias trabajados en el mes</label>
+              <label className="label">{convertSiteFieldsEngToEsp("days_month")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -379,32 +356,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.days_month.isApproved}
-                label={
-                  formik.values.days_month.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("days_month.isApproved", checked);
-                }}
-              /> */}
-              {/* <Form.Dropdown
-                placeholder="Seleccione"
-                options={["Aprobado", "No aprobado"].map((ds) => {
-                  return {
-                    key: ds,
-                    text: ds,
-                    value: ds,
-                  };
-                })}
-                selection
-                onChange={(_, data) =>
-                  formik.setFieldValue("days_month.isApproved", data.value)
-                }
-                value={formik.values.days_month.isApproved}
-                error={formik.errors.days_month}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -429,25 +380,21 @@ export function SiteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Dias trabajados en el mes", "days_month");
+                  openUpdateSite(convertSiteFieldsEngToEsp("days_month"), "days_month");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"days_month"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.days_total.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">Dias totales trabajados</label>
+              <label className="label">{convertSiteFieldsEngToEsp("days_total")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -459,16 +406,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.days_total.isApproved}
-                label={
-                  formik.values.days_total.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("days_total.isApproved", checked);
-                }}
-              /> */}
                  <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -498,20 +435,16 @@ export function SiteForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"days_total"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.hours_month.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">Horas trabajadas en el mes</label>
+              <label className="label">{convertSiteFieldsEngToEsp("hours_month")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -523,16 +456,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.hours_month.isApproved}
-                label={
-                  formik.values.hours_month.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("hours_month.isApproved", checked);
-                }}
-              /> */}
                      <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -557,25 +480,21 @@ export function SiteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Horas trabajadas en el mes", "hours_month");
+                  openUpdateSite(convertSiteFieldsEngToEsp("hours_month"), "hours_month");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"hours_month"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.hours_total.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">Horas totales trabajadas</label>
+              <label className="label">{convertSiteFieldsEngToEsp("hours_total")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -588,16 +507,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.hours_total.isApproved}
-                label={
-                  formik.values.hours_total.isApproved ? "Aprobado" : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue("hours_total.isApproved", checked);
-                }}
-              /> */}
                          <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -622,26 +531,22 @@ export function SiteForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Horas totales trabajadas", "hours_total");
+                  openUpdateSite( convertSiteFieldsEngToEsp("hours_total"), "hours_total");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"hours_total"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.temporary_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadores temporales
+              {convertSiteFieldsEngToEsp("temporary_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -691,28 +596,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadores temporales",
+                    convertSiteFieldsEngToEsp("temporary_workers"),
                     "temporary_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"temporary_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.permanent_production_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadores de produccion permanentes
+                {convertSiteFieldsEngToEsp("permanent_production_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -725,21 +626,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.permanent_production_workers.isApproved}
-                label={
-                  formik.values.permanent_production_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "permanent_production_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                                <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -765,25 +651,21 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadores de produccion permanentes",
+                    convertSiteFieldsEngToEsp("permanent_production_workers"),
                     "permanent_production_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"permanent_production_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.permanent_administrative_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
                 Cantidad de trabajadores administrativos permanentes
@@ -799,23 +681,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.permanent_administrative_workers.isApproved
-                }
-                label={
-                  formik.values.permanent_administrative_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "permanent_administrative_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -848,21 +713,17 @@ export function SiteForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"permanent_administrative_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.female_production_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadoras de produccion femeninas
+                {convertSiteFieldsEngToEsp("female_production_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -875,21 +736,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.female_production_workers.isApproved}
-                label={
-                  formik.values.female_production_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "female_production_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                                  <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -915,28 +761,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadoras de produccion femeninas",
+                    convertSiteFieldsEngToEsp("female_production_workers"),
                     "female_production_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"female_production_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.male_production_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadores de produccion masculinos
+                {convertSiteFieldsEngToEsp("male_production_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -949,21 +791,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.male_production_workers.isApproved}
-                label={
-                  formik.values.male_production_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "male_production_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                                     <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -989,28 +816,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadores de produccion masculinos",
+                    convertSiteFieldsEngToEsp("male_production_workers"),
                     "male_production_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"male_production_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.female_administrative_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadoras administrativas femeninas
+                {convertSiteFieldsEngToEsp("female_administrative_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1023,21 +846,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.female_administrative_workers.isApproved}
-                label={
-                  formik.values.female_administrative_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "female_administrative_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                                         <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1063,28 +871,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadoras administrativas femeninas",
+                    convertSiteFieldsEngToEsp("female_administrative_workers"),
                     "female_administrative_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"female_administrative_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.male_administrative_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadores administrativos masculinos
+                {convertSiteFieldsEngToEsp("male_administrative_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1097,21 +901,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.male_administrative_workers.isApproved}
-                label={
-                  formik.values.male_administrative_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "male_administrative_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                                           <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1137,28 +926,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadores administrativos masculinos",
+                    convertSiteFieldsEngToEsp("male_administrative_workers"),
                     "male_administrative_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"male_administrative_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.female_workers_leadership_positions.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadoras femeninas en posiciones de liderazgo
+              {convertSiteFieldsEngToEsp("female_workers_leadership_positions")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1171,23 +956,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.female_workers_leadership_positions.isApproved
-                }
-                label={
-                  formik.values.female_workers_leadership_positions.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "female_workers_leadership_positions.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                                        <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1213,28 +981,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadoras femeninas en posiciones de liderazgo",
+                    convertSiteFieldsEngToEsp("female_workers_leadership_positions"),
                     "female_workers_leadership_positions"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"female_workers_leadership_positions"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.male_workers_leadership_positions.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad de trabajadores masculinos en posiciones de liderazgo
+                {convertSiteFieldsEngToEsp("male_workers_leadership_positions")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1247,23 +1011,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.male_workers_leadership_positions.isApproved
-                }
-                label={
-                  formik.values.male_workers_leadership_positions.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "male_workers_leadership_positions.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1289,28 +1036,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad de trabajadores masculinos en posiciones de liderazgo",
+                    convertSiteFieldsEngToEsp("male_workers_leadership_positions"),
                     "male_workers_leadership_positions"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"male_workers_leadership_positions"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.average_total_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Cantidad promedio de trabajadores totales
+                {convertSiteFieldsEngToEsp("average_total_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1323,21 +1066,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.average_total_workers.isApproved}
-                label={
-                  formik.values.average_total_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "average_total_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1363,28 +1091,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Cantidad promedio de trabajadores totales",
+                    convertSiteFieldsEngToEsp("average_total_workers"),
                     "average_total_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"average_total_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.average_female_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Promedio de trabajadoras femeninas
+                {convertSiteFieldsEngToEsp("average_female_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1397,21 +1121,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.average_female_workers.isApproved}
-                label={
-                  formik.values.average_female_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "average_female_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1437,28 +1146,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Promedio de trabajadoras femeninas",
+                    convertSiteFieldsEngToEsp("average_female_workers"),
                     "average_female_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"average_female_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.average_male_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Promedio de trabajadores masculinos
+                {convertSiteFieldsEngToEsp("average_male_workers")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1471,21 +1176,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.average_male_workers.isApproved}
-                label={
-                  formik.values.average_male_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "average_male_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                      <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1511,27 +1201,23 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Promedio de trabajadores masculinos",
+                    convertSiteFieldsEngToEsp("average_male_workers"),
                     "average_male_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"average_male_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.percentage_female_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">% de trabajadoras femeninas</label>
+              <label className="label">{convertSiteFieldsEngToEsp("percentage_female_workers")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1543,21 +1229,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_female_workers.isApproved}
-                label={
-                  formik.values.percentage_female_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_female_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
               <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1583,53 +1254,34 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "% de trabajadoras femeninas",
+                    convertSiteFieldsEngToEsp("percentage_female_workers"),
                     "percentage_female_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_female_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.percentage_male_workers.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">% de trabajadores masculinos</label>
+              <label className="label"> {convertSiteFieldsEngToEsp("percentage_male_workers")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
                 type="number"
-                name="percentage_female_workers.value"
+                name="percentage_male_workers.value"
                 onChange={formik.handleChange}
                 value={formik.values.percentage_male_workers.value}
                 error={formik.errors.percentage_male_workers}
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_male_workers.isApproved}
-                label={
-                  formik.values.percentage_male_workers.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_male_workers.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1655,27 +1307,23 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "% de trabajadores masculinos",
+                    convertSiteFieldsEngToEsp("percentage_male_workers"),
                     "percentage_male_workers"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_male_workers"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.percentage_total_female.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">% de mujeres totales</label>
+              <label className="label">{convertSiteFieldsEngToEsp("percentage_total_female")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1687,21 +1335,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_total_female.isApproved}
-                label={
-                  formik.values.percentage_total_female.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_total_female.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1727,27 +1360,23 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "% de mujeres totales",
+                    convertSiteFieldsEngToEsp("percentage_total_female"),
                     "percentage_total_female"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_total_female"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.percentage_total_male.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
-              <label className="label">% de hombres totales</label>
+              <label className="label">{convertSiteFieldsEngToEsp("percentage_total_male")}</label>
             </Table.Cell>
             <Table.Cell>
               <Form.Input
@@ -1759,21 +1388,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.percentage_total_male.isApproved}
-                label={
-                  formik.values.percentage_total_male.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_total_male.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                     <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1799,28 +1413,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "% de hombres totales",
+                    convertSiteFieldsEngToEsp("percentage_total_male"),
                     "percentage_total_male"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_total_male"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.percentage_female_leadership_positions.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                % de femeninas en posicion de liderazgo
+                {convertSiteFieldsEngToEsp("percentage_female_leadership_positions")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1835,25 +1445,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.percentage_female_leadership_positions
-                    .isApproved
-                }
-                label={
-                  formik.values.percentage_female_leadership_positions
-                    .isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_female_leadership_positions.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                          <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1879,25 +1470,21 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "% de femeninas en posicion de liderazgo",
+                    convertSiteFieldsEngToEsp("percentage_female_leadership_positions"),
                     "percentage_female_leadership_positions"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_female_leadership_positions"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.percentage_male_leadership_positions.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
                 % de masculinos en posicion de liderazgo
@@ -1913,23 +1500,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={
-                  formik.values.percentage_male_leadership_positions.isApproved
-                }
-                label={
-                  formik.values.percentage_male_leadership_positions.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "percentage_male_leadership_positions.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                              <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -1962,21 +1532,17 @@ export function SiteForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"percentage_male_leadership_positions"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.work_accidents_with_sick_days.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Accidentes de trabajo con dias de baja (+ de uno)
+              {convertSiteFieldsEngToEsp("work_accidents_with_sick_days")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -1989,21 +1555,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.work_accidents_with_sick_days.isApproved}
-                label={
-                  formik.values.work_accidents_with_sick_days.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "work_accidents_with_sick_days.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                             <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -2029,28 +1580,24 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Accidentes de trabajo con dias de baja (+ de uno)",
+                    convertSiteFieldsEngToEsp("work_accidents_with_sick_days"),
                     "work_accidents_with_sick_days"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"work_accidents_with_sick_days"}/>
             </Table.Cell>
           </Table.Row>
 
           <Table.Row>
+          <Table.Cell> <label className="label">
+                {formik.values.first_aid_without_sick_days.code}{" "}
+              </label></Table.Cell>
             <Table.Cell>
               <label className="label">
-                Primeros auxilios sin dias de baja (continua trabajando)
+              {convertSiteFieldsEngToEsp("first_aid_without_sick_days")}
               </label>
             </Table.Cell>
             <Table.Cell>
@@ -2063,21 +1610,6 @@ export function SiteForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Checkbox
-                toggle
-                checked={formik.values.first_aid_without_sick_days.isApproved}
-                label={
-                  formik.values.first_aid_without_sick_days.isApproved
-                    ? "Aprobado"
-                    : "Aprobado"
-                }
-                onChange={(e, { checked }) => {
-                  formik.setFieldValue(
-                    "first_aid_without_sick_days.isApproved",
-                    checked
-                  );
-                }}
-              /> */}
                         <Form.Dropdown
                 placeholder="Seleccione"
                 options={[{key:1, value:true,name:"Aprobado"}, {key:2 , value:false,name:"No aprobado"}].map((ds) => {
@@ -2103,21 +1635,14 @@ export function SiteForm(props) {
                 primary
                 onClick={() => {
                   openUpdateSite(
-                    "Primeros auxilios sin dias de baja (continua trabajando)",
+                    convertSiteFieldsEngToEsp("first_aid_without_sick_days"),
                     "first_aid_without_sick_days"
                   );
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"first_aid_without_sick_days"}/>
             </Table.Cell>
           </Table.Row>
         </Table.Body>
@@ -2301,36 +1826,150 @@ const EditableComment = ({ id, author, date, content, onSave, active }) => {
   );
 };
 
-// function ModalComments() {
-//   const [open, setOpen] = React.useState(false)
+function FileUpload (props) {
+  const {accessToken, data, field}=props;
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [message, setMessage] = useState('');
 
-//   return (
-//     <Modal
-//       basic
-//       onClose={() => setOpen(false)}
-//       onOpen={() => setOpen(true)}
-//       open={open}
-//       size='small'
-//       trigger={<Button>Basic Modal</Button>}
-//     >
-//       <Header icon>
-//         <Icon name='archive' />
-//         Archive Old Messages
-//       </Header>
-//       <ModalContent>
-//         <p>
-//           Your inbox is getting full, would you like us to enable automatic
-//           archiving of old messages?
-//         </p>
-//       </ModalContent>
-//       <ModalActions>
-//         <Button basic color='red' inverted onClick={() => setOpen(false)}>
-//           <Icon name='remove' /> No
-//         </Button>
-//         <Button color='green' inverted onClick={() => setOpen(false)}>
-//           <Icon name='checkmark' /> Yes
-//         </Button>
-//       </ModalActions>
-//     </Modal>
-//   )
-// }
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf',  
+    //'application/vnd.ms-excel', // .xls
+    //'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+    ];
+
+  useEffect(() => {
+    if (data.values[field] && data.values[field].file!==null) {
+     setFileName(data.values[field].file);
+    }
+  }, [field]);
+
+   const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        console.log('Tipo de archivo no permitido. Debe ser JPG, PNG o PDF.');
+      } else {
+      setMessage(`Archivo seleccionado: ${file.name}`);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await siteFormController.uploadFileApi(accessToken,formData);
+        setMessage(response.msg);
+        if(response.status && response.status===200){
+          setFile(file);
+          setFileName(file.name);
+          data.setFieldValue(`${field}.file`, file.name)
+        }
+      } catch (error) {
+        setMessage('Error al subir el archivo');
+      }
+    }
+    }
+  };
+
+  const handleButtonClick = (event) => {
+    event.preventDefault(); // Evita que el formulario se envíe
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = handleFileChange;
+    input.click();
+  };
+
+  const handleRemoveFile = async () => {
+    setFile(null); // Elimina el archivo
+    setFileName(null);
+    try {
+      const response = await siteFormController.deleteFileApi(accessToken,fileName);
+      setMessage(response.message);
+      removeFile();
+    } catch (error) {
+      setMessage('Error al elimianr el archivo');
+    }
+  };
+
+  const removeFile = async () => {
+    data.setFieldValue(`${field}.file`, null)
+  };
+
+  return (
+    <>
+     
+      {fileName? (
+        <>
+          {/* <p>{file.name}</p> */}
+          <FileViewer fileName={fileName} handleRemove={handleRemoveFile}/>
+        </>
+      ):  <Button icon onClick={handleButtonClick}>
+                   <Icon name="paperclip" />
+    </Button>}
+    </>
+  );
+
+};
+
+function FileViewer (props){
+  const {fileName, handleRemove}=props;
+  const [fileUrl, setFileUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (fileName) {
+      setFileUrl(fileName); // Construye la URL del archivo
+      (async () => {
+        try {
+          const response = await siteFormController.getFileApi(fileName);
+          setFileUrl(response); // Construye la URL del archivo
+          //setMessage(response.message);
+        } catch (error) {
+          //setMessage('Error al elimianr el archivo');
+        }
+          })();
+    
+    }
+  }, [fileName]);
+
+  const handleOpenPreview = (event) => {
+    event.preventDefault(); 
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = (event) => {
+    event.preventDefault(); // Previene el comportamiento predeterminado
+    setPreviewOpen(false);
+  };
+  console.log(fileUrl)
+
+  return (
+    <>
+      {/* //<Button onClick={handleOpenPreview}> {fileName}</Button> */}
+       
+    <Modal
+      onClose={ handleClosePreview}
+      onOpen={handleOpenPreview}
+      open={previewOpen}
+      trigger={<Button primary icon><Icon name="file alternate"/></Button>}
+    >
+      <ModalHeader>{fileName}</ModalHeader>
+      <ModalContent>
+        {fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg')) && (
+            <Image src={fileUrl} alt="Vista previa" style={{ maxWidth: '100%' }} />
+          )}
+          {fileName && fileName.endsWith('.pdf') && (
+            <iframe src={fileUrl} title="Vista previa" style={{ width: '100%', height: '500px' }} />
+          )}
+      </ModalContent>
+      <ModalActions>
+      <Button color="red" onClick={handleRemove}>
+          <Icon disabled name='trash alternate' /> Eliminar
+          </Button>
+        <Button color='black' onClick={handleClosePreview}>
+        <Icon disabled name='close' />Cerrar
+        </Button>
+      </ModalActions>
+    </Modal>
+    </>
+  );
+};

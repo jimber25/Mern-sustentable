@@ -66,6 +66,7 @@ export function EnergyForms() {
   const handleSelected = (idSite) => {
     setSiteSelected(idSite._id);
   };
+  console.log(siteSelected)
 
   const panes = [
     {
@@ -102,7 +103,7 @@ export function EnergyForms() {
       <div className="energy-forms-page">
       <Segment textAlign="center">
           {" "}
-          <Header as="h">ENERGIA</Header>
+          <Header as="h1">ENERGIA</Header>
         </Segment>
         <div className="energy-forms-page__add">
           {siteSelected !== null || site ? (

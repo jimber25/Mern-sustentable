@@ -26,7 +26,7 @@ export function Reports() {
     <>
        <Segment textAlign="center">
           {" "}
-          <Header as="h">REPORTES</Header>
+          <Header as="h1">REPORTES</Header>
         </Segment>
     <ViewReports/>
       {/* <div className="blog-page">

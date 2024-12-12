@@ -14,7 +14,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     cost_of_water_from_the_municipal_network: form?.cost_of_water_from_the_municipal_network || {
       code:waterCodes["cost_of_water_from_the_municipal_network"],
@@ -22,7 +22,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     rainwater_harvesting:form?.rainwater_harvesting || {
       code:waterCodes["rainwater_harvesting"],
@@ -30,7 +30,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     groundwater:form?.groundwater || {
       code:waterCodes["groundwater"],
@@ -38,7 +38,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     surface_water:form?.surface_water || {
       code:waterCodes["surface_water"],
@@ -46,7 +46,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     percentage_surface_water:form?.percentage_surface_water || {
       code:waterCodes["percentage_surface_water"],
@@ -54,7 +54,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     percentage_network_water:form?.percentage_network_water || {
       code:waterCodes["percentage_network_water"],
@@ -62,7 +62,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     percentage_groundwater:form?.percentage_groundwater || {
       code:waterCodes["percentage_groundwater"],
@@ -70,7 +70,7 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
     total_water_consumed_per_unit_produced:form?.total_water_consumed_per_unit_produced || {
       code:waterCodes["total_water_consumed_per_unit_produced"],
@@ -78,18 +78,13 @@ export function initialValues(form, period, year) {
       value:"",
       reviews:[
       ],
-      isApproved:false
+        isApproved:false, file:null
     },
   };
 }
 
 export function validationSchema() {
-  // return Yup.object({
-  //   date: Yup.string().required(true),
-  //   creator_user: Yup.string().required(true),
-  //   state: Yup.string().required(true),
-  //   installation_type: Yup.object({
-  //     value: Yup.string().required(),
-  //   }),
-  // });
+  return Yup.object({
+    period: Yup.string("Dato requerido").required("El campo periodo es obligatorio"),
+  });
 }

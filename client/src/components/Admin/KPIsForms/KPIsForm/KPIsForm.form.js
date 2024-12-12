@@ -2,161 +2,160 @@ import * as Yup from "yup";
 import { kpisCodes } from "../../../../utils/codes";
 
 const currentYear = new Date().getFullYear();
-const valueMhW="MhW";
-const valuePercentage="%";
-const valueGEI="GEI";
-
+const valueMhW = "MhW";
+const valuePercentage = "%";
+const valueGEI = "GEI";
 
 export function initialValues(form, period, year) {
   return {
     date: form?.date || "",
     period: form?.period || period,
-    year:form?.year || year,
+    year: form?.year || year,
     creator_user: form?.creator_user || "",
     state: form?.state || "",
-    energy_indicators:form?.energy_indicators || {
+    energy_indicators: form?.energy_indicators || {
       total_fuel_energy_consumption: form?.total_fuel_energy_consumption || {
-        code:kpisCodes["total_fuel_energy_consumption"],
-        unit:valueMhW,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+        code: kpisCodes["total_fuel_energy_consumption"],
+        unit: valueMhW,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      total_electrical_energy_consumption: form?.total_electrical_energy_consumption || {
-        code:kpisCodes["total_electrical_energy_consumption"],
-        unit:valueMhW,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      total_electrical_energy_consumption:
+        form?.total_electrical_energy_consumption || {
+          code: kpisCodes["total_electrical_energy_consumption"],
+          unit: valueMhW,
+          value: 0,
+          reviews: [],
+          isApproved: false,
+          file: null,
+        },
+      total_energy_consumption: form?.total_energy_consumption || {
+        code: kpisCodes["total_energy_consumption"],
+        unit: valueMhW,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      total_energy_consumption:form?.total_energy_consumption || {
-        code:kpisCodes["total_energy_consumption"],
-        unit:valueMhW,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      total_renewable_energy: form?.total_renewable_energy || {
+        code: kpisCodes["total_renewable_energy"],
+        unit: valueMhW,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      total_renewable_energy:form?.total_renewable_energy || {
-        code:kpisCodes["total_renewable_energy"],
-        unit:valueMhW,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      percentage_of_renewable_energy: form?.percentage_of_renewable_energy || {
+        code: kpisCodes["percentage_of_renewable_energy"],
+        unit: valuePercentage,
+        value: "",
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      percentage_of_renewable_energy:form?.percentage_of_renewable_energy || {
-        code:kpisCodes["percentage_of_renewable_energy"],
-        unit:valuePercentage,
-        value:"",
-        reviews:[
-        ],
-        isApproved:false
-      },
-      percentage_energy_from_fossil_fuels:form?.percentage_energy_from_fossil_fuels || {
-        code:kpisCodes["percentage_energy_from_fossil_fuels"],
-        unit:"",
-        value:"",
-        reviews:[
-        ],
-        isApproved:false
-      },
-      total_energy_consumed_per_productive_unit:form?.total_energy_consumed_per_productive_unit || {
-        code:kpisCodes["total_energy_consumed_per_productive_unit"],
-        unit:"kWh",
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
-      },
-      total_cost_of_energy_consumed:form?.total_cost_of_energy_consumed || {
-        code:kpisCodes["total_cost_of_energy_consumed"],
-        unit:"",
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      percentage_energy_from_fossil_fuels:
+        form?.percentage_energy_from_fossil_fuels || {
+          code: kpisCodes["percentage_energy_from_fossil_fuels"],
+          unit: "",
+          value: "",
+          reviews: [],
+          isApproved: false,
+          file: null,
+        },
+      total_energy_consumed_per_productive_unit:
+        form?.total_energy_consumed_per_productive_unit || {
+          code: kpisCodes["total_energy_consumed_per_productive_unit"],
+          unit: "kWh",
+          value: 0,
+          reviews: [],
+          isApproved: false,
+          file: null,
+        },
+      total_cost_of_energy_consumed: form?.total_cost_of_energy_consumed || {
+        code: kpisCodes["total_cost_of_energy_consumed"],
+        unit: "",
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
     },
-    greenhouse_gas_indicators:form?.greenhouse_gas_indicators || {
+    greenhouse_gas_indicators: form?.greenhouse_gas_indicators || {
       total_scope_1: form?.total_scope_1 || {
-        code:kpisCodes["total_fuel_entotal_scope_1ergy_consumption"],
-        unit:valueGEI,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+        code: kpisCodes["total_fuel_entotal_scope_1ergy_consumption"],
+        unit: valueGEI,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
       total_scope_2: form?.total_scope_2 || {
-        code:kpisCodes["total_scope_2"],
-        unit:valueGEI,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+        code: kpisCodes["total_scope_2"],
+        unit: valueGEI,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      total_scope_3:form?.total_scope_3 || {
-        code:kpisCodes["total_scope_3"],
-        unit:valueGEI,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      total_scope_3: form?.total_scope_3 || {
+        code: kpisCodes["total_scope_3"],
+        unit: valueGEI,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      total_emissions_per_unit_produced:form?.total_emissions_per_unit_produced || {
-        code:kpisCodes["total_emissions_per_unit_produced"],
-        unit:valueGEI,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      total_emissions_per_unit_produced:
+        form?.total_emissions_per_unit_produced || {
+          code: kpisCodes["total_emissions_per_unit_produced"],
+          unit: valueGEI,
+          value: 0,
+          reviews: [],
+          isApproved: false,
+          file: null,
+        },
+      total_emissions: form?.total_emissions || {
+        code: kpisCodes["total_emissions"],
+        unit: valueGEI,
+        value: "",
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      total_emissions:form?.total_emissions || {
-        code:kpisCodes["total_emissions"],
-        unit:valueGEI,
-        value:"",
-        reviews:[
-        ],
-        isApproved:false
+      scope_percentage_1: form?.scope_percentage_1 || {
+        code: kpisCodes["scope_percentage_1"],
+        unit: valuePercentage,
+        value: "",
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      scope_percentage_1:form?.scope_percentage_1 || {
-        code:kpisCodes["scope_percentage_1"],
-        unit:valuePercentage,
-        value:"",
-        reviews:[
-        ],
-        isApproved:false
+      scope_percentage_2: form?.scope_percentage_2 || {
+        code: kpisCodes["scope_percentage_2"],
+        unit: valuePercentage,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
-      scope_percentage_2:form?.scope_percentage_2 || {
-        code:kpisCodes["scope_percentage_2"],
-        unit:valuePercentage,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
-      },
-      scope_percentage_3:form?.scope_percentage_3 || {
-        code:kpisCodes["scope_percentage_3"],
-        unit:valuePercentage,
-        value:0,
-        reviews:[
-        ],
-        isApproved:false
+      scope_percentage_3: form?.scope_percentage_3 || {
+        code: kpisCodes["scope_percentage_3"],
+        unit: valuePercentage,
+        value: 0,
+        reviews: [],
+        isApproved: false,
+        file: null,
       },
     },
-    
   };
 }
 
 export function validationSchema() {
-  // return Yup.object({
-  //   date: Yup.string().required(true),
-  //   creator_user: Yup.string().required(true),
-  //   state: Yup.string().required(true),
-  //   installation_type: Yup.object({
-  //     value: Yup.string().required(),
-  //   }),
-  // });
+  return Yup.object({
+    period: Yup.string("Dato requerido").required(
+      "El campo periodo es obligatorio"
+    ),
+  });
 }

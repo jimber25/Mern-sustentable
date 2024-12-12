@@ -23,6 +23,7 @@ import {
   isMaster,
 } from "../../../../utils/checkPermission";
 import "./PermissionItem.scss";
+import { useLanguage } from "../../../../contexts";
 
 const permissionController = new Permission();
 const roleController = new Role();
@@ -33,6 +34,10 @@ export function PermissionItem(props) {
     accessToken,
     user: { role },
   } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
 
@@ -66,7 +71,7 @@ export function PermissionItem(props) {
   }, [role]);
 
   const openUpdateUser = () => {
-    setTitleModal(`Actualizar Permiso: ${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}`);
+    setTitleModal(`${t("update")}: ${t(permission.role.name.toLowerCase())} / ${t(permission.module)} / ${t(permission.action)}`);
     onOpenCloseModal();
   };
 
@@ -74,8 +79,8 @@ export function PermissionItem(props) {
     setIsDelete(false);
     setConfirmMessage(
       permission.active
-        ? `¿Está seguro que desea desactivar el permiso "${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}"?`
-        : `¿Está seguro que desea activar el permiso "${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}"?`
+        ? `¿${t("question_inactive")} "${t(permission.role.name.toLowerCase())} / ${t(permission.module)} / ${t(permission.action)}"?`
+        : `¿${t("question_active")} "${t(permission.role.name.toLowerCase())} / ${t(permission.module)} / ${t(permission.action)}"?`
     );
     onOpenCloseConfirm();
   };
@@ -94,7 +99,7 @@ export function PermissionItem(props) {
 
   const openDeleteConfirm = () => {
     setIsDelete(true);
-    setConfirmMessage(`¿Está seguro que desea eliminar el permiso "${permission.role.name} / ${convertModulesEngToEsp(permission.module)} / ${convertActionsEngToEsp(permission.action)}"?`);
+    setConfirmMessage(`¿Está seguro que desea eliminar el permiso "${permission.role.name} / ${t(permission.module)} / ${t(permission.action)}"?`);
     onOpenCloseConfirm();
   };
 
@@ -116,11 +121,11 @@ export function PermissionItem(props) {
         </Table.Cell>
         <Table.Cell>
           {permission.role && permission.role.name
-            ? permission.role.name
+            ? t(permission.role.name.toLowerCase())
             : null}
         </Table.Cell>
-        <Table.Cell>{convertModulesEngToEsp(permission.module)}</Table.Cell>
-        <Table.Cell>{convertActionsEngToEsp(permission.action)}</Table.Cell>
+        <Table.Cell>{t(permission.module)}</Table.Cell>
+        <Table.Cell>{t(permission.action)}</Table.Cell>
         <Table.Cell>
           {isMaster(role) ||
           isAdmin(role) ||
@@ -169,8 +174,8 @@ export function PermissionItem(props) {
         onConfirm={isDelete ? onDelete : onActivateDesactivate}
         content={confirmMessage}
         size="tiny"
-        cancelButton='Cancelar'
-        confirmButton="Aceptar"
+        cancelButton={t("cancel")}
+        confirmButton={t("accept")}
       />
     </>
   );

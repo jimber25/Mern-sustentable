@@ -30,6 +30,7 @@ import {
 } from "../../../../utils/converts";
 import { MODULES } from "../../../../utils/constants";
 import "./PermissionsRole.scss";
+import { useLanguage } from "../../../../contexts";
 
 const permissionController = new Permission();
 const roleController = new Role();
@@ -37,6 +38,10 @@ const roleController = new Role();
 export function PermissionsRole(props) {
   const { role, onReload } = props;
   const { accessToken } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [listPermissions, setListPermissions] = useState([]);
   const [listPermissionsFilter, setListPermissionsFilter] = useState([]);
@@ -78,7 +83,7 @@ export function PermissionsRole(props) {
   const onOpenCloseConfirm = () => setShowConfirm((prevState) => !prevState);
 
   const openUpdatePermission = (permission) => {
-    setTitleModal(`Actualizar ${permission.action}`);
+    setTitleModal(`${t("update")} ${permission.action}`);
     onOpenCloseModal();
   };
 
@@ -86,8 +91,8 @@ export function PermissionsRole(props) {
     setIsDelete(false);
     setConfirmMessage(
       permission.active
-        ? `Desactivar permiso ${permission.action}`
-        : `Activar permiso ${permission.action}`
+        ? `${"deactivate"} ${permission.action}`
+        : `${"activate"} ${permission.action}`
     );
     onOpenCloseConfirm();
   };
@@ -121,7 +126,7 @@ export function PermissionsRole(props) {
 
   const openDeleteConfirm = (permission) => {
     setIsDelete(true);
-    setConfirmMessage(`Eliminar el permiso ${permission.action}`);
+    setConfirmMessage(`${t("delete")} ${permission.action}`);
     onOpenCloseConfirm();
   };
 
@@ -142,15 +147,15 @@ export function PermissionsRole(props) {
           <div className="permissions-role-item__info">
             <div>
               <Divider horizontal>
-                <Header as="h4">Módulo</Header>
+                <Header as="h4">{t("module")}</Header>
               </Divider>
               <Dropdown
-                label="Modulo"
+                label={t("module")}
                 // placeholder="Selecciona un modulo"
                 options={MODULES.map((ds) => {
                   return {
                     key: ds,
-                    text: convertModulesEngToEsp(ds),
+                    text: t(ds),
                     value: ds,
                   };
                 })}
@@ -165,7 +170,7 @@ export function PermissionsRole(props) {
               <Divider horizontal>
                 <Header as="h4">
                   {/* <Icon name='tag' /> */}
-                  Permisos
+                  {t("permissions")}
                 </Header>
               </Divider>
                 {listPermissionsFilter.map((permission, index) => {
@@ -177,13 +182,13 @@ export function PermissionsRole(props) {
                             <Icon name={actionIcon(permission.action)} />
                           </GridColumn>
                           <GridColumn width={5}>
-                            {convertActionsEngToEsp(permission.action)}
+                            {t(permission.action)}
                           </GridColumn>
                           <GridColumn width={3}>
                             <Checkbox
                               toggle
                               checked={permission.active}
-                              label={permission.active? 'Habilitado' : "deshabilitado"}
+                              label={permission.active? t("enabled") : t("disabled")}
                               onChange={(e, { checked }) => {
                                 setActivateDesactivate(checked, index);
                               }}
@@ -233,7 +238,7 @@ export function PermissionsRole(props) {
         </div>
 
         <div>
-          <FormButton type="submit" primary content={"Guardar"} />
+          <FormButton type="submit" primary content={t("save")} />
         </div>
 
         <Confirm

@@ -16,53 +16,54 @@ export function initialValues(effluent, period, year) {
       value:0,
       reviews:[
       ],
-      isApproved:false
+      isApproved:false,
+      file:null
     },
     total_industrial_effluents: effluent?.total_industrial_effluents || {
       code:effluentCodes["total_industrial_effluents"],
       value:0,
       reviews:[
       ],
-      isApproved:false
+      isApproved:false,
+      file:null
     },
     sludge_mud_sent_for_disposal_landfill:effluent?.sludge_mud_sent_for_disposal_landfill || {
       code:effluentCodes["sludge_mud_sent_for_disposal_landfill"],
       value:0,
       reviews:[
       ],
-      isApproved:false
+      isApproved:false,
+      file:null
     },
     total_effluents_per_unit_produced:effluent?.total_effluents_per_unit_produced || {
       code:effluentCodes["total_effluents_per_unit_produced"],
       value:0,
       reviews:[
       ],
-      isApproved:false
+      isApproved:false,
+      file:null
     },
     percentage_domestic_effluents:effluent?.percentage_domestic_effluents || {
       code:effluentCodes["percentage_domestic_effluents"],
       value:"",
       reviews:[
       ],
-      isApproved:false
+      isApproved:false,
+      file:null
     },
     percentage_industrial_effluents:effluent?.percentage_industrial_effluents || {
       code:effluentCodes["percentage_industrial_effluents"],
       value:"",
       reviews:[
       ],
-      isApproved:false
+      isApproved:false,
+      file:null
     }
   };
 }
 
 export function validationSchema() {
-  // return Yup.object({
-  //   date: Yup.string().required(true),
-  //   creator_user: Yup.string().required(true),
-  //   state: Yup.string().required(true),
-  //   installation_type: Yup.object({
-  //     value: Yup.string().required(),
-  //   }),
-  // });
+  return Yup.object({
+    period: Yup.string("Dato requerido").required("El campo periodo es obligatorio"),
+  });
 }

@@ -97,7 +97,7 @@ export function ProductionForms() {
       <div className="production-forms-page">
         <Segment textAlign="center">
           {" "}
-          <Header as="h">PRODUCCION</Header>
+          <Header as="h1">PRODUCCION</Header>
         </Segment>
         <div className="production-forms-page__add">
           {siteSelected !== null || site ? (

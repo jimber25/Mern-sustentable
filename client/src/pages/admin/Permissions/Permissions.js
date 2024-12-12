@@ -7,6 +7,7 @@ import { Permission } from "../../../api";
 import { hasPermission , isAdmin, isMaster} from "../../../utils/checkPermission";
 import { ErrorAccessDenied } from "../../../pages/admin/Error";
 import "./Permissions.scss";
+import { useLanguage } from "../../../contexts";
 
 const permissionController = new Permission();
 
@@ -17,6 +18,10 @@ export function Permissions() {
     user: { role },
     accessToken
   } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [permissionsByRole, setPermissionsByRole]=useState([]);
 
@@ -40,7 +45,7 @@ export function Permissions() {
 
   const panes = [
     {
-      menuItem: "Por Roles",
+      menuItem: t("by_roles"),
       render: () => (
         <Tab.Pane attached={false}>
           <ListPermissions isByRoles={true} permissionsActive={true} reload={reload} onReload={onReload} />
@@ -48,7 +53,7 @@ export function Permissions() {
       ),
     },
     {
-      menuItem: "Por Permisos",
+      menuItem: t("by_permissions"),
       render: () => (
         <Tab.Pane attached={false}>
           <ListPermissions isByRoles={false} permissionsActive={false} reload={reload} onReload={onReload} />
@@ -64,14 +69,14 @@ export function Permissions() {
     <div className="permissions-page">
       {isMaster(role) || isAdmin(role) || hasPermission(permissionsByRole, role._id, "permissions", "create")?
         <Button className="permissions-page__add" primary onClick={onOpenCloseModal}>
-         <Icon name='plus' />  Nuevo permiso
+         <Icon name='plus' />  { t("new_permission")}
         </Button>: null}
         <Tab menu={{ secondary: true }} panes={panes} /> 
       </div>
       <BasicModal
         show={showModal}
         close={onOpenCloseModal}
-        title="Crear nuevo permiso"
+        title={t("create_permission")}
       >
         <PermissionForm close={onOpenCloseModal} onReload={onReload} />
       </BasicModal></>) : 

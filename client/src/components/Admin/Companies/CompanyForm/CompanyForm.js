@@ -7,6 +7,7 @@ import { isAdmin, isMaster } from "../../../../utils/checkPermission";
 import { initialValues, validationSchema } from "./CompanyForm.form";
 import "./CompanyForm.scss";
 import { extractDomain } from "../../../../utils/formatEmail";
+import { useLanguage } from "../../../../contexts";
 
 const companyController = new Company();
 const roleController = new Role();
@@ -18,6 +19,10 @@ export function CompanyForm(props) {
     user: { role },
   } = useAuth();
   const [listRoles, setListRoles] = useState([]);
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   useEffect(() => {
     roleController.getRoles(accessToken, true).then((response) => {
@@ -62,7 +67,7 @@ export function CompanyForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Razón Social"
+          label={t("company_name")}
           name="name"
           // placeholder="Razon social"
           onChange={formik.handleChange}
@@ -70,7 +75,7 @@ export function CompanyForm(props) {
           error={formik.errors.name}
         />
         <Form.Input
-          label="CUIT"
+          label={t("CUIT")}
           name="cuit"
           // placeholder="cuit"
           onChange={formik.handleChange}
@@ -81,7 +86,7 @@ export function CompanyForm(props) {
 
       <Form.Group widths="equal">
         <Form.Input
-          label="Teléfono"
+          label={t("phone")}
           name="phone"
           // placeholder="Telefono"
           onChange={formik.handleChange}
@@ -89,7 +94,7 @@ export function CompanyForm(props) {
           error={formik.errors.phone}
         />
         <Form.Input
-          label="Dirección"
+          label={t("address")}
           name="address"
           // placeholder="Direccion"
           onChange={formik.handleChange}
@@ -100,7 +105,7 @@ export function CompanyForm(props) {
     
       <Form.Group widths="equal">
         <Form.Input
-          label="Correo Electrónico"
+          label={t("email")}
           name="email"
           // placeholder="Correo electronico"
           onChange={formik.handleChange}
@@ -122,7 +127,7 @@ export function CompanyForm(props) {
       </Form.Group> */}
 
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {company ? "Actualizar datos" : "Crear Empresa"}
+        {company ? t("update") : t("create")}
       </Form.Button>
     </Form>
   );

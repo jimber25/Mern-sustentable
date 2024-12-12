@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const Effluent = require("../models/effluent");
 const { deleteCompany } = require("./company");
 const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
 
 async function getEffluent(req, res) {
   const { id } = req.params;
@@ -160,6 +162,54 @@ async function getEffluentFormsBySiteAndYear(req, res) {
   );
 }
 
+function uploadFile(req, res) {
+  const file = req.files.file;
+
+  if (!file) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  const filePath = path.join("uploads/files", file.name);
+
+  fs.rename(file.path, filePath, (err) => {
+    if (err) {
+      return res.status(500).send("Failed to upload file.");
+    }
+    res.status(200).send({code:200,msg:"File uploaded successfully", fileName: filePath});
+  });
+}
+
+function getFile(req, res) {
+    const fileName = req.params.fileName;
+    const filePath = "./uploads/files/" + fileName;
+    fs.exists(filePath, (exists) => {
+      if (!exists) {
+        res.status(404).send({ message: "El archivo que buscás no existe" });
+      } else {
+        res.sendFile(path.resolve(filePath));
+      }
+    });
+}
+
+function deleteFile(req, res) {
+  const { fileName } = req.body;
+
+  if (!fileName) {
+    return res.status(400).json({ message: 'Se requiere el nombre del archivo' });
+  }
+
+  // Define la ruta del archivo
+  const filePath = path.join("uploads/files", fileName);
+
+  // Elimina el archivo
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      return res.status(500).json({ code: 500, message: 'Error al eliminar el archivo' });
+    }
+    res.status(200).json({ code:200, message: 'Archivo eliminado exitosamente' });
+  });
+}
+
 module.exports = {
   getEffluent,
   getEffluents,
@@ -169,4 +219,7 @@ module.exports = {
   existsEffluentFormBySiteAndPeriodAndYear,
   getPeriodEffluentFormsBySiteAndYear,
   getEffluentFormsBySiteAndYear,
-};
+  uploadFile,
+  getFile,
+  deleteFile
+}

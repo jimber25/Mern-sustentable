@@ -15,6 +15,7 @@ export function initialValues(production, period, year) {
       value:"",
       reviews:[
       ],
+      file:null,
       isApproved:false
     },
     annual_average: production?.annual_average || {
@@ -23,6 +24,7 @@ export function initialValues(production, period, year) {
       value:"",
       reviews:[
       ],
+      file:null,
       isApproved:false
     },
     
@@ -31,12 +33,14 @@ export function initialValues(production, period, year) {
 }
 
 export function validationSchema() {
-  // return Yup.object({
-  //   date: Yup.string().required(true),
-  //   creator_user: Yup.string().required(true),
-  //   state: Yup.string().required(true),
-  //   installation_type: Yup.object({
-  //     value: Yup.string().required(),
-  //   }),
-  // });
+  return Yup.object({
+    production_volume: Yup.object({
+      value: Yup.string().required('El campo "valor" es requerido'),
+    }),
+//creator_user: Yup.string().required(true),
+    period: Yup.string("Dato requerido").required('El campo "periodo" es obligatorio'),
+    //: Yup.object({
+   //   value: Yup.string().required(),
+   // }),
+  });
 }

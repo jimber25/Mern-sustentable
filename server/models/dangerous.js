@@ -31,7 +31,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   lubricants_sent_to_reuse_or_recycle:{
     code:String,
@@ -45,7 +46,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   oils_sent_to_reuse_or_recycle:{
     code:String,
@@ -59,7 +61,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   machines_and_equipment_sent_to_reuse_or_recycle:{
     code:String,
@@ -73,7 +76,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   electronic_waste_sent_to_reuse_or_recycle:{
     code:String,
@@ -87,7 +91,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   other_dangerous_wastes_sent_to_reuse_or_recycle:{
     code:String,
@@ -101,7 +106,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   chemicals_sent_to_incineration:{
     code:String,
@@ -115,7 +121,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   lubricants_sent_to_incineration:{
     code:String,
@@ -129,7 +136,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   oils_sent_to_incineration:{
     code:String,
@@ -143,7 +151,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   machines_and_equipment_sent_to_incineration:{
     code:String,
@@ -157,7 +166,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   electronic_waste_sent_to_incineration:{
     code:String,
@@ -171,7 +181,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   other_dangerous_wastes_sent_to_incineration:{
     code:String,
@@ -185,7 +196,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   chemicals_sent_to_landfill:{
     code:String,
@@ -199,7 +211,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   lubricants_sent_to_landfill:{
     code:String,
@@ -213,7 +226,8 @@ const DangerousSchema = mongoose.Schema({
       },
       comments:String
     }],
-    isApproved:Boolean
+    isApproved:Boolean,
+    file:String
   },
   active:Boolean
 });

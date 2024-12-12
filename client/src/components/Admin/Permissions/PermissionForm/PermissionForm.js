@@ -10,6 +10,7 @@ import {
   convertActionsEngToEsp,
 } from "../../../../utils/converts";
 import "./PermissionForm.scss";
+import { useLanguage } from "../../../../contexts";
 
 const permissionController = new Permission();
 const roleController = new Role();
@@ -20,6 +21,10 @@ export function PermissionForm(props) {
   const [listRoles, setListRoles] = useState([]);
   const [listActionPermissions, setListActionPermissions] = useState([]);
   const [listActions, setListActions] = useState([]);
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key.toLowerCase()] || key ; // Función para obtener la traducción
 
   useEffect(() => {
     roleController.getRoles(accessToken, true).then((response) => {
@@ -88,12 +93,12 @@ export function PermissionForm(props) {
     <Form className="permission-form" onSubmit={formik.handleSubmit}>
       <Form.Group widths="equal">
         <Form.Dropdown
-          label="Rol"
-          placeholder="Selecciona un rol"
+          label={t("rol")}
+          //placeholder="Selecciona un rol"
           options={listRoles.map((ds) => {
             return {
               key: ds._id,
-              text: ds.name,
+              text: t(ds.name),
               value: ds._id,
             };
           })}
@@ -105,12 +110,12 @@ export function PermissionForm(props) {
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Dropdown
-          label="Módulo"
-          placeholder="Selecciona un módulo"
+          label={t("module")}
+          //placeholder="Selecciona un módulo"
           options={MODULES.map((ds) => {
             return {
               key: ds,
-              text: convertModulesEngToEsp(ds),
+              text: t(ds),
               value: ds,
             };
           })}
@@ -129,7 +134,7 @@ export function PermissionForm(props) {
           options={listActions.map((ds) => {
             return {
               key: ds,
-              text: convertActionsEngToEsp(ds),
+              text: t(ds),
               value: ds,
             };
           })}
@@ -152,7 +157,7 @@ export function PermissionForm(props) {
       </Form.Group>
 
       <Form.Button type="submit" primary fluid loading={formik.isSubmitting}>
-        {permission ? "Actualizar permisos" : "Crear permiso"}
+        {permission ? t("update") : t("create")}
       </Form.Button>
     </Form>
   );

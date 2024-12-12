@@ -163,7 +163,7 @@ function TablePeriods(props) {
     onOpenCloseConfirm();
   };
 
-  const openUpdateEffluentForm = (period) => {
+  const openUpdateProductionForm = (period) => {
     //setFieldName(name);
     const form = data.find((item) => item.period === period);
     setTitleModal(
@@ -176,6 +176,7 @@ function TablePeriods(props) {
         onClose={onOpenCloseModal}
         onReload={onReload}
         productionForm={form}
+        siteSelected={site}
       />
     );
     setShowModal(true);
@@ -221,7 +222,6 @@ function TablePeriods(props) {
   };
 
   const hasDataPeriod = (period) => {
-    console.log(data)
     if(data){
       const existsPeriod = data.some((entry) => entry.period === period);
       return existsPeriod;
@@ -262,13 +262,12 @@ function TablePeriods(props) {
                       icon="ellipsis vertical"
                       floating
                       className="icon"
-    
                     >
                       <Dropdown.Menu>
                         <Dropdown.Item
                           text="Editar"
                           icon="edit"
-                          onClick={() => openUpdateEffluentForm(period)}
+                          onClick={() => openUpdateProductionForm(period)}
                         />
                         <Dropdown.Item
                           text="Eliminar"
@@ -281,11 +280,12 @@ function TablePeriods(props) {
                 ) : (
                   <>
                     <Dropdown
-                      link
+                      //link={true}
                       icon="ellipsis vertical"
                       floating
                       size="tiny"
                       className="icon"
+                      exact="true"
                       // style={{ marginLeft: "10px" }}
                     >
                       <Dropdown.Menu>

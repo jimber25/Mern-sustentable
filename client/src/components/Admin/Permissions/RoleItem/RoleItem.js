@@ -7,6 +7,7 @@ import { RoleForm } from "../../Roles/RoleForm";
 import { PermissionsRole } from "../PermissionsRole/PermissionsRole";
 import "./RoleItem.scss";
 import { isAdmin , hasPermission, isMaster} from "../../../../utils/checkPermission";
+import { useLanguage } from "../../../../contexts";
 
 const roleController = new Role();
 const permissionController = new Permission();
@@ -15,6 +16,10 @@ export function RoleItem(props) {
   const { role, onReload } = props;
   const { accessToken } = useAuth();
   const roleUser = useAuth().user.role;
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [showModal, setShowModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
@@ -103,7 +108,7 @@ export function RoleItem(props) {
       <div className="role-item">
         <div className="role-item__info">
           <div>
-              {role.name}
+              {t(role.name.toLowerCase())}
           </div>
         </div>
         <div>

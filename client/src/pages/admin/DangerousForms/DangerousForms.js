@@ -97,7 +97,7 @@ export function DangerousForms() {
       <div className="dangerous-forms-page">
         <Segment textAlign="center">
           {" "}
-          <Header as="h">PELIGROSOS</Header>
+          <Header as="h1">PELIGROSOS</Header>
         </Segment>
         <div className="dangerous-forms-page__add">
           {siteSelected !== null || site ? (

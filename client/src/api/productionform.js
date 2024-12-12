@@ -30,7 +30,7 @@ export class Productionform {
       //   formData.append(key, data[key]);
       // });
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USER}`;
-      console.log(data)
+      console.log(data);
       const url = `${this.baseApi}/add-production`;
       const params = {
         method: "POST",
@@ -55,14 +55,14 @@ export class Productionform {
     try {
       const pageFilter = `page=${paramsProduction?.page || 1}`;
       const limitFilter = `limit=${paramsProduction?.limit || 10}`;
-      const siteFilter = `site=${paramsProduction?.site || undefined}`
+      const siteFilter = `site=${paramsProduction?.site || undefined}`;
       // const url = `${this.baseApi}/${ENV.API_ROUTES.USERS}?active=${active}`;
-      let url=`${this.baseApi}/productions?${pageFilter}&${limitFilter}`;
-      if(active !== undefined){
+      let url = `${this.baseApi}/productions?${pageFilter}&${limitFilter}`;
+      if (active !== undefined) {
         url = `${this.baseApi}/productions?active=${active}&${pageFilter}&${limitFilter}`;
       }
-      if(paramsProduction?.site){
-        url = `${url}&${siteFilter}`
+      if (paramsProduction?.site) {
+        url = `${url}&${siteFilter}`;
       }
       const params = {
         headers: {
@@ -81,7 +81,11 @@ export class Productionform {
     }
   }
 
-  async updateProductionForm(accessToken, idProductionForm, productionformData) {
+  async updateProductionForm(
+    accessToken,
+    idProductionForm,
+    productionformData
+  ) {
     try {
       const data = productionformData;
 
@@ -137,7 +141,7 @@ export class Productionform {
   async existsProductionFormByPeriodAndYear(accessToken, siteId, period, year) {
     try {
       const url = `${this.baseApi}/production-exists-site/${siteId}/${period}/${year}`;
-      
+
       const params = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -158,7 +162,7 @@ export class Productionform {
   async getPeriodsProductionFormsBySiteAndYear(accessToken, siteId, year) {
     try {
       const url = `${this.baseApi}/productions-periods-site-year/${siteId}/${year}`;
-      
+
       const params = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -175,11 +179,11 @@ export class Productionform {
       throw error;
     }
   }
-  
+
   async getProductionFormsBySiteAndYear(accessToken, siteId, year) {
     try {
       const url = `${this.baseApi}/productions-site-year/${siteId}/${year}`;
-      
+
       const params = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -195,5 +199,60 @@ export class Productionform {
     } catch (error) {
       throw error;
     }
+  }
+
+  async uploadFileApi(accessToken, data) {
+    const url = `${this.baseApi}/upload-file-production/`;
+
+    const params = {
+      method: "POST",
+      body: data,
+      headers: {
+        //'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    return fetch(url, params)
+      .then((response) => {
+        return response;
+      })
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  }
+
+  async getFileApi(fileName) {
+    const url = `${this.baseApi}/get-file-production/${fileName}`;
+    return fetch(url)
+      .then((response) => {
+        //console.log(response)
+        return response.url;
+      })
+      .catch((err) => {
+        return err.message;
+      });
+  }
+
+  async deleteFileApi(accessToken, fileName) {
+    const url = `${this.baseApi}/delete-file-production`;
+
+    const params = {
+      method: "DELETE",
+      body: JSON.stringify({ fileName }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    return fetch(url, params)
+      .then((response) => {
+        return response.url;
+      })
+      .catch((err) => {
+        return err.message;
+      });
   }
 }

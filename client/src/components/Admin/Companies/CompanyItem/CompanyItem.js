@@ -8,6 +8,7 @@ import { ENV } from "../../../../utils";
 import { CompanyForm } from "../CompanyForm";
 import "./CompanyItem.scss";
 import { hasPermission, isAdmin, isMaster } from "../../../../utils/checkPermission";
+import { useLanguage } from "../../../../contexts";
 
 const companyController = new Company();
 const permissionController = new Permission();
@@ -15,6 +16,10 @@ const permissionController = new Permission();
 export function CompanyItem(props) {
   const { company, onReload } = props;
   const { accessToken, user: { role } } = useAuth();
+
+  const { language, changeLanguage, translations } = useLanguage();
+  
+  const t = (key) => translations[key] || key ; // Función para obtener la traducción
 
   const [permissionsByRole, setPermissionsByRole] = useState([]);
 
@@ -52,8 +57,8 @@ export function CompanyItem(props) {
     setIsDelete(false);
     setConfirmMessage(
       company.active
-        ? `¿Está seguro que desea desactivar "${company.name}"?`
-        : `¿Está seguro que desea activar "${company.name}"?`
+        ? `¿${t("question_inactive")} "${company.name}"?`
+        : `¿${t("question_active")} "${company.name}"?`
     );
     onOpenCloseConfirm();
   };
@@ -72,7 +77,7 @@ export function CompanyItem(props) {
 
   const openDeleteConfirm = () => {
     setIsDelete(true);
-    setConfirmMessage(`¿Está seguro que desea eliminar "${company.name}"?`);
+    setConfirmMessage(`¿${t("question_delete")} "${company.name}"?`);
     onOpenCloseConfirm();
   };
 
@@ -121,8 +126,8 @@ export function CompanyItem(props) {
         onConfirm={isDelete ? onDelete : onActivateDesactivate}
         content={confirmMessage}
         size="tiny"
-        cancelButton='Cancelar'
-        confirmButton="Aceptar"
+        cancelButton={t("cancel")}
+        confirmButton={t("accept")}
       />
     </>
   );

@@ -1,7 +1,7 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback,useRef, useState, useEffect } from "react";
 import {
   Form,
-  Image,
+  Label,
   Grid,
   Table,
   Icon,
@@ -13,7 +13,13 @@ import {
   Divider,
   Header,
   GridColumn,
-  GridRow
+  GridRow,
+  Modal,
+  Image,
+  ModalActions,
+  ModalHeader,
+  ModalContent,
+  ModalDescription
 } from "semantic-ui-react";
 import { useDropzone } from "react-dropzone";
 import { useFormik, Field, FieldArray, FormikProvider, getIn } from "formik";
@@ -30,7 +36,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { decrypt, encrypt } from "../../../../utils/cryptoUtils";
 import "./ProductionForm.scss";
-import { convertPeriodsEngToEsp } from "../../../../utils/converts";
+import { convertPeriodsEngToEsp, convertProductionFieldsEngToEsp } from "../../../../utils/converts";
 
 const productionFormController = new Productionform();
 
@@ -52,6 +58,9 @@ export function ProductionForm(props) {
     // return <div>No se encontraron detalles de producto.</div>;
   }
 
+  const [data, setData] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+
   const navigate = useNavigate();
 
   const onOpenCloseModal = () => setShowModal((prevState) => !prevState);
@@ -70,24 +79,44 @@ export function ProductionForm(props) {
     onSubmit: async (formValue) => {
       try {
         if (!productionForm) {
-          formValue.creator_user = user._id;
-          formValue.date = new Date();
-          if (user?.production) {
-            formValue.site = user.production._id;
-          } else {
-            if (siteSelected) {
-              formValue.site = siteSelected;
+          // if(data && Object.keys(data).length > 0){
+          //   Object.entries(data).map(async ([d]) => {
+          //     data[d].creator_user = user._id;
+          //     data[d].date = new Date();
+          //     if (user?.production) {
+          //       data[d].site = user.production._id;
+          //     } else {
+          //       if (siteSelected) {
+          //         data[d].site = siteSelected;
+          //       }
+          //     }
+          //     await productionFormController.createProductionForm(accessToken, data[d]);
+          //     return true;
+          //     //console.log(formValue);
+          // })
+
+
+          // }else{
+            formValue.creator_user = user._id;
+            formValue.date = new Date();
+            if (user?.production) {
+              formValue.site = user.production._id;
+            } else {
+              if (siteSelected) {
+                formValue.site = siteSelected;
+              }
+              // } else {
+              //   // Desencriptar los datos recibidos
+              //   if (!productionForm) {
+              //     const productionData = decrypt(productionSelected);
+              //     formValue.production = productionData;
+              //   }
+              // }
             }
-            // } else {
-            //   // Desencriptar los datos recibidos
-            //   if (!productionForm) {
-            //     const productionData = decrypt(productionSelected);
-            //     formValue.production = productionData;
-            //   }
-            // }
-          }
-          await productionFormController.createProductionForm(accessToken, formValue);
-          //console.log(formValue);
+            await productionFormController.createProductionForm(accessToken, formValue);
+            //console.log(formValue);
+          // }
+    
         } else {
           await productionFormController.updateProductionForm(
             accessToken,
@@ -140,6 +169,32 @@ export function ProductionForm(props) {
         }
       })();
     }, [formik.values.year]);
+
+    // const handleAdd = async () => {
+    //   const validationErrors = await formik.validateForm();;
+    //   console.log(Object.keys(validationErrors).length)
+    //   if(Object.keys(validationErrors).length === 0){
+    //     if (selectedMonth) {
+    //       setData((prevData) => ({
+    //         ...prevData,
+    //         [selectedMonth]: formik.values,
+    //       }));
+    //       setSelectedMonth('');
+    //     }
+    //   }
+
+    // };
+
+    // useEffect(() => {
+    //   (async () => {
+    //     try {
+    //       setSelectedMonth(formik.values.period)
+    //     } catch (error) {
+    //       console.error(error);
+    //       setSelectedMonth("")
+    //     }
+    //   })();
+    // }, [formik.values.period]);
 
   return (
     <Form className="production-form" onSubmit={formik.handleSubmit}>
@@ -204,10 +259,24 @@ export function ProductionForm(props) {
           </Grid>
         </>
       ) : null}
+      {/* {
+        data ?
+        <>
+              {console.log(data)}
+        {Object.entries(data).map(([month, val]) => (
+            <Label key={month}>
+              {console.log(month)}
+              {convertPeriodsEngToEsp(month)}
+            </Label>
+        ))}
+        </>
+        : null
+      } */}
       <Table size="small" celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell width="6">Conce</Table.HeaderCell>
+          <Table.HeaderCell width="1">Codigo</Table.HeaderCell>
+            <Table.HeaderCell width="6">Concepto</Table.HeaderCell>
             <Table.HeaderCell width="2">Valor</Table.HeaderCell>
             <Table.HeaderCell width="2">Unidad</Table.HeaderCell>
             <Table.HeaderCell width="2">Estado</Table.HeaderCell>
@@ -217,8 +286,13 @@ export function ProductionForm(props) {
         <Table.Body>
           <Table.Row>
 
+          <Table.Cell>
+              <label className="label">
+                {formik.values.production_volume.code}{" "}
+              </label>
+            </Table.Cell>
             <Table.Cell>
-              <label className="label">Volumen de produccion</label>
+              <label className="label">{convertProductionFieldsEngToEsp("production_volume")}</label>
             </Table.Cell>
             <Table.Cell>
             <Form.Input
@@ -226,7 +300,7 @@ export function ProductionForm(props) {
                 name="production_volume.value"
                 onChange={formik.handleChange}
                 value={formik.values.production_volume.value}
-                error={formik.errors.production_volume}
+                error={formik.errors.production_volume?.value? formik.errors.production_volume.value : null}
               />
              
            
@@ -234,7 +308,7 @@ export function ProductionForm(props) {
 
            <Table.Cell>
             <Form.Dropdown
-                placeholder="Celda datos fijos"
+                //placeholder="Celda datos fijos"
                 options={[{key:1, value:true,name:"dato"}].map((ds) => {
                   return {
                     key: ds.key,
@@ -247,7 +321,7 @@ export function ProductionForm(props) {
                   formik.setFieldValue("production_volume.unit", data.value)
                 }
                 value={formik.values.production_volume.unit}
-                error={formik.errors.average_annual}
+                error={formik.errors.production_volume?.unit? formik.errors.production_volume.unit : null}
               />
             </Table.Cell>
 
@@ -266,7 +340,7 @@ export function ProductionForm(props) {
                   formik.setFieldValue("production_volume.isApproved", data.value)
                 }
                 value={formik.values.production_volume.isApproved}
-                error={formik.errors.production_volume}
+                error={formik.errors.production_volume?.isApproved? formik.errors.production_volume.isApproved : null}
               />
             </Table.Cell>
             <Table.Cell>
@@ -275,34 +349,25 @@ export function ProductionForm(props) {
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("volumen de produccion", "production_valume");
+                  openUpdateSite(convertProductionFieldsEngToEsp("production_volume"), "production_volume");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite("tipo de instalacion", "installation_type");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"production_volume"}/>
             </Table.Cell>
           </Table.Row>
                     
           <Table.Row>
-            <Table.Cell>
-              <label className="label">Promedio anual basado en los reportes</label>
+          <Table.Cell>
+              <label className="label">
+                {formik.values.annual_average.code}{" "}
+              </label>
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Input
-                type="number"
-                name="average_annual.value"
-                onChange={formik.handleChange}
-                value={formik.average_annual.value}
-                error={formik.errors.average_annual}
-              /> */}
+              <label className="label">{convertProductionFieldsEngToEsp("annual_average")}</label>
+            </Table.Cell>
+            <Table.Cell>
                     <Form.Input
                 type="number"
                 name="annual_average.value"
@@ -312,18 +377,20 @@ export function ProductionForm(props) {
               />
             </Table.Cell>
             <Table.Cell>
-              {/* <Form.Input
-                type="number"
-                name="average_annual.value"
-                onChange={formik.handleChange}
-                value={formik.average_annual.value}
-                error={formik.errors.average_annual}
-              /> */}
-                    <Form.Input
-                type="number"
-                name="average_annual.value"
-                onChange={formik.handleChange}
-                value={formik.values.annual_average.value}
+            <Form.Dropdown
+                //placeholder="Celda datos fijos"
+                options={[{key:1, value:true,name:"dato"}].map((ds) => {
+                  return {
+                    key: ds.key,
+                    text: ds.name,
+                    value: ds.value,
+                  };
+                })}
+                selection
+                onChange={(_, data) =>
+                  formik.setFieldValue("annual_average.unit", data.value)
+                }
+                value={formik.values.annual_average.unit}
                 error={formik.errors.annual_average}
               />
             </Table.Cell>
@@ -348,30 +415,18 @@ export function ProductionForm(props) {
             </Table.Cell>
 
 
-
-
-
-
-
             <Table.Cell>
               <Button
                 icon
                 type="button"
                 primary
                 onClick={() => {
-                  openUpdateSite("Promedio anual basado en reportes", "average_annual");
+                  openUpdateSite(convertProductionFieldsEngToEsp("annual_average"), "annual_average");
                 }}
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite("Categoria de productos");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"annual_average"}/>
             </Table.Cell>
             </Table.Row>
          
@@ -405,6 +460,9 @@ export function ProductionForm(props) {
         />
       </BasicModal>
       <Form.Group widths="2">
+      {/* <Form.Button type="button"    secondary
+          fluid onClick={handleAdd}>Añadir
+        </Form.Button> */}
         <Form.Button type="submit" fluid primary loading={formik.isSubmitting}>
           {!productionForm ? "Guardar" : "Actualizar datos"}
         </Form.Button>
@@ -552,6 +610,153 @@ const EditableComment = ({ id, author, date, content, onSave, active }) => {
         ) : null}
       </Comment.Content>
     </Comment>
+  );
+};
+
+function FileUpload (props) {
+  const {accessToken, data, field}=props;
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf',  
+    //'application/vnd.ms-excel', // .xls
+    //'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+    ];
+
+  useEffect(() => {
+    if (data.values[field] && data.values[field].file!==null) {
+     setFileName(data.values[field].file);
+    }
+  }, [field]);
+
+   const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        console.log('Tipo de archivo no permitido. Debe ser JPG, PNG o PDF.');
+      } else {
+      setMessage(`Archivo seleccionado: ${file.name}`);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await productionFormController.uploadFileApi(accessToken,formData);
+        setMessage(response.msg);
+        if(response.status && response.status===200){
+          setFile(file);
+          setFileName(file.name);
+          data.setFieldValue(`${field}.file`, file.name)
+        }
+      } catch (error) {
+        setMessage('Error al subir el archivo');
+      }
+    }
+    }
+  };
+
+  const handleButtonClick = (event) => {
+    event.preventDefault(); // Evita que el formulario se envíe
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = handleFileChange;
+    input.click();
+  };
+
+  const handleRemoveFile = async () => {
+    setFile(null); // Elimina el archivo
+    setFileName(null);
+    try {
+      const response = await productionFormController.deleteFileApi(accessToken,fileName);
+      setMessage(response.message);
+      removeFile();
+    } catch (error) {
+      setMessage('Error al elimianr el archivo');
+    }
+  };
+
+  const removeFile = async () => {
+    data.setFieldValue(`${field}.file`, null)
+  };
+
+  return (
+    <>
+     
+      {fileName? (
+        <>
+          {/* <p>{file.name}</p> */}
+          <FileViewer fileName={fileName} handleRemove={handleRemoveFile}/>
+        </>
+      ):  <Button icon onClick={handleButtonClick}>
+                   <Icon name="paperclip" />
+    </Button>}
+    </>
+  );
+
+};
+
+function FileViewer (props){
+  const {fileName, handleRemove}=props;
+  const [fileUrl, setFileUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (fileName) {
+      setFileUrl(fileName); // Construye la URL del archivo
+      (async () => {
+        try {
+          const response = await productionFormController.getFileApi(fileName);
+          setFileUrl(response); // Construye la URL del archivo
+          //setMessage(response.message);
+        } catch (error) {
+          //setMessage('Error al elimianr el archivo');
+        }
+          })();
+    
+    }
+  }, [fileName]);
+
+  const handleOpenPreview = (event) => {
+    event.preventDefault(); 
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = (event) => {
+    event.preventDefault(); // Previene el comportamiento predeterminado
+    setPreviewOpen(false);
+  };
+
+  return (
+    <>
+      {/* //<Button onClick={handleOpenPreview}> {fileName}</Button> */}
+       
+    <Modal
+      onClose={ handleClosePreview}
+      onOpen={handleOpenPreview}
+      open={previewOpen}
+      trigger={<Button primary icon><Icon name="file alternate"/></Button>}
+    >
+      <ModalHeader>{fileName}</ModalHeader>
+      <ModalContent>
+        {fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg'))  && (
+            <Image src={fileUrl} alt="Vista previa" style={{ maxWidth: '100%' }} />
+          )}
+          {fileName && fileName.endsWith('.pdf') && (
+            <iframe src={fileUrl} title="Vista previa" style={{ width: '100%', height: '500px' }} />
+          )}
+      </ModalContent>
+      <ModalActions>
+      <Button color="red" onClick={handleRemove}>
+          <Icon disabled name='trash alternate' /> Eliminar
+          </Button>
+        <Button color='black' onClick={handleClosePreview}>
+        <Icon disabled name='close' />Cerrar
+        </Button>
+      </ModalActions>
+    </Modal>
+    </>
   );
 };
 

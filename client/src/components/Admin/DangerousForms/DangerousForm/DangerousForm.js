@@ -11,10 +11,10 @@ import {
   GridColumn,
   CommentMetadata,
   GridRow,
-  CommentAuthor,
-  TableFooter,
-  TableHeaderCell,
-  TableRow,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalActions,
   Segment,
   Divider,
   Header,
@@ -260,9 +260,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("chemicals_sent_to_reuse_or_recycle.isApproved", data.value)
+                  formik.setFieldValue("chemicals_sent_to_reuse_or_recycle.unit", data.value)
                 }
-                value={formik.values.chemicals_sent_to_reuse_or_recycle.isApproved}
+                value={formik.values.chemicals_sent_to_reuse_or_recycle.unit}
                 error={formik.errors.chemicals_sent_to_reuse_or_recycle}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -308,14 +308,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  // openUpdateSite(convertDangerousFieldsEngToEsp("chemicals_sent_to_reuse_or_recycle"), "chemicals_sent_to_reuse_or_recycle");
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"chemicals_sent_to_reuse_or_recycle"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -353,9 +346,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("lubricants_sent_to_reuse_or_recycle.isApproved", data.value)
+                  formik.setFieldValue("lubricants_sent_to_reuse_or_recycle.unit", data.value)
                 }
-                value={formik.values.lubricants_sent_to_reuse_or_recycle.isApproved}
+                value={formik.values.lubricants_sent_to_reuse_or_recycle.unit}
                 error={formik.errors.lubricants_sent_to_reuse_or_recycle}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -399,17 +392,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("lubricants_sent_to_reuse_or_recycle"),
-                    "lubricants_sent_to_reuse_or_recycle"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"lubricants_sent_to_reuse_or_recycle"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -452,9 +435,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("oils_sent_to_reuse_or_recycle.isApproved", data.value)
+                  formik.setFieldValue("oils_sent_to_reuse_or_recycle.unit", data.value)
                 }
-                value={formik.values.oils_sent_to_reuse_or_recycle.isApproved}
+                value={formik.values.oils_sent_to_reuse_or_recycle.unit}
                 error={formik.errors.oils_sent_to_reuse_or_recycle}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -500,17 +483,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("oils_sent_to_reuse_or_recycle"),
-                    "oils_sent_to_reuse_or_recycle"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"oils_sent_to_reuse_or_recycle"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -600,17 +573,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("machines_and_equipment_sent_to_reuse_or_recycle"),
-                    "machines_and_equipment_sent_to_reuse_or_recycle"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"machines_and_equipment_sent_to_reuse_or_recycle"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -648,9 +611,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("electronic_waste_sent_to_reuse_or_recycle.isApproved", data.value)
+                  formik.setFieldValue("electronic_waste_sent_to_reuse_or_recycle.unit", data.value)
                 }
-                value={formik.values.electronic_waste_sent_to_reuse_or_recycle.isApproved}
+                value={formik.values.electronic_waste_sent_to_reuse_or_recycle.unit}
                 error={formik.errors.electronic_waste_sent_to_reuse_or_recycle}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -696,17 +659,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("electronic_waste_sent_to_reuse_or_recycle"),
-                    "electronic_waste_sent_to_reuse_or_recycle"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"electronic_waste_sent_to_reuse_or_recycle"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -792,17 +745,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("other_dangerous_wastes_sent_to_reuse_or_recycle"),
-                    "other_dangerous_wastes_sent_to_reuse_or_recycle"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"other_dangerous_wastes_sent_to_reuse_or_recycle"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -840,9 +783,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("chemicals_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("chemicals_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.chemicals_sent_to_incineration.isApproved}
+                value={formik.values.chemicals_sent_to_incineration.unit}
                 error={formik.errors.chemicals_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -887,17 +830,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("chemicals_sent_to_incineration"),
-                    "chemicals_sent_to_incineration"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"chemicals_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -935,9 +868,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("lubricants_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("lubricants_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.lubricants_sent_to_incineration.isApproved}
+                value={formik.values.lubricants_sent_to_incineration.unit}
                 error={formik.errors.lubricants_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -982,17 +915,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("lubricants_sent_to_incineration"),
-                    "lubricants_sent_to_incineration"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"lubricants_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1031,9 +954,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("oils_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("oils_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.oils_sent_to_incineration.isApproved}
+                value={formik.values.oils_sent_to_incineration.unit}
                 error={formik.errors.oils_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1077,17 +1000,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("oils_sent_to_incineration"),
-                    "oils_sent_to_incineration"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"oils_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
           
@@ -1171,17 +1084,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("machines_and_equipment_sent_to_incineration"),
-                    "machines_and_equipment_sent_to_incineration"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"machines_and_equipment_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
           
@@ -1219,9 +1122,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("electronic_waste_sent_to_incineration.isApproved", data.value)
+                  formik.setFieldValue("electronic_waste_sent_to_incineration.unit", data.value)
                 }
-                value={formik.values.electronic_waste_sent_to_incineration.isApproved}
+                value={formik.values.electronic_waste_sent_to_incineration.unit}
                 error={formik.errors.electronic_waste_sent_to_incineration}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1265,17 +1168,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("electronic_waste_sent_to_incineration"),
-                    "electronic_waste_sent_to_incineration"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"electronic_waste_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
           
@@ -1359,17 +1252,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("other_dangerous_wastes_sent_to_incineration"),
-                    "other_dangerous_wastes_sent_to_incineration"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"other_dangerous_wastes_sent_to_incineration"}/>
             </Table.Cell>
           </Table.Row>
           
@@ -1407,9 +1290,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("chemicals_sent_to_landfill.isApproved", data.value)
+                  formik.setFieldValue("chemicals_sent_to_landfill.unit", data.value)
                 }
-                value={formik.values.chemicals_sent_to_landfill.isApproved}
+                value={formik.values.chemicals_sent_to_landfill.unit}
                 error={formik.errors.chemicals_sent_to_landfill}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1453,17 +1336,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("chemicals_sent_to_landfill"),
-                    "chemicals_sent_to_landfill"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"chemicals_sent_to_landfill"}/>
             </Table.Cell>
           </Table.Row>
 
@@ -1501,9 +1374,9 @@ export function DangerousForm(props) {
                 })}
                 selection
                 onChange={(_, data) =>
-                  formik.setFieldValue("lubricants_sent_to_landfill.isApproved", data.value)
+                  formik.setFieldValue("lubricants_sent_to_landfill.unit", data.value)
                 }
-                value={formik.values.lubricants_sent_to_landfill.isApproved}
+                value={formik.values.lubricants_sent_to_landfill.unit}
                 error={formik.errors.lubricants_sent_to_landfill}
               />
               {/* {formik.values.days_total.isApproved?  <Icon color="green" name='checkmark' /> : <Icon color="red" name='close' />} */}
@@ -1547,17 +1420,7 @@ export function DangerousForm(props) {
               >
                 <Icon name="comment outline" />
               </Button>
-              <Button
-                icon
-                onClick={() => {
-                  openUpdateSite(
-                    convertDangerousFieldsEngToEsp("lubricants_sent_to_landfill"),
-                    "lubricants_sent_to_landfill"
-                  );
-                }}
-              >
-                <Icon name="paperclip" />
-              </Button>
+              <FileUpload accessToken={accessToken} data={formik} field={"lubricants_sent_to_landfill"}/>
             </Table.Cell>
           </Table.Row>
         </Table.Body>
@@ -1740,36 +1603,149 @@ const EditableComment = ({ id, author, date, content, onSave, active }) => {
   );
 };
 
-// function ModalComments() {
-//   const [open, setOpen] = React.useState(false)
+function FileUpload (props) {
+  const {accessToken, data, field}=props;
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [message, setMessage] = useState('');
 
-//   return (
-//     <Modal
-//       basic
-//       onClose={() => setOpen(false)}
-//       onOpen={() => setOpen(true)}
-//       open={open}
-//       size='small'
-//       trigger={<Button>Basic Modal</Button>}
-//     >
-//       <Header icon>
-//         <Icon name='archive' />
-//         Archive Old Messages
-//       </Header>
-//       <ModalContent>
-//         <p>
-//           Your inbox is getting full, would you like us to enable automatic
-//           archiving of old messages?
-//         </p>
-//       </ModalContent>
-//       <ModalActions>
-//         <Button basic color='red' inverted onClick={() => setOpen(false)}>
-//           <Icon name='remove' /> No
-//         </Button>
-//         <Button color='green' inverted onClick={() => setOpen(false)}>
-//           <Icon name='checkmark' /> Yes
-//         </Button>
-//       </ModalActions>
-//     </Modal>
-//   )
-// }
+  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf',  
+    //'application/vnd.ms-excel', // .xls
+    //'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+    ];
+
+  useEffect(() => {
+    if (data.values[field] && data.values[field].file!==null) {
+     setFileName(data.values[field].file);
+    }
+  }, [field]);
+
+   const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    
+    if (file) {
+      if (!allowedTypes.includes(file.type)) {
+        console.log('Tipo de archivo no permitido. Debe ser JPG, PNG o PDF.');
+      } else {
+      setMessage(`Archivo seleccionado: ${file.name}`);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await dangerousFormController.uploadFileApi(accessToken,formData);
+        setMessage(response.msg);
+        if(response.status && response.status===200){
+          setFile(file);
+          setFileName(file.name);
+          data.setFieldValue(`${field}.file`, file.name)
+        }
+      } catch (error) {
+        setMessage('Error al subir el archivo');
+      }
+    }
+    }
+  };
+
+  const handleButtonClick = (event) => {
+    event.preventDefault(); // Evita que el formulario se envíe
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = handleFileChange;
+    input.click();
+  };
+
+  const handleRemoveFile = async () => {
+    setFile(null); // Elimina el archivo
+    setFileName(null);
+    try {
+      const response = await dangerousFormController.deleteFileApi(accessToken,fileName);
+      setMessage(response.message);
+      removeFile();
+    } catch (error) {
+      setMessage('Error al elimianr el archivo');
+    }
+  };
+
+  const removeFile = async () => {
+    data.setFieldValue(`${field}.file`, null)
+  };
+
+  return (
+    <>
+     
+      {fileName? (
+        <>
+          {/* <p>{file.name}</p> */}
+          <FileViewer fileName={fileName} handleRemove={handleRemoveFile}/>
+        </>
+      ):  <Button icon onClick={handleButtonClick}>
+                   <Icon name="paperclip" />
+    </Button>}
+    </>
+  );
+
+};
+
+function FileViewer (props){
+  const {fileName, handleRemove}=props;
+  const [fileUrl, setFileUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (fileName) {
+      setFileUrl(fileName); // Construye la URL del archivo
+      (async () => {
+        try {
+          const response = await dangerousFormController.getFileApi(fileName);
+          setFileUrl(response); // Construye la URL del archivo
+          //setMessage(response.message);
+        } catch (error) {
+          //setMessage('Error al elimianr el archivo');
+        }
+          })();
+    
+    }
+  }, [fileName]);
+
+  const handleOpenPreview = (event) => {
+    event.preventDefault(); 
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = (event) => {
+    event.preventDefault(); // Previene el comportamiento predeterminado
+    setPreviewOpen(false);
+  };
+
+  return (
+    <>
+      {/* //<Button onClick={handleOpenPreview}> {fileName}</Button> */}
+       
+    <Modal
+      onClose={ handleClosePreview}
+      onOpen={handleOpenPreview}
+      open={previewOpen}
+      trigger={<Button primary icon><Icon name="file alternate"/></Button>}
+    >
+      <ModalHeader>{fileName}</ModalHeader>
+      <ModalContent>
+        {fileName && (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.jpeg')) && (
+            <Image src={fileUrl} alt="Vista previa" style={{ maxWidth: '100%' }} />
+          )}
+          {fileName && fileName.endsWith('.pdf') && (
+            <iframe src={fileUrl} title="Vista previa" style={{ width: '100%', height: '500px' }} />
+          )}
+      </ModalContent>
+      <ModalActions>
+      <Button color="red" onClick={handleRemove}>
+          <Icon disabled name='trash alternate' /> Eliminar
+          </Button>
+        <Button color='black' onClick={handleClosePreview}>
+        <Icon disabled name='close' />Cerrar
+        </Button>
+      </ModalActions>
+    </Modal>
+    </>
+  );
+};
