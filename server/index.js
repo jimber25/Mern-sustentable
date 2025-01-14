@@ -5,14 +5,15 @@ const { API_VERSION, IP_SERVER, PORT_DB, NAME_DB } = require("./config");
 
 
 mongoose.connect(
-    //`mongodb+srv://fray:1234@cluster0-ox2m2.mongodb.net/backend?retryWrites=true&w=majority`, //CONEXIÓN A MONGODB ATLAS
-    `mongodb://${IP_SERVER}:${PORT_DB}/web-db`, //CONEXIÓN A LOCALHOST
+   "mongodb+srv://localhost:<admin123>@cluster0.v0g8s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", //CONEXIÓN A MONGODB ATLAS
+    //`mongodb://${IP_SERVER}:${PORT_DB}/web-db`, //CONEXIÓN A LOCALHOST
     { useNewUrlParser: true, useUnifiedTopology: true, 
         //useCreateIndex: true, 
         //useFindAndModify: false 
     },
     (err, res) => {
         if (err) {
+        
             throw err;
         } else {
             console.log("La conexión a la base de datos web-db es correcta.");
