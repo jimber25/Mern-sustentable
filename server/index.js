@@ -10,11 +10,11 @@ mongoose.connect(
     { useNewUrlParser: true, useUnifiedTopology: true, 
         //useCreateIndex: true, 
         //useFindAndModify: false 
-    },
+     },
     (err, res) => {
-        if (err) {
+       if (err) {
         
-            throw err;
+           // throw err;
         } else {
             console.log("La conexión a la base de datos web-db es correcta.");
             app.listen(port, () => {
