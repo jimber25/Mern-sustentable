@@ -5,8 +5,9 @@ const { API_VERSION, IP_SERVER, PORT_DB, NAME_DB } = require("./config");
 
 
 mongoose.connect(
-   "mongodb+srv://localhost:<admin123>@cluster0.v0g8s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", //CONEXIÓN A MONGODB ATLAS
-    //`mongodb://${IP_SERVER}:${PORT_DB}/web-db`, //CONEXIÓN A LOCALHOST
+  
+   //"mongodb+srv://localhost:<admin123>@cluster0.v0g8s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", //CONEXIÓN A MONGODB ATLAS
+    `mongodb://${IP_SERVER}:${PORT_DB}/web-db`, //CONEXIÓN A LOCALHOST
     { useNewUrlParser: true, useUnifiedTopology: true, 
         //useCreateIndex: true, 
         //useFindAndModify: false 
